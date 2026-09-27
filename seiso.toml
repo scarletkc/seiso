@@ -12,3 +12,7 @@ kind = "howto"
 [[kinds]]
 path = "docs/**"
 kind = "reference"
+
+[[kinds]]
+path = "docs/release-notes/**"
+kind = "changelog"
