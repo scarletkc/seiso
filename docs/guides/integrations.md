@@ -47,13 +47,14 @@ before submission.
 
 ## pre-commit
 
-Add the hook to `.pre-commit-config.yaml`. Replace the revision placeholder with
-a reviewed seiso Git revision that contains the checking commands:
+Add the hook to `.pre-commit-config.yaml` and set `rev` to a seiso
+[release tag](https://github.com/scarletkc/seiso/releases);
+`pre-commit autoupdate` later moves it to the newest release:
 
 ```yaml
 repos:
   - repo: https://github.com/scarletkc/seiso
-    rev: <reviewed-revision>
+    rev: <release-tag>
     hooks:
       - id: seiso
 ```

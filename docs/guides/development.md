@@ -65,8 +65,8 @@ separately and return exit code 2. This command inspects structure; it does
 not apply lint rules or return lint exit code 1.
 
 ```sh
-cargo run -p seiso -- parse docs/ --output-format json
-cargo run -p seiso -- parse --config seiso.toml README.md
+cargo run -- parse docs/ --output-format json
+cargo run -- parse --config seiso.toml README.md
 ```
 
 `--stdin-filename PATH` reads stdin instead of the file at PATH. PATH must

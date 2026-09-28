@@ -51,7 +51,7 @@ jobs:
         run: cargo clippy --all-targets --locked -- -D warnings
       - run: cargo test --locked
       - if: runner.os == 'Linux'
-        run: cargo run --locked -p seiso -- check --output-format concise
+        run: cargo run --locked -- check --output-format concise
       - if: runner.os == 'Linux'
         uses: actions/setup-python@v5
         with:
@@ -73,7 +73,7 @@ jobs:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: cargo run --locked -p seiso -- check --output-format concise
+      - run: cargo run --locked -- check --output-format concise
 
   check:
     if: always()

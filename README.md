@@ -16,16 +16,16 @@
 
 </div>
 
-Hardly anyone writes project docs by hand anymore. AI writes most of them,
-and coding agents read them as context as often as people do. Both kinds of
-reader take the page at its word, so a stale version number or a field list
-updated in only one of its three copies misleads all of them. AI writes docs
-faster than anyone can review them, and it makes the same few mistakes every
-time.
+AI writes project docs faster than anyone can review them, and coding agents
+read those docs back as context for the next change. People and agents alike
+take the page at its word, so a stale version number or a field list updated
+in only one of its three copies misleads all of them. And AI makes the same
+few mistakes over and over.
 
 seiso defines one convention for how Markdown in a repository is organized,
-so projects can follow the same rules without agreeing on them first, the
-way rustfmt settled formatting for Rust code.
+the way rustfmt settled formatting for Rust code. Projects share the rules
+instead of negotiating their own; each project mainly maps its documents to
+kinds, and `seiso init` suggests a starting point.
 
 ## The convention
 
@@ -43,10 +43,12 @@ way rustfmt settled formatting for Rust code.
   exception without one is itself a violation.
 
 seiso's rules check documents against this convention; stable rules run by
-default, and the rest are opt-in previews. Each diagnostic says where
-the problem is and how to fix it, so an agent can repair the page from
-seiso's output alone. seiso doesn't guess whether prose sounds
-machine-written, and it leaves formatting and spelling to other tools. The
+default, and the rest are opt-in previews. Each diagnostic says where the
+problem is and how to fix it, so an agent can repair most findings from
+seiso's output alone. When a fix needs a judgment, such as which of two pages
+owns a fact, the diagnostic names the decision. seiso doesn't guess whether
+prose sounds machine-written, and it leaves formatting and spelling to other
+tools. The
 [convention](https://github.com/scarletkc/seiso/blob/main/docs/reference/convention.md)
 defines each kind's contract and the evidence a diagnostic can claim.
 
@@ -62,7 +64,7 @@ The PyPI and npm packages include prebuilt binaries for macOS on Apple silicon
 and Intel, Linux x64 and arm64 with glibc, and Windows x64. On other platforms,
 including musl-based Linux such as Alpine, use cargo; the PyPI package also
 works there but builds from source, which requires a Rust toolchain. From a
-source checkout, run `cargo run -p seiso -- <command>`.
+source checkout, run `cargo run -- <command>`.
 
 ## Quick start
 
