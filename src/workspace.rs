@@ -452,6 +452,8 @@ fn skipped_inputs(
             format!("configuration excludes its {count} Markdown {files}; inspect `seiso policy`")
         } else if target != root && ignored_by_git(root, target, true).unwrap_or(false) {
             ".gitignore ignores it".to_owned()
+        } else if contains_markdown_ignored_by_git(target) {
+            ".gitignore ignores its Markdown files".to_owned()
         } else {
             "it contains no Markdown files".to_owned()
         };
@@ -471,6 +473,20 @@ fn skipped_inputs(
         });
     }
     skipped
+}
+
+/// Discovery drops Git-ignored files, so find them again only to explain a
+/// directory that selected nothing. Other discovery settings match `load`.
+fn contains_markdown_ignored_by_git(directory: &Path) -> bool {
+    ignore::WalkBuilder::new(directory)
+        .standard_filters(false)
+        .follow_links(false)
+        .filter_entry(|entry| entry.file_name() != ".git" && entry.file_name() != ".seiso_cache")
+        .build()
+        .flatten()
+        .any(|entry| {
+            entry.file_type().is_some_and(|kind| kind.is_file()) && is_markdown(entry.path())
+        })
 }
 
 fn configuration_label(configuration: &str) -> String {

@@ -783,6 +783,30 @@ fn unchecked_inputs_and_inactive_preview_selectors_explain_themselves() {
 }
 
 #[test]
+fn unchecked_directories_name_git_ignored_markdown_as_the_cause() {
+    let workspace = workspace();
+    let root = workspace.path();
+    write(root, ".gitignore", "*.md\n");
+    write(root, "docs/guide.md", "# Guide\n");
+    write(root, "empty/notes.txt", "Text\n");
+    let whole = run(root, &["check"], None);
+    assert_eq!(whole.status.code(), Some(0));
+    let stderr = String::from_utf8_lossy(&whole.stderr);
+    assert!(
+        stderr.contains("because .gitignore ignores its Markdown files."),
+        "{stderr}"
+    );
+    let named = run(root, &["check", "docs", "empty"], None);
+    let stderr = String::from_utf8_lossy(&named.stderr);
+    for expected in [
+        "seiso: docs: Not checked because .gitignore ignores its Markdown files.",
+        "seiso: empty: Not checked because it contains no Markdown files.",
+    ] {
+        assert!(stderr.contains(expected), "{stderr}");
+    }
+}
+
+#[test]
 fn rule_documents_are_available_and_future_features_are_rejected() {
     let workspace = workspace();
     let root = workspace.path();
