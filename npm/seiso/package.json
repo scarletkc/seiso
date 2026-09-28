@@ -1,6 +1,6 @@
 {
   "name": "@scarletkc/seiso",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A Markdown convention and linter for project docs written by AI and read by humans and agents",
   "license": "MIT",
   "author": "scarletkc",
