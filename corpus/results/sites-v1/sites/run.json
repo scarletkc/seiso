@@ -59,12 +59,12 @@
     "src/analysis.rs": "efa00268fb46fb7bf007c41d48cbae85ca3d1323a956dd921db51e73d00bcab5",
     "src/cache/mod.rs": "e3e3800ea77a4ce023be4ce09fa618c72cdefbaa6a920d55ce9e34f23d37ee6a",
     "src/commands.rs": "0e4cb6b98132111375a6ea9ca60375cae1b858b11b8ad93adc8c0d9bc5a798ee",
-    "src/config/mod.rs": "dd8e91c1ed1a2bc2ae0320c04bcef76da72944dbe2519047b906e93e9bec63d6",
+    "src/config/mod.rs": "7cab9a682ccb2a0e221213dcf7eb2639ee069b2b8635ea94310d661c142f7260",
     "src/diagnostics/mod.rs": "a8b97764981145302a4ef3ccfb99eb0f7e30474f7a1e8227f92d2c914413be09",
     "src/diagnostics/outputs.rs": "d28aa632d9fcf583e01f0ca31e5d4cc6f10c44683d092661444fcab51a41bbae",
     "src/diagnostics/render.rs": "8f57d8f8063eb928969bbf44ba17bcbdb26e20e9bb474107645130538e0ee25b",
     "src/diagnostics/source_map.rs": "ed8fbf32335dd91feea916a425ee3d9e246ee59f7624a0bdd5bad47a379ab02b",
-    "src/index/mod.rs": "4418a3922e4c82808579dcca919b267e68833c4ac85299321bc5ebfb4ae3ab2d",
+    "src/index/mod.rs": "4d11b9441efbe3c2c33ee42a331faaaa58ab603a274f87c47cd4602f588e4e9a",
     "src/lib.rs": "7977487dc3bb4c190ad5634f73d0ec99a18cda76e375eca4ca783e3edd5b105d",
     "src/main.rs": "2542864f7f14fe269728f10c578f3778a537230928e1360d1f6dbb553a527233",
     "src/md/mapping.rs": "ef4c82ed0f82d1dd0c6768a511132a4899216e94f3d3f1383b848fc2c66aa276",
@@ -80,7 +80,7 @@
     "src/rules/normative.rs": "e3d0752b878bb8932a7c61fa288ab91d15342b50288cacc33691895413ce8c2f",
     "src/rules/suppression.rs": "b559ec8fc86d90cb0ff52e5995993e4173469924552494f79faec62b8cda9b4d",
     "src/sections.rs": "7553734e7b8f1ac08683769cb35c2e4493baa13f37a6d9a046e04b37ff10e54a",
-    "src/workspace.rs": "ac45a85a4b35ca7db1bef016d97827aa6bfdc815fadcf4fd2514d8f4d87c0a4a"
+    "src/workspace.rs": "52dc6fa7e8c122f95c66c1eb228b4f0858f1f0cf479f2a70448afea409aea050"
   },
   "implementation_hash_format": "sha256-lf",
   "incomplete_rule_files": {
@@ -114,9 +114,9 @@
       "PTR002": 7
     }
   },
-  "probe_sha256": "496a3aa90e06fa15532dfe8dc45ff6fd063d74191d3ed11e68106ae4d51b6962",
+  "probe_sha256": "06975889b956d41e9ea2a082f21f41605f1ae7cdbf31d7b4447a40e59aa77a76",
   "raw_result_sha256": "1295222daa4aee816e72c6fad8535ad8f0038b417960e11fe07edc7e065d2b5b",
-  "report_sha256": "f889a8eaf38a44a1db8d7648fec3919ed751d23ad28936037c7911a3d56efe1d",
+  "report_sha256": "676acfa54e3f0ef7909e43eeb29f998923c1d45ae8f4a9cb06ad8d6ee7751a65",
   "reverse_byte_identical": true,
   "reverse_dimensions": [
     "sources",

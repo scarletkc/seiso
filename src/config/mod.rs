@@ -50,6 +50,7 @@ pub struct Settings {
     pub preview: bool,
     pub kinds: Vec<KindMapping>,
     pub domains: Vec<DomainMapping>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
     pub sites: Vec<SiteMapping>,
     pub lint: LintSettings,
 }

@@ -44,6 +44,7 @@ pub struct FilePolicy {
     pub configuration: String,
     pub kind: Option<KindResolution>,
     pub domain: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub site: Option<SiteMapping>,
     pub enabled_rules: Vec<String>,
     pub excluded: Option<&'static str>,

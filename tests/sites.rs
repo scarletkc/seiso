@@ -219,7 +219,7 @@ fn the_written_path_wins_over_a_route_and_the_dump_shows_resolved_targets() {
         ]
     );
     let outside = file("docs/outside.md");
-    assert_eq!(outside["site"], Value::Null);
+    assert!(outside.get("site").is_none());
     assert_eq!(outside["links"][0]["resolution"]["status"], "missing");
 }
 
@@ -246,6 +246,18 @@ fn policy_names_each_file_site() {
         report["configurations"]["seiso.toml"]["sites"][0]["public"],
         "site/public"
     );
+}
+
+#[test]
+fn inspection_output_has_no_site_fields_without_site_entries() {
+    let workspace = site_workspace("");
+    for arguments in [&["policy"][..], &["index", "--dump"]] {
+        let output = run(workspace.path(), arguments);
+        assert_eq!(output.status.code(), Some(0));
+        let text = String::from_utf8_lossy(&output.stdout);
+        assert!(!text.contains("\"site\""), "{text}");
+        assert!(!text.contains("\"sites\""), "{text}");
+    }
 }
 
 #[test]

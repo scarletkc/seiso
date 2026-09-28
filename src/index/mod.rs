@@ -214,17 +214,20 @@ impl WorkspaceIndex {
                 "span": link.span,
                 "resolution": self.resolve_link(&file.filename, &link.destination),
             })).collect();
-            serde_json::json!({
+            let mut record = serde_json::json!({
                 "filename": file.filename,
                 "kind": file.kind,
                 "domain": file.domain,
-                "site": file.config.site_for(&file.path),
                 "language": file.document.language,
                 "canonical": file.document.frontmatter.as_ref().filter(|value| value.errors.is_empty()).and_then(|value| value.canonical).unwrap_or(false),
                 "anchors": self.anchor_spans[&file.filename],
                 "identifiers": file.document.identifiers,
                 "links": links,
-            })
+            });
+            if let Some(site) = file.config.site_for(&file.path) {
+                record["site"] = serde_json::json!(site);
+            }
+            record
         }).collect();
         serde_json::json!({ "complete": self.complete, "files": files })
     }
