@@ -58,9 +58,7 @@ a change without an issue.
 | `chore/` | Documentation, tests, CI, build, refactoring, and dependency updates |
 
 Use lowercase letters, digits, and single hyphens. Dots are allowed only in
-release versions. Branches created by coding agents may use the agent prefixes
-from the same specification (`claude/`, `codex/`, `copilot/`, `cursor/`, or
-`ai/`) with the same description format.
+release versions.
 
 Branch from the latest `main` and keep each branch to one change.
 
