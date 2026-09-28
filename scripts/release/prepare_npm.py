@@ -4,12 +4,27 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 import shutil
 import tomllib
 import zipfile
 from email.parser import BytesParser
 
 from .versions import python_version
+
+
+NPM_PLATFORMS = ("linux-x64", "linux-arm64", "darwin-x64", "darwin-arm64", "win32-x64")
+ARCHITECTURES = {"_x86_64": "x64", "_aarch64": "arm64", "_arm64": "arm64"}
+
+
+def npm_platform(wheel):
+    """Return the npm platform directory that a binary wheel supplies, or None."""
+    tag = wheel.stem.split("-")[-1]
+    if tag == "win_amd64":
+        return "win32-x64"
+    system = {"manylinux": "linux", "macosx": "darwin"}.get(re.match(r"[a-z]*", tag)[0])
+    arch = next((npm for suffix, npm in ARCHITECTURES.items() if tag.endswith(suffix)), None)
+    return f"{system}-{arch}" if system and arch else None
 
 
 def prepare(wheels: Path, output: Path, root: Path) -> None:
@@ -19,12 +34,11 @@ def prepare(wheels: Path, output: Path, root: Path) -> None:
         raise ValueError("npm package must use @scarletkc/seiso and the Cargo package version")
     binaries = {}
     for wheel in sorted(wheels.glob("*.whl")):
-        if wheel.name.endswith("-win_amd64.whl"):
-            target, name = "win32-x64/seiso.exe", "seiso.exe"
-        elif "manylinux" in wheel.name and wheel.name.endswith("_x86_64.whl"):
-            target, name = "linux-x64/seiso", "seiso"
-        else:
+        platform = npm_platform(wheel)
+        if platform is None:
             continue
+        name = "seiso.exe" if platform.startswith("win32-") else "seiso"
+        target = f"{platform}/{name}"
         if target in binaries:
             raise ValueError(f"More than one wheel supplies {target}")
         with zipfile.ZipFile(wheel) as archive:
@@ -38,8 +52,9 @@ def prepare(wheels: Path, output: Path, root: Path) -> None:
             binaries[target] = archive.read(scripts[0])
             if not binaries[target]:
                 raise ValueError(f"{wheel.name} contains an empty executable")
-    if set(binaries) != {"linux-x64/seiso", "win32-x64/seiso.exe"}:
-        raise ValueError("Both Linux x64 manylinux and Windows x64 wheels are required")
+    missing = sorted(set(NPM_PLATFORMS) - {target.split("/")[0] for target in binaries})
+    if missing:
+        raise ValueError(f"Wheels are required for every npm platform; missing {', '.join(missing)}")
     checksums = {}
     for target, data in sorted(binaries.items()):
         destination = output / "native" / target

@@ -15,8 +15,8 @@
     "seiso": "bin/seiso.cjs"
   },
   "files": ["bin/", "native/", "LICENSE", "README.md"],
-  "os": ["linux", "win32"],
-  "cpu": ["x64"],
+  "os": ["darwin", "linux", "win32"],
+  "cpu": ["arm64", "x64"],
   "engines": {
     "node": ">=18"
   },

@@ -87,8 +87,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+        include:
+          - platform: linux-x64
+            runner: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - platform: linux-arm64
+            runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          - platform: darwin-x64
+            runner: macos-15-intel
+            target: x86_64-apple-darwin
+          - platform: darwin-arm64
+            runner: macos-latest
+            target: aarch64-apple-darwin
+          - platform: win32-x64
+            runner: windows-latest
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -99,12 +114,14 @@ jobs:
           python-version: '3.12'
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - if: runner.os == 'Windows'
+      # Shared preflight runs the Rust tests on Linux x64.
+      - if: matrix.platform != 'linux-x64'
         run: cargo test --locked
       - uses: PyO3/maturin-action@v1
         with:
           maturin-version: '1.15.0'
           command: build
+          target: ${{ matrix.target }}
           args: --release --locked --out dist
           manylinux: '2014'
       - name: Install and exercise the wheel
@@ -117,7 +134,7 @@ jobs:
           python -c "import json; assert json.load(open('checked.json', encoding='utf-8')) == []"
           seiso parse README.md --output-format json > parsed.json
           python -c "import json; r=json.load(open('parsed.json', encoding='utf-8')); assert len(r['files']) == 1 and not r['errors']"
-      - if: runner.os == 'Linux'
+      - if: matrix.platform == 'linux-x64'
         uses: PyO3/maturin-action@v1
         with:
           maturin-version: '1.15.0'
@@ -126,7 +143,7 @@ jobs:
       - run: python -m scripts.release.verify_distributions dist
       - uses: actions/upload-artifact@v4
         with:
-          name: distributions-${{ runner.os }}
+          name: distributions-${{ matrix.platform }}
           path: dist/*
           if-no-files-found: error
 
@@ -154,7 +171,36 @@ jobs:
       - run: npm pack ./npm/seiso --pack-destination dist
       - uses: dtolnay/rust-toolchain@stable
       - run: python -m scripts.release.release npm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: npm-package
+          path: dist/*.tgz
+          if-no-files-found: error
+
+  npm-install:
+    needs: npm
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-latest, windows-latest]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm-package
+          path: dist
       - name: Exercise the packed npm executable
+        shell: bash
         run: |
           python -m scripts.release.verify_installation -- npm exec --yes --package ./dist/*.tgz -- seiso
           npm exec --yes --package ./dist/*.tgz -- seiso rule KND001
@@ -162,15 +208,10 @@ jobs:
           python -c "import json; assert json.load(open('checked.json', encoding='utf-8')) == []"
           npm exec --yes --package ./dist/*.tgz -- seiso parse README.md --output-format json > parsed.json
           python -c "import json; r=json.load(open('parsed.json', encoding='utf-8')); assert len(r['files']) == 1 and not r['errors']"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: npm-package
-          path: dist/*.tgz
-          if-no-files-found: error
 
   publish-npm:
     if: inputs.publish_all || inputs.publish_npm
-    needs: npm
+    needs: [npm, npm-install]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: npm
@@ -243,11 +284,12 @@ jobs:
       always() && !cancelled() &&
       (inputs.publish_all || inputs.publish_github) &&
       needs.preflight.result == 'success' &&
-      needs.wheels.result == 'success' && needs.npm.result == 'success' && needs.crates.result == 'success' &&
+      needs.wheels.result == 'success' && needs.npm.result == 'success' && needs.npm-install.result == 'success' &&
+      needs.crates.result == 'success' &&
       (needs.publish-npm.result == 'success' || needs.publish-npm.result == 'skipped') &&
       (needs.publish-crates.result == 'success' || needs.publish-crates.result == 'skipped') &&
       (needs.pypi.result == 'success' || needs.pypi.result == 'skipped')
-    needs: [preflight, wheels, npm, crates, publish-npm, publish-crates, pypi]
+    needs: [preflight, wheels, npm, npm-install, crates, publish-npm, publish-crates, pypi]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: github-release

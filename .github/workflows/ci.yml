@@ -34,7 +34,7 @@ jobs:
     if: needs.changes.outputs.docs_only != 'true'
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     steps:

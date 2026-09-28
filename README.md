@@ -58,11 +58,11 @@ uv tool install seiso    # or: pipx install seiso
 npm install -g @scarletkc/seiso
 ```
 
-The PyPI package includes prebuilt binaries for Linux x64 and Windows x64 and
-builds from source on other platforms, which requires a Rust toolchain. The npm
-package installs only on Linux x64 with glibc and on Windows x64; elsewhere, use
-cargo or the PyPI package. From a source checkout, run
-`cargo run -p seiso -- <command>`.
+The PyPI and npm packages include prebuilt binaries for macOS on Apple silicon
+and Intel, Linux x64 and arm64 with glibc, and Windows x64. On other platforms,
+including musl-based Linux such as Alpine, use cargo; the PyPI package also
+works there but builds from source, which requires a Rust toolchain. From a
+source checkout, run `cargo run -p seiso -- <command>`.
 
 ## Quick start
 

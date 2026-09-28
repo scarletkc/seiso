@@ -9,7 +9,13 @@ const manifest = JSON.parse(fs.readFileSync(path.join(root, "native", "manifest.
 if (metadata.version !== manifest.version) {
   throw new Error("The native binaries and npm package have different versions.");
 }
-for (const file of ["linux-x64/seiso", "win32-x64/seiso.exe"]) {
+for (const file of [
+  "darwin-arm64/seiso",
+  "darwin-x64/seiso",
+  "linux-arm64/seiso",
+  "linux-x64/seiso",
+  "win32-x64/seiso.exe",
+]) {
   const bytes = fs.readFileSync(path.join(root, "native", file));
   const digest = crypto.createHash("sha256").update(bytes).digest("hex");
   if (manifest.sha256[file] !== digest) {

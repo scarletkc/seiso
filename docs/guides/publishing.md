@@ -112,13 +112,14 @@ In GitHub Actions, select **Build and publish distributions → Run workflow**
 and choose the release branch or tag. Leave all `publish_*` checkboxes unchecked.
 
 The workflow checks version consistency and release notes, runs script and
-Rust tests, verifies the Cargo package, builds and exercises Linux x64 and
-Windows x64 wheels, creates a source archive, and packs and exercises the npm
-executable. Installation checks require CLI output to match Cargo's SemVer and
-installed Python metadata to match its PEP 440 version. Build jobs have no
-publishing secrets or OIDC permissions and do not enter publishing environments.
-This is the complete validation path. A
-selected registry upload waits for shared preflight and its required artifacts:
+Rust tests, verifies the Cargo package, builds and exercises a wheel on each
+platform in the `wheels` job matrix, creates a source archive, packs the npm
+package, and exercises its executable on each of those platforms. Installation
+checks require CLI output to match Cargo's SemVer and installed Python metadata
+to match its PEP 440 version. Build jobs have no publishing secrets or OIDC
+permissions and do not enter publishing environments. This is the complete
+validation path. A selected registry upload waits for shared preflight and its
+required artifacts:
 
 | Selection | Builds and verifies |
 | --- | --- |
@@ -127,9 +128,10 @@ selected registry upload waits for shared preflight and its required artifacts:
 | `publish_npm` | Wheels and source archive, then the npm package using those binaries |
 | `publish_github`, `publish_all`, or no upload selection | All distributions and release notes |
 
-Selections are additive. Script tests and Linux Rust tests run once in shared
-preflight; the Windows wheel job also runs Rust tests on Windows. Release notes
-and tag checks apply to the full validation and GitHub Release paths.
+Selections are additive. Script tests and Linux x64 Rust tests run once in
+shared preflight; the other wheel jobs also run the Rust tests on their own
+platforms. Release notes and tag checks apply to the full validation and GitHub
+Release paths.
 
 Download the artifacts and generated release body:
 
@@ -137,8 +139,8 @@ Download the artifacts and generated release body:
 gh run download RUN_ID -p 'distributions-*' -p npm-package -p cargo-package -p release-notes -D dist/downloaded
 ```
 
-The npm package requires Node.js 18 or later and contains both native binaries
-from the verified wheels, with version and checksum checks before packing.
+The npm package requires Node.js 18 or later and contains the native binary
+from each verified wheel, with version and checksum checks before packing.
 It has no install-time download or build step. Source installations require Rust.
 
 ## Authentication
