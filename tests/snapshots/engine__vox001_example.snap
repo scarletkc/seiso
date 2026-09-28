@@ -5,7 +5,7 @@ expression: result.diagnostics
 [
   {
     "code": "VOX001",
-    "message": "This phrase addresses the requester of an earlier conversation.",
+    "message": "This phrase refers to the requester of an earlier conversation.",
     "filename": "docs/guide.md",
     "location": {
       "row": 4,

@@ -288,6 +288,53 @@ fn conversation_markers_handle_case_entities_and_formatting_without_code_splicin
 }
 
 #[test]
+fn reports_about_the_requester_are_remnants_but_end_user_behavior_is_not() {
+    for (lang, text, expected) in [
+        ("zh", "经用户确认，发布流程改用手动审批。", "经用户确认"),
+        ("zh", "用户已授权删除旧的配置目录。", "用户已授权"),
+        ("zh", "已与用户确认，保留旧接口。", "已与用户确认"),
+        (
+            "zh",
+            "根据用户的要求，默认端口改为 8080。",
+            "根据用户的要求",
+        ),
+        (
+            "en",
+            "The user confirmed that the old flag can go.",
+            "The user confirmed",
+        ),
+        (
+            "en",
+            "As the user requested, the guide skips Docker.",
+            "As the user requested",
+        ),
+    ] {
+        assert_one("VOX001", &language(lang, text), expected);
+    }
+    for (lang, text) in [
+        ("zh", "未经用户授权，应用不得读取通讯录。"),
+        ("zh", "删除操作须经用户确认。"),
+        ("zh", "订单经用户确认后发货。"),
+        ("zh", "列表显示用户已授权的应用。"),
+        ("zh", "如果用户已同意隐私政策，则跳过弹窗。"),
+        ("zh", "用户授权后，应用获得访问令牌。"),
+        (
+            "en",
+            "Once the user approved the request, the app receives a token.",
+        ),
+        (
+            "en",
+            "If the user has authorized the app, skip the consent screen.",
+        ),
+    ] {
+        assert!(
+            check("VOX001", &language(lang, text), "").is_empty(),
+            "{text}"
+        );
+    }
+}
+
+#[test]
 fn extensions_are_literal_language_specific_and_language_selection_is_respected() {
     let settings = r#"
 [lint.lexicon.en]

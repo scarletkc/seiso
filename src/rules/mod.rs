@@ -153,6 +153,16 @@ pub fn check_raw_with_files(
         diagnostics.extend(heuristic.diagnostics);
         incomplete.extend(heuristic.incomplete_rules);
     }
+    // One value gets one explanation: identifier and version rules say more about
+    // it than STL001's generic current-state diagnosis.
+    let specific: BTreeSet<Span> = diagnostics
+        .iter()
+        .filter(|diagnostic| matches!(diagnostic.code.as_str(), "STL003" | "STL004"))
+        .map(|diagnostic| diagnostic.byte_range)
+        .collect();
+    diagnostics.retain(|diagnostic| {
+        diagnostic.code != "STL001" || !specific.contains(&diagnostic.byte_range)
+    });
     let mut errors = Vec::new();
     if enabled.contains("LNK001") {
         let links = links::check(context, files);

@@ -241,6 +241,11 @@ pub fn github_slug(heading: &str) -> String {
 fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
     let mut anchors = BTreeMap::new();
     let mut seen = BTreeSet::new();
+    // Site generators read a trailing attribute list such as `{#id}` or
+    // `{: #id .class}` as the heading's id and omit it from the visible text.
+    static HEADING_ATTRIBUTES: OnceLock<Regex> = OnceLock::new();
+    let heading_attributes =
+        HEADING_ATTRIBUTES.get_or_init(|| Regex::new(r"\s*\{:?\s*([^{}]*)\}\s*$").unwrap());
     for block in document
         .blocks
         .iter()
@@ -258,6 +263,17 @@ fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
             slug = format!("{base}-{suffix}");
         }
         anchors.entry(slug).or_insert(block.span);
+        if let Some(attributes) = heading_attributes.captures(text) {
+            let visible = &text[..attributes.get(0).unwrap().start()];
+            anchors.entry(github_slug(visible)).or_insert(block.span);
+            for id in attributes[1]
+                .split_whitespace()
+                .filter_map(|token| token.strip_prefix('#'))
+                .filter(|id| !id.is_empty())
+            {
+                anchors.entry(id.to_owned()).or_insert(block.span);
+            }
+        }
     }
     static TAG: OnceLock<Regex> = OnceLock::new();
     static ATTRIBUTE: OnceLock<Regex> = OnceLock::new();
@@ -463,6 +479,39 @@ mod tests {
         }
         assert_eq!(github_slug("one  two_name — x"), "one--two_name--x");
         assert!(index.anchor_span("a.md", "安装配置").is_some());
+    }
+
+    #[test]
+    fn heading_attribute_lists_add_declared_ids_and_the_visible_slug() {
+        let root = tempfile::tempdir().unwrap();
+        let source = "# Array some {#array-some}\n## 安装 { #install .note }\n## Options {: #opts }\n## Classes only {.wide}\n## Template {name}\n# Empty {#}\n";
+        let index = WorkspaceIndex::new(
+            root.path().to_path_buf(),
+            vec![file(root.path(), "a.md", source)],
+            true,
+        );
+        let anchors = index.anchors("a.md").unwrap();
+        for expected in [
+            "array-some",
+            "array-some-array-some",
+            "install",
+            "安装",
+            "opts",
+            "options",
+            "classes-only",
+            "template",
+            "template-name",
+        ] {
+            assert!(
+                anchors.contains(expected),
+                "missing {expected:?} from {anchors:?}"
+            );
+        }
+        assert!(!anchors.contains("") && !anchors.contains("name"));
+        assert_eq!(
+            index.anchor_span("a.md", "install"),
+            index.anchor_span("a.md", "安装")
+        );
     }
 
     #[test]

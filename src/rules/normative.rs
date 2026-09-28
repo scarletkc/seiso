@@ -91,6 +91,13 @@ fn defaults(words: Words, language: Language) -> &'static [&'static str] {
             "here is the updated",
             "i hope this helps",
             "hope this helps",
+            "as the user requested",
+            "the user confirmed",
+            "the user has confirmed",
+            "the user approved",
+            "the user has approved",
+            "the user authorized",
+            "the user has authorized",
         ],
         (Words::Conversation, Language::Zh) => &[
             "根据你的要求",
@@ -99,6 +106,18 @@ fn defaults(words: Words, language: Language) -> &'static [&'static str] {
             "按照你的要求",
             "希望对你有帮助",
             "希望对您有帮助",
+            "根据用户的要求",
+            "按照用户的要求",
+            "经用户确认",
+            "已与用户确认",
+            "用户已确认",
+            "经用户授权",
+            "已获用户授权",
+            "已获得用户授权",
+            "用户已授权",
+            "经用户同意",
+            "已征得用户同意",
+            "用户已同意",
         ],
         (Words::Conversation, Language::Ja) => &[
             "ご要望に応じて",
@@ -107,6 +126,43 @@ fn defaults(words: Words, language: Language) -> &'static [&'static str] {
             "お役に立てれば幸い",
         ],
     }
+}
+
+/// Product documentation describes its own end users with the same words as a
+/// report about the requester: "未经用户授权", "once the user approved",
+/// "用户已授权的应用", "经用户确认后". A condition, negation, or requirement
+/// before the phrase, or an attributive or temporal clause after it, marks
+/// that use.
+const END_USER_BEFORE: &[&str] = &[
+    "未", "需", "须", "应", "不", "待", "等", "请", "若", "如果", "当", "一旦", "只有", "除非",
+];
+const END_USER_BEFORE_WORDS: &[&str] = &[
+    "if", "once", "when", "after", "until", "unless", "before", "whether",
+];
+const END_USER_AFTER: &[&str] = &["的", "后", "之后", "以后", "时"];
+
+fn conversation_marker(runs: &[Run<'_>], phrases: &[&str]) -> Option<Span> {
+    runs.iter()
+        .flat_map(|run| {
+            phrases.iter().flat_map(move |phrase| {
+                occurrences(&run.text, phrase)
+                    .into_iter()
+                    .filter(|range| {
+                        let before = run.text[..range.start].trim_end();
+                        let before_word = before
+                            .rsplit(|ch: char| !ch.is_alphanumeric())
+                            .next()
+                            .unwrap_or_default()
+                            .to_ascii_lowercase();
+                        let after = run.text[range.end..].trim_start();
+                        !END_USER_BEFORE.iter().any(|word| before.ends_with(word))
+                            && !END_USER_BEFORE_WORDS.contains(&before_word.as_str())
+                            && !END_USER_AFTER.iter().any(|word| after.starts_with(word))
+                    })
+                    .filter_map(|range| run.span(range))
+            })
+        })
+        .min_by_key(|span| (span.start, span.end))
 }
 
 fn extensions(words: Words, lexicon: &Lexicon) -> &[String] {
@@ -300,7 +356,7 @@ pub fn check(
             }
         }
         if enabled.contains("VOX001")
-            && let Some(span) = marker(
+            && let Some(span) = conversation_marker(
                 &prose,
                 &words(config, sentence.language, Words::Conversation),
             )
@@ -310,7 +366,7 @@ pub fn check(
                 filename,
                 "VOX001",
                 span,
-                "This phrase addresses the requester of an earlier conversation.",
+                "This phrase refers to the requester of an earlier conversation.",
                 "State the document's instructions or facts directly for its readers.",
             ));
         }

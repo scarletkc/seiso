@@ -160,6 +160,8 @@ fn production_heading(language: Language) -> &'static [&'static str] {
     }
 }
 
+/// First-person production accounts. Statements that a page is generated or
+/// maintained by someone are ownership notices, not narration.
 fn narration(language: Language) -> &'static [&'static str] {
     match language {
         Language::En => &[
@@ -168,7 +170,6 @@ fn narration(language: Language) -> &'static [&'static str] {
             "i have added",
             "i updated",
             "i created this",
-            "this document was generated",
             "this page demonstrates",
         ],
         Language::Zh => &[
@@ -176,13 +177,11 @@ fn narration(language: Language) -> &'static [&'static str] {
             "我已实现",
             "我添加了",
             "我修改了",
-            "本文档由",
             "本页面展示了实现过程",
         ],
         Language::Ja => &[
             "私は実装しました",
             "私が追加した",
-            "このドキュメントを生成",
             "このページを作成しました",
         ],
     }
