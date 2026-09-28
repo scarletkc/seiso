@@ -11,6 +11,8 @@
 [![PyPI](https://img.shields.io/pypi/v/seiso?logo=pypi&logoColor=white&label=PyPI)](https://pypi.org/project/seiso/)
 [![npm](https://img.shields.io/npm/v/%40scarletkc%2Fseiso?logo=npm&label=npm)](https://www.npmjs.com/package/@scarletkc/seiso)
 [![License](https://img.shields.io/badge/license-MIT-blue)](https://github.com/scarletkc/seiso/blob/main/LICENSE)
+[![CodeRabbit Reviews](https://img.shields.io/coderabbit/prs/github/scarletkc/seiso?label=CodeRabbit%20Reviews&labelColor=171717&color=FF570A)](https://coderabbit.ai)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/scarletkc/seiso)
 
 </div>
 
