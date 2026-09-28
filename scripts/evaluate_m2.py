@@ -26,12 +26,17 @@ def read(path):
     return json.loads(path.read_bytes())
 
 
+def source_digest(path):
+    """Identify implementation text independently of checkout line endings."""
+    return digest(path.read_bytes().replace(b"\r\n", b"\n"))
+
+
 def fingerprints():
     paths = [ROOT / "Cargo.toml", ROOT / "Cargo.lock", Path(__file__)]
     paths += sorted((ROOT / "src").rglob("*.rs"))
     paths += sorted((ROOT / "docs/rules").glob("*.md"))
     paths.append(ROOT / "examples/evaluate_m2.rs")
-    return {path.relative_to(ROOT).as_posix(): digest(path.read_bytes()) for path in sorted(paths)}
+    return {path.relative_to(ROOT).as_posix(): source_digest(path) for path in sorted(paths)}
 
 
 def reverse_inputs(batch):
@@ -138,7 +143,7 @@ def run(output, corpus=ROOT / "corpus", split=None, sections=False):
     diagnostics = diagnostic_rows(files, lock)
     all_counts, m2_counts = counts(diagnostics)
     metadata = {"schema_version": 1, "corpus_sha256": lock_hash, "kind_profile_sha256": digest(profile_path.read_bytes()),
-        "inventory_sha256": digest(inventory_path.read_bytes()), "implementation": before, "probe_sha256": digest(binary.read_bytes()),
+        "inventory_sha256": digest(inventory_path.read_bytes()), "implementation": before, "implementation_hash_format": "sha256-lf", "probe_sha256": digest(binary.read_bytes()),
         "link_backend": "case-sensitive pinned Git trees; symlinks and submodules undetermined; anchors only in pinned corpus documents",
         "reverse_byte_identical": True, "reverse_dimensions": ["sources", "documents", "tree_entries"], "raw_result_sha256": digest(raw)}
     if sections:

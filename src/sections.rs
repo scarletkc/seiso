@@ -1,7 +1,7 @@
 //! Inspectable heuristic section roles. Classification is independent of file policy.
 
 use crate::diagnostics::Span;
-use crate::md::prose::{occurrences, runs};
+use crate::md::prose::{assertions, occurrences};
 use crate::md::{Block, BlockKind, Document, FragmentKind, Language, Sentence};
 use serde::Serialize;
 
@@ -38,9 +38,9 @@ pub(crate) fn contains(text: &str, phrases: &[&str]) -> bool {
 }
 
 pub(crate) fn prose_text(sentence: &Sentence) -> String {
-    runs(sentence, false)
+    assertions(sentence, false)
         .iter()
-        .map(|run| run.text.as_str())
+        .flat_map(|run| run.text.split_whitespace())
         .collect::<Vec<_>>()
         .join(" ")
 }
@@ -444,20 +444,6 @@ fn heading_role(heading: &str) -> Option<SectionType> {
             ][..],
         ),
         (
-            SectionType::Rationale,
-            &[
-                "rationale",
-                "design decisions",
-                "trade-offs",
-                "tradeoffs",
-                "设计决策",
-                "设计理由",
-                "设计权衡",
-                "設計判断",
-                "設計の理由",
-            ][..],
-        ),
-        (
             SectionType::Reference,
             &[
                 "api reference",
@@ -512,17 +498,10 @@ fn heading_role(heading: &str) -> Option<SectionType> {
             return Some(role);
         }
     }
-    if starts(
-        &text,
-        &[
-            "why we chose",
-            "why we use",
-            "why use",
-            "为什么选择",
-            "为什么要用",
-            "採用した理由",
-        ],
-    ) {
+    if decision_heading(&text)
+        || ["trade-offs", "tradeoffs"].contains(&text.as_str())
+        || starts(&text, &["why use", "为什么要用"])
+    {
         return Some(SectionType::Rationale);
     }
     if contains(

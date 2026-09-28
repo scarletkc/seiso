@@ -8,7 +8,7 @@ from pathlib import Path
 import shutil
 import subprocess
 
-from evaluate_m2 import ROOT, digest, encode, fingerprints
+from evaluate_m2 import ROOT, digest, encode, fingerprints, source_digest
 from evaluate_m3 import RULES
 
 POLICY = '''preview=true
@@ -92,12 +92,12 @@ def run(output, revision):
     if output.exists():
         raise ValueError(f'Preserve the existing replay: {output}')
     revision, changes, documents = collect(revision)
-    before = fingerprints() | {str(Path(__file__).relative_to(ROOT)): digest(Path(__file__).read_bytes()), 'examples/replay_m3.rs': digest((ROOT / 'examples/replay_m3.rs').read_bytes())}
+    before = fingerprints() | {Path(__file__).relative_to(ROOT).as_posix(): source_digest(Path(__file__)), 'examples/replay_m3.rs': source_digest(ROOT / 'examples/replay_m3.rs')}
     binary = build_probe('replay_m3')
     batch = {'config': POLICY, 'documents': list(documents.values())}
     results, raw = run_probe(binary, batch, ROOT / 'target/m3-history/forward')
     _, reverse = run_probe(binary, batch | {'documents': list(reversed(batch['documents']))}, ROOT / 'target/m3-history/reverse')
-    if raw != reverse or any(digest((ROOT / path).read_bytes()) != sha for path, sha in before.items()):
+    if raw != reverse or any(source_digest(ROOT / path) != sha for path, sha in before.items()):
         raise ValueError('Replay implementation or order equivalence changed')
     by_id = {row['id']: row for row in results}
     diagnoses = []
@@ -118,7 +118,7 @@ def run(output, revision):
             diagnoses.append({'id': identity, 'change_id': change['id'], 'code': diagnostic['code'], 'path': change['path'], 'input_sha256': new['source_sha256'], 'diagnostic': diagnostic, 'document_id': change['after'], 'introduced': is_new})
     report = {'schema_version': 1, 'revision': revision, 'repository': 'https://github.com/scarletkc/seiso', 'license': 'MIT', 'selection': 'All first-parent A/M/D Markdown path changes through the pinned revision; renames are delete plus add.',
         'policy': POLICY, 'policy_sha256': digest(POLICY.encode()), 'policy_scope': 'One fixed current kind profile on both sides isolates content changes; original per-revision configuration is not replayed.',
-        'implementation': before, 'probe_sha256': digest(binary.read_bytes()), 'reverse_byte_identical': True,
+        'implementation': before, 'implementation_hash_format': 'sha256-lf', 'probe_sha256': digest(binary.read_bytes()), 'reverse_byte_identical': True,
         'documents': list(documents.values()), 'results': results, 'changes': changes, 'diagnostics': diagnoses}
     packed = gzip.compress(encode(report), mtime=0)
     output.mkdir(parents=True)

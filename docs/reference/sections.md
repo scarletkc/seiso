@@ -39,14 +39,16 @@ lists remain unclassified. The signal names and phrase lists are defined in
 [`sections`](../../src/sections.rs).
 
 Only direct section blocks contribute; parent sections do not inherit child
-roles. Quotations, footnotes, sample output, and console output described as
+roles. Quoted phrases are masked by the shared prose-assertion reader.
+Quotations, footnotes, sample output, and console output described as
 an error/result do not establish a main flow. A console fence needs a command
 prompt. A non-shell example needs an adjacent instruction. The classifier does
 not execute code or interpret opaque site components. It assigns no probability;
 `other` includes unsupported and missed responsibilities.
 
-Ordering rules remain incomplete when opaque HTML/component content or an unclassified code example could
-hide an earlier procedure. That state prevents SUP002 from removing a suppression
+Ordering rules remain incomplete when no main flow is detected, or when opaque
+HTML/component content or an unclassified code example could hide an earlier
+procedure. That state prevents SUP002 from removing a suppression
 whose rule could not establish an outcome.
 
 Classification runs independently of document kind, preview selection, and

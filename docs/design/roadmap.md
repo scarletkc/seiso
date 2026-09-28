@@ -27,6 +27,8 @@ classifier, nine preview rules, threshold calibration, edit-history replay,
 repair regressions, and per-rule precision and usage-noise reports.
 The [optimization record](../evaluation/m3-optimization-2026-09-28.md) records
 subsequent context handling, abstention, and fresh-cohort limitations.
+The [review corrections](../evaluation/m3-review-2026-09-28.md) record subsequent
+evaluation portability and heuristic consistency fixes.
 [Section annotations](../reference/sections.md) describe the inspection API;
 `seiso rule --all` owns the available rules and their explanations.
 

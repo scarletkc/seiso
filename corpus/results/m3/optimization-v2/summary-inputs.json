@@ -1,0 +1,56 @@
+{
+  "comparisons": {
+    "known_corpus": {
+      "before": {
+        "report": "../natural-v1/diagnostics.json.gz",
+        "labels": "../natural-v1/labels.json"
+      },
+      "after": {
+        "report": "known-corpus/diagnostics.json.gz",
+        "labels": "known-corpus/labels.json"
+      },
+      "preserve_existing_rules": true
+    },
+    "development_cohort": {
+      "before": {
+        "report": "../optimization-v1/fresh-holdout/diagnostics.json.gz",
+        "labels": "../optimization-v1/fresh-holdout/labels.json"
+      },
+      "after": {
+        "report": "first-cohort-replay/diagnostics.json.gz",
+        "labels": "first-cohort-replay/labels.json"
+      }
+    }
+  },
+  "cohorts": {
+    "fresh_holdout": {
+      "report": "fresh-complete/diagnostics.json.gz",
+      "labels": "fresh-complete/labels.json",
+      "corpus": "fresh-inputs/corpus.lock.json"
+    }
+  },
+  "histories": {
+    "history": {
+      "before": {
+        "report": "../history-v3/replay.json.gz",
+        "labels": "../history-v3/labels.json"
+      },
+      "after": {
+        "report": "history/replay.json.gz",
+        "labels": "history/labels.json"
+      }
+    }
+  },
+  "sections": {
+    "known": {
+      "sample": "../sections-v1/sample.json",
+      "labels": "../sections-v1/labels.json",
+      "report": "known-corpus/diagnostics.json.gz"
+    },
+    "fresh": {
+      "sample": "sections/sample.json",
+      "labels": "sections/labels.json",
+      "report": "fresh-complete/diagnostics.json.gz"
+    }
+  }
+}

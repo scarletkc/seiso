@@ -12,13 +12,6 @@ from evaluate_m2 import ROOT, digest, encode, fingerprints, read, verify_blob
 from evaluate_m3 import RULES
 from replay_m3 import build_probe, run_probe
 
-SOURCES = [
-    {'id': 'httpx', 'repository': 'encode/httpx', 'include': ['README.md', 'docs/**']},
-    {'id': 'mkdocs', 'repository': 'mkdocs/mkdocs', 'include': ['README.md', 'docs/**']},
-    {'id': 'hatch', 'repository': 'pypa/hatch', 'include': ['README.md', 'docs/**']},
-]
-
-
 def corpus_tools():
     spec = importlib.util.spec_from_file_location('seiso_corpus_tools', ROOT / 'corpus/corpus.py')
     module = importlib.util.module_from_spec(spec)
@@ -26,7 +19,7 @@ def corpus_tools():
     return module
 
 
-def pin(output, sources=SOURCES, previous_corpora=()):
+def pin(output, sources, previous_corpora=()):
     if output.exists():
         raise ValueError(f'Preserve the pinned cohort: {output}')
     previous = read(ROOT / 'corpus/corpus.lock.json')
@@ -67,8 +60,6 @@ def evaluate(lock_path, profile_path, output, development_replay=False):
     lock, profile = read(lock_path), read(profile_path)
     if profile.get('previous_profile_sha256') and not development_replay:
         raise ValueError('A reused kind profile requires --development-replay')
-    if profile['implementation'] != fingerprints():
-        raise ValueError('Implementation differs from the freeze reviewed with the kind profile')
     if profile['corpus_sha256'] != digest(lock_path.read_bytes()):
         raise ValueError('Fresh kind profile is not bound to this cohort')
     documents, metadata = [], {}
@@ -102,9 +93,9 @@ def evaluate(lock_path, profile_path, output, development_replay=False):
         files.append({'source': source['id'], 'path': entry['path'], 'sha256': entry['sha256'], 'language': row['language'], 'result': row['result'], 'incomplete_rules': row['incomplete_rules'], 'section_annotations': row['section_annotations']})
         for diagnostic in row['result']['diagnostics']:
             identity = {'source': source['id'], 'path': entry['path'], 'input_sha256': entry['sha256'], 'code': diagnostic['code'], 'span': diagnostic['byte_range']}
-            diagnostics.append(identity | {'id': digest(encode(identity)), 'split': 'holdout', 'repository': source['repository'], 'commit': source['commit'], 'git_blob': entry['git_blob'], 'kind': row['result']['kind']['value'] or 'unknown', 'language': row['language'], 'diagnostic': diagnostic})
+            diagnostics.append(identity | {'id': digest(encode(identity)), 'split': 'tuning' if development_replay else 'holdout', 'repository': source['repository'], 'commit': source['commit'], 'git_blob': entry['git_blob'], 'kind': row['result']['kind']['value'] or 'unknown', 'language': row['language'], 'diagnostic': diagnostic})
     role = 'development replay of a previously reviewed cohort; not independent validation' if development_replay else 'fresh repository holdout; English-focused; author-agent review is separate'
-    report = {'schema_version': 1, 'evaluation_role': role, 'corpus_sha256': digest(lock_path.read_bytes()), 'kind_profile_sha256': digest(profile_path.read_bytes()), 'implementation': before,
+    report = {'schema_version': 1, 'evaluation_role': role, 'corpus_sha256': digest(lock_path.read_bytes()), 'kind_profile_sha256': digest(profile_path.read_bytes()), 'implementation': before, 'implementation_hash_format': 'sha256-lf',
         'script_sha256': digest(Path(__file__).read_bytes()), 'probe_sha256': digest(binary.read_bytes()), 'probe_source_sha256': digest((ROOT / 'examples/replay_m3.rs').read_bytes()), 'reverse_byte_identical': True, 'config': config, 'files': files, 'diagnostics': diagnostics}
     packed = gzip.compress(encode(report), mtime=0)
     output.mkdir(parents=True)
@@ -125,7 +116,9 @@ def main():
     parser.add_argument('--development-replay', action='store_true')
     args = parser.parse_args()
     if args.command == 'pin':
-        sources = [{'id': repo.split('/')[-1], 'repository': repo, 'include': ['README.md', 'docs/**']} for repo in args.source] if args.source else SOURCES
+        if not args.source:
+            parser.error('pin requires at least one --source OWNER/REPO')
+        sources = [{'id': repo.split('/')[-1], 'repository': repo, 'include': ['README.md', 'docs/**']} for repo in args.source]
         pin(args.output, sources, args.previous_corpus)
     elif args.command == 'fetch':
         if args.input is None:

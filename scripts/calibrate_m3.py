@@ -40,7 +40,7 @@ def run(output):
         raise ValueError('Implementation changed during calibration')
     report = {'schema_version': 1, 'split': 'tuning', 'sources': [source['id'] for source in lock['sources']], 'documents': sum(len(source['documents']) for source in lock['sources']),
         'corpus_sha256': digest((corpus / 'corpus.lock.json').read_bytes()), 'kind_profile_sha256': digest((corpus / 'evaluation/kinds.json').read_bytes()), 'inventory_sha256': digest((corpus / 'inventory/inventory.lock.json').read_bytes()),
-        'implementation': before, 'probe_sha256': digest(binary.read_bytes()), 'script_sha256': digest(Path(__file__).read_bytes()), 'candidates': candidates,
+        'implementation': before, 'implementation_hash_format': 'sha256-lf', 'probe_sha256': digest(binary.read_bytes()), 'script_sha256': digest(Path(__file__).read_bytes()), 'candidates': candidates,
         'decision': 'Pending review; diagnostic counts alone cannot justify a threshold change.'}
     output.mkdir(parents=True)
     (output / 'candidates.json.gz').write_bytes(gzip.compress(encode(report), mtime=0))

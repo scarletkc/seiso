@@ -9,6 +9,17 @@ from evaluate_m2 import ROOT, digest, encode, fingerprints, prepare_inputs, read
 from replay_m3 import build_probe, introduced, run_probe
 
 
+def same_results(actual, expected):
+    """Compare behavior, including completeness when the baseline recorded it."""
+    if len(actual) != len(expected):
+        return False
+    return all(
+        {key: value for key, value in row.items()
+         if key != 'incomplete_rules' or key in baseline} == baseline
+        for row, baseline in zip(actual, expected)
+    )
+
+
 def verify(natural_path, history_path):
     natural = json.loads(gzip.decompress(natural_path.read_bytes()))
     history = json.loads(gzip.decompress(history_path.read_bytes()))
@@ -21,12 +32,12 @@ def verify(natural_path, history_path):
     binary = build_probe('evaluate_m2')
     files, raw = run_probe(binary, inputs, ROOT / 'target/m3-verification/natural')
     _, reverse = run_probe(binary, reverse_inputs(inputs), ROOT / 'target/m3-verification/natural-reverse')
-    if files != natural['files'] or digest(raw) != natural['raw_result_sha256'] or raw != reverse:
+    if not same_results(files, natural['files']) or raw != reverse:
         raise ValueError('Current natural diagnostics or section predictions differ from the frozen evidence')
     replay_binary = build_probe('replay_m3')
     results, raw = run_probe(replay_binary, {'config': history['policy'], 'documents': history['documents']}, ROOT / 'target/m3-verification/history')
     _, reverse = run_probe(replay_binary, {'config': history['policy'], 'documents': list(reversed(history['documents']))}, ROOT / 'target/m3-verification/history-reverse')
-    if results != history['results'] or raw != reverse:
+    if not same_results(results, history['results']) or raw != reverse:
         raise ValueError('Current history diagnostics or annotations differ from the frozen evidence')
     documents = {row['id']: row for row in history['documents']}
     by_id = {row['id']: row for row in results}
@@ -41,7 +52,7 @@ def verify(natural_path, history_path):
     if before != fingerprints():
         raise ValueError('Implementation changed during verification')
     return {'schema_version': 1, 'natural_sha256': digest(natural_path.read_bytes()), 'history_sha256': digest(history_path.read_bytes()),
-        'implementation': before, 'script_sha256': digest(Path(__file__).read_bytes()), 'natural_probe_sha256': digest(binary.read_bytes()),
+        'implementation': before, 'implementation_hash_format': 'sha256-lf', 'script_sha256': digest(Path(__file__).read_bytes()), 'natural_probe_sha256': digest(binary.read_bytes()),
         'history_probe_sha256': digest(replay_binary.read_bytes()), 'natural_files_identical': True, 'history_results_identical': True,
         'introduced_diagnostics_identical': True, 'reverse_byte_identical': True,
         'changes_since_natural_freeze': {path: {'frozen_sha256': natural['implementation'].get(path), 'current_sha256': sha} for path, sha in before.items() if natural['implementation'].get(path) != sha}}

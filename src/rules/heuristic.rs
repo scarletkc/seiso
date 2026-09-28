@@ -334,12 +334,38 @@ fn has_evidence(document: &Document, sentence: &Sentence, recommendation: bool) 
         })
 }
 
+#[derive(Default)]
 pub struct HeuristicResult {
     pub diagnostics: Vec<Diagnostic>,
     pub incomplete_rules: BTreeSet<String>,
 }
 
 pub fn check(
+    document: &Document,
+    filename: &str,
+    config: &Config,
+    enabled: &BTreeSet<String>,
+) -> HeuristicResult {
+    let mut result = HeuristicResult::default();
+    if ["STL002", "STL004", "VOX002", "VOX003", "EVD001"]
+        .iter()
+        .any(|code| enabled.contains(*code))
+    {
+        result = check_sentences(document, filename, config, enabled);
+    }
+    if enabled_language(config, document.language)
+        && ["RAT001", "ORD001", "ORD002", "MIX001"]
+            .iter()
+            .any(|code| enabled.contains(*code))
+    {
+        let structure = check_structure(document, filename, config, enabled);
+        result.diagnostics.extend(structure.diagnostics);
+        result.incomplete_rules.extend(structure.incomplete_rules);
+    }
+    result
+}
+
+fn check_sentences(
     document: &Document,
     filename: &str,
     config: &Config,
@@ -374,7 +400,8 @@ pub fn check(
             .collect::<Vec<_>>()
             .join(" ");
         let heading = block.kind == BlockKind::Heading;
-        if !conditional(&text)
+        if enabled.contains("STL002")
+            && !conditional(&text)
             && let Some(span) = marker(&prose, deployment(sentence.language))
         {
             let state_text = assertions(sentence, true)
@@ -508,7 +535,10 @@ pub fn check(
                 }
             }
         }
-        if heading && let Some(span) = marker(&prose, excluded_heading(sentence.language)) {
+        if enabled.contains("VOX002")
+            && heading
+            && let Some(span) = marker(&prose, excluded_heading(sentence.language))
+        {
             emit(
                 "VOX002",
                 span,
@@ -516,14 +546,16 @@ pub fn check(
                 "Name the capability or boundary readers need; keep project non-goals in a plan or ADR.",
             );
         }
-        if let Some(span) = marker(
-            &prose,
-            if heading {
-                production_heading(sentence.language)
-            } else {
-                narration(sentence.language)
-            },
-        ) {
+        if enabled.contains("VOX003")
+            && let Some(span) = marker(
+                &prose,
+                if heading {
+                    production_heading(sentence.language)
+                } else {
+                    narration(sentence.language)
+                },
+            )
+        {
             emit(
                 "VOX003",
                 span,
@@ -589,13 +621,37 @@ pub fn check(
             }
         }
     }
-    if !enabled_language(config, document.language) {
+    HeuristicResult {
+        diagnostics,
+        incomplete_rules,
+    }
+}
+
+fn check_structure(
+    document: &Document,
+    filename: &str,
+    config: &Config,
+    enabled: &BTreeSet<String>,
+) -> HeuristicResult {
+    let mut diagnostics = Vec::new();
+    let mut incomplete_rules = BTreeSet::new();
+    let annotations = sections::classify(document);
+    let opaque = sections::opaque_flow(document);
+    if enabled.contains("MIX001") {
+        check_mixed_sections(document, filename, config, &annotations, &mut diagnostics);
+        if opaque.is_some() {
+            incomplete_rules.insert("MIX001".into());
+        }
+    }
+    if !["RAT001", "ORD001", "ORD002"]
+        .iter()
+        .any(|code| enabled.contains(*code))
+    {
         return HeuristicResult {
             diagnostics,
             incomplete_rules,
         };
     }
-    let annotations = sections::classify(document);
     let in_recovery = |mut id: usize| {
         loop {
             if annotations[id].section_type == SectionType::Troubleshooting {
@@ -611,9 +667,8 @@ pub fn check(
         .blocks
         .iter()
         .find(|block| main_flow(document, block) && !in_recovery(block.section));
-    let opaque = sections::opaque_flow(document);
-    let uncertain_order = opaque
-        .is_some_and(|span| first.is_none_or(|first| span.start < first.span.start))
+    let uncertain_order = first.is_none()
+        || opaque.is_some_and(|span| first.is_none_or(|first| span.start < first.span.start))
         || document.blocks.iter().any(|block| {
             first.is_none_or(|first| block.span.start < first.span.start)
                 && !in_recovery(block.section)
@@ -627,97 +682,95 @@ pub fn check(
                 .map(str::to_owned),
         );
     }
-    if opaque.is_some() && enabled.contains("MIX001") {
-        incomplete_rules.insert("MIX001".into());
-    }
     if let Some(first) = first.filter(|_| !uncertain_order) {
         let preceding: Vec<_> = document
             .blocks
             .iter()
             .filter(|block| block.span.end <= first.span.start && !is_quoted(document, block))
             .collect();
-        let rationale_blocks: Vec<_> = preceding
-            .iter()
-            .filter(|block| {
-                block.kind == BlockKind::Paragraph
-                    && block.sentences.iter().any(|&id| {
-                        let sentence = &document.sentences[id];
-                        enabled_language(config, sentence.language)
-                            && rationale(&prose_text(sentence), sentence.language)
-                    })
-            })
-            .collect();
-        let chars: usize = rationale_blocks
-            .iter()
-            .flat_map(|block| &block.sentences)
-            .map(|&id| prose_text(&document.sentences[id]).chars().count())
-            .sum();
-        if enabled.contains("RAT001")
-            && rationale_blocks.len() >= RATIONALE_PARAGRAPHS
-            && chars >= RATIONALE_CHARS
-        {
-            let mut diagnostic = Diagnostic::new(
-                filename,
-                &document.source,
-                "RAT001",
-                rationale_blocks[0].span,
-                "Design-choice arguments precede the first procedure or runnable example.",
-                "Move the extended rationale to an ADR and link to it after the main steps.",
-            );
-            diagnostic.related.push(RelatedLocation::new(
-                filename,
-                &document.source,
-                first.span,
-                "The main flow starts here.",
-            ));
-            diagnostics.push(diagnostic);
+        if enabled.contains("RAT001") {
+            let rationale_blocks: Vec<_> = preceding
+                .iter()
+                .filter(|block| {
+                    block.kind == BlockKind::Paragraph
+                        && block.sentences.iter().any(|&id| {
+                            let sentence = &document.sentences[id];
+                            enabled_language(config, sentence.language)
+                                && rationale(&prose_text(sentence), sentence.language)
+                        })
+                })
+                .collect();
+            let chars: usize = rationale_blocks
+                .iter()
+                .flat_map(|block| &block.sentences)
+                .map(|&id| prose_text(&document.sentences[id]).chars().count())
+                .sum();
+            if rationale_blocks.len() >= RATIONALE_PARAGRAPHS && chars >= RATIONALE_CHARS {
+                let mut diagnostic = Diagnostic::new(
+                    filename,
+                    &document.source,
+                    "RAT001",
+                    rationale_blocks[0].span,
+                    "Design-choice arguments precede the first procedure or runnable example.",
+                    "Move the extended rationale to an ADR and link to it after the main steps.",
+                );
+                diagnostic.related.push(RelatedLocation::new(
+                    filename,
+                    &document.source,
+                    first.span,
+                    "The main flow starts here.",
+                ));
+                diagnostics.push(diagnostic);
+            }
         }
-        // Count occupied content lines, not YAML, blank lines, comments, headings or fenced examples.
-        let mut lines = BTreeSet::new();
-        let mut long_table = None;
-        for block in &preceding {
-            if !matches!(block.kind, BlockKind::Paragraph | BlockKind::Table) {
-                continue;
-            }
-            let text = &document.source[block.span.start..block.span.end];
-            let count = text.lines().filter(|line| !line.trim().is_empty()).count();
-            if block.kind == BlockKind::Table && count > PREAMBLE_TABLE_LINES {
-                long_table = Some(block.span);
-            }
-            let start = document.source[..block.span.start]
-                .bytes()
-                .filter(|&b| b == b'\n')
-                .count();
-            for (offset, line) in text.lines().enumerate() {
-                if !line.trim().is_empty() {
-                    lines.insert(start + offset);
+        if enabled.contains("ORD001") {
+            // Count occupied content lines, not YAML, blank lines, comments, headings or fenced examples.
+            let mut lines = BTreeSet::new();
+            let mut long_table = None;
+            for block in &preceding {
+                if !matches!(block.kind, BlockKind::Paragraph | BlockKind::Table) {
+                    continue;
+                }
+                let text = &document.source[block.span.start..block.span.end];
+                let count = text.lines().filter(|line| !line.trim().is_empty()).count();
+                if block.kind == BlockKind::Table && count > PREAMBLE_TABLE_LINES {
+                    long_table = Some(block.span);
+                }
+                let start = document.source[..block.span.start]
+                    .bytes()
+                    .filter(|&b| b == b'\n')
+                    .count();
+                for (offset, line) in text.lines().enumerate() {
+                    if !line.trim().is_empty() {
+                        lines.insert(start + offset);
+                    }
                 }
             }
-        }
-        if enabled.contains("ORD001") && (lines.len() > PREAMBLE_LINES || long_table.is_some()) {
-            let span = long_table
-                .or_else(|| {
-                    preceding
-                        .iter()
-                        .find(|block| block.kind == BlockKind::Paragraph)
-                        .map(|block| block.span)
-                })
-                .unwrap_or(first.span);
-            let mut diagnostic = Diagnostic::new(
-                filename,
-                &document.source,
-                "ORD001",
-                span,
-                "A long preamble delays the first procedure or runnable example.",
-                "Put the runnable example or ordered procedure before extended background and reference tables.",
-            );
-            diagnostic.related.push(RelatedLocation::new(
-                filename,
-                &document.source,
-                first.span,
-                "The main flow starts here.",
-            ));
-            diagnostics.push(diagnostic);
+            if lines.len() > PREAMBLE_LINES || long_table.is_some() {
+                let span = long_table
+                    .or_else(|| {
+                        preceding
+                            .iter()
+                            .find(|block| block.kind == BlockKind::Paragraph)
+                            .map(|block| block.span)
+                    })
+                    .unwrap_or(first.span);
+                let mut diagnostic = Diagnostic::new(
+                    filename,
+                    &document.source,
+                    "ORD001",
+                    span,
+                    "A long preamble delays the first procedure or runnable example.",
+                    "Put the runnable example or ordered procedure before extended background and reference tables.",
+                );
+                diagnostic.related.push(RelatedLocation::new(
+                    filename,
+                    &document.source,
+                    first.span,
+                    "The main flow starts here.",
+                ));
+                diagnostics.push(diagnostic);
+            }
         }
         if enabled.contains("ORD002") {
             for annotation in &annotations {
@@ -747,45 +800,52 @@ pub fn check(
             }
         }
     }
-    if enabled.contains("MIX001") {
-        for annotation in &annotations {
-            let section = &document.sections[annotation.section];
-            if annotation.section_type != SectionType::Rationale || section.heading_span.is_none() {
-                continue;
-            }
-            if !section
-                .heading
-                .as_deref()
-                .is_some_and(sections::decision_heading)
-                && !section.blocks.iter().any(|&id| {
-                    let block = &document.blocks[id];
-                    block.kind == BlockKind::Paragraph
-                        && block.sentences.iter().any(|&id| {
-                            let sentence = &document.sentences[id];
-                            enabled_language(config, sentence.language)
-                                && rationale(&prose_text(sentence), sentence.language)
-                        })
-                })
-            {
-                continue;
-            }
-            let paragraphs = section
-                .blocks
-                .iter()
-                .filter(|&&id| {
-                    document.blocks[id].kind == BlockKind::Paragraph
-                        && !is_quoted(document, &document.blocks[id])
-                })
-                .count();
-            if paragraphs >= RATIONALE_PARAGRAPHS {
-                diagnostics.push(Diagnostic::new(filename, &document.source, "MIX001", section.heading_span.unwrap(),
-                    "An extended rationale section conflicts with this procedure or reference page.",
-                    "Move the decision rationale to an ADR and keep a link beside the procedure or contract it explains."));
-            }
-        }
-    }
     HeuristicResult {
         diagnostics,
         incomplete_rules,
+    }
+}
+
+fn check_mixed_sections(
+    document: &Document,
+    filename: &str,
+    config: &Config,
+    annotations: &[sections::SectionAnnotation],
+    diagnostics: &mut Vec<Diagnostic>,
+) {
+    for annotation in annotations {
+        let section = &document.sections[annotation.section];
+        if annotation.section_type != SectionType::Rationale || section.heading_span.is_none() {
+            continue;
+        }
+        if !section
+            .heading
+            .as_deref()
+            .is_some_and(sections::decision_heading)
+            && !section.blocks.iter().any(|&id| {
+                let block = &document.blocks[id];
+                block.kind == BlockKind::Paragraph
+                    && block.sentences.iter().any(|&id| {
+                        let sentence = &document.sentences[id];
+                        enabled_language(config, sentence.language)
+                            && rationale(&prose_text(sentence), sentence.language)
+                    })
+            })
+        {
+            continue;
+        }
+        let paragraphs = section
+            .blocks
+            .iter()
+            .filter(|&&id| {
+                document.blocks[id].kind == BlockKind::Paragraph
+                    && !is_quoted(document, &document.blocks[id])
+            })
+            .count();
+        if paragraphs >= RATIONALE_PARAGRAPHS {
+            diagnostics.push(Diagnostic::new(filename, &document.source, "MIX001", section.heading_span.unwrap(),
+                    "An extended rationale section conflicts with this procedure or reference page.",
+                    "Move the decision rationale to an ADR and keep a link beside the procedure or contract it explains."));
+        }
     }
 }

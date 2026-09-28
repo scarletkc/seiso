@@ -19,6 +19,87 @@ fn evaluate(source: &str, code: &str, kind: &str) -> CheckResult {
 }
 
 #[test]
+fn missing_main_flow_preserves_ordering_suppressions() {
+    for code in ["RAT001", "ORD001", "ORD002"] {
+        let source = format!(
+            "<!-- seiso: allow-file {code} -- The procedure is not recognized. -->\n\nThe next action is to launch the application."
+        );
+        let result = evaluate(&source, code, "howto");
+        assert!(result.diagnostics.is_empty(), "{code}");
+        assert!(matches!(
+            result.suppressions[0].states[code],
+            seiso::rules::suppression::SuppressionState::Incomplete { count: 0 }
+        ));
+
+        let completed = evaluate(&format!("{source}\n\nRun `app start`."), code, "howto");
+        assert_eq!(completed.diagnostics[0].code, "SUP002");
+        assert!(completed.diagnostics[0].fix.is_some());
+    }
+}
+
+#[test]
+fn classifier_and_mixed_role_rule_share_decision_headings() {
+    for heading in [
+        "Why we choose a queue",
+        "Why we chose a queue",
+        "Why we use a queue",
+    ] {
+        let source = format!(
+            "## {heading}\n\nWorkers share a durable message buffer.\n\nEach request has an independent lifetime."
+        );
+        assert_eq!(
+            classify(&parse(&source).unwrap())[1].section_type,
+            SectionType::Rationale
+        );
+        assert_eq!(
+            evaluate(&source, "MIX001", "howto").diagnostics[0].code,
+            "MIX001"
+        );
+    }
+    assert!(
+        evaluate(
+            "## Why use a queue\n\nWorkers share messages.\n\nRequests are independent.",
+            "MIX001",
+            "howto"
+        )
+        .diagnostics
+        .is_empty()
+    );
+}
+
+#[test]
+fn quoted_decisions_do_not_become_document_rationale() {
+    let arguments = [
+        "We chose this database because our team needed to compare several persistence models and their operational costs",
+        "We chose a different deployment design after a long discussion about maintenance trade-offs and operational overhead",
+    ];
+    let quoted = format!(
+        "## Logs\n\nThe log contains \"{}\".\n\nAnother log contains \"{}\".",
+        arguments[0], arguments[1]
+    );
+    assert_ne!(
+        classify(&parse(&quoted).unwrap())[1].section_type,
+        SectionType::Rationale
+    );
+    for code in ["RAT001", "MIX001"] {
+        assert!(
+            evaluate(
+                &format!("{quoted}\n\n## Start\n\nRun `app start`."),
+                code,
+                "howto"
+            )
+            .diagnostics
+            .is_empty()
+        );
+        let asserted = format!(
+            "## Choice\n\n{}.\n\n{}.\n\n## Start\n\nRun `app start`.",
+            arguments[0], arguments[1]
+        );
+        assert_eq!(evaluate(&asserted, code, "howto").diagnostics[0].code, code);
+    }
+}
+
+#[test]
 fn version_constraints_and_examples_do_not_hide_independent_snapshots() {
     for source in [
         "Install Node.js v18.0.0 or higher.",
