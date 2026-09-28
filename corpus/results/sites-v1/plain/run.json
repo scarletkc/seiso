@@ -33,7 +33,7 @@
     "docs/rules/EVD001.md": "68e586f6c400457b9296d26b98a236136a8df090d0c5f1ec8a536f44377d3c77",
     "docs/rules/KND001.md": "377ec6a68518b1b351e1f909272c900c31386c108f6399391b3490eb28d4010a",
     "docs/rules/KND002.md": "fcffad518d2459f84c2af95d0d861ac736847bf4f019275e96c5bdfb7368f9ed",
-    "docs/rules/LNK001.md": "67d062f416e8b684fdcf3f8a6b7c834c9ca4aaaaa65f310a2deb1afb7747ac74",
+    "docs/rules/LNK001.md": "84454211d4f90341c6c92d596541fa46a6a6ae9e0dcf858a3cffff8fc9b8222b",
     "docs/rules/LNK002.md": "640b8784db6acc2bb8bcafd52bf6213385cf75fe36b8ea8fa60d97c56feb3ea0",
     "docs/rules/MIX001.md": "4c93cea7d61ecf7dd45a0b107f535a371270eb6f4000307ce29b551184f57581",
     "docs/rules/ORD001.md": "c5bb40c7af3eae017248e06d9f45ceb5c1a32a3f2a7ee7740b6b8a233e0dff11",
@@ -71,7 +71,7 @@
     "src/md/mod.rs": "46509fccf3ca0da219586dc4529d1259e1053032741d935c174a71846ed45312",
     "src/md/parser.rs": "c6a1916d4c9f6e8595db0db5f6b2c784efeaa8abc2063650afb07e59b96e514c",
     "src/md/prose.rs": "1733fa523af6bcd7f976effeb59be2a1f5a02188843fa457972da0f04f81b59f",
-    "src/paths.rs": "2cc7507b8a0b6e9a4c0dacc9648b996163df26c3aa02bdec055b3cc097dc876f",
+    "src/paths.rs": "d548c61dbcc0ccd315cb60a86d2280ee61ffbf7243a8899138a029ae87574277",
     "src/rules/cross_file.rs": "658e5954c725fa35f2c0d55f61319ed8dfda5856e17ddb53544e683ca7a87e2f",
     "src/rules/fixes.rs": "fc04fb748e27486df040ec52afb7db1e05d4a21cce5fcc5bd49793409fbcdcb1",
     "src/rules/heuristic.rs": "076473345ceebc1fa3f57dfab67d42adfe334d1e85e982e1e15389cd5119e941",
@@ -114,9 +114,9 @@
       "PTR002": 7
     }
   },
-  "probe_sha256": "06975889b956d41e9ea2a082f21f41605f1ae7cdbf31d7b4447a40e59aa77a76",
+  "probe_sha256": "806e5f913906caa77ab07720e2d2e0fe7fa9ab3e4a2a5539a93d78a877b6471c",
   "raw_result_sha256": "fe16ad9bfb484033e718aaddab94eba34b79d91caa06f63215543a111fe25aaf",
-  "report_sha256": "c510846f47c93298e480fa1503b3162898c9d35f2cc1680a07585b5406482086",
+  "report_sha256": "299a599a6b947c279a945d8f6399d7b9345b5eda630a96648338c1f0f8d7b651",
   "reverse_byte_identical": true,
   "reverse_dimensions": [
     "sources",

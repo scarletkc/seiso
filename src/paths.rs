@@ -139,14 +139,16 @@ pub(crate) fn local_link_targets(
     let Some(site) = site.filter(|_| !path.is_empty()) else {
         return Ok(targets);
     };
+    // Normalization drops a trailing slash, which addresses the route's directory.
+    let directory = path.ends_with('/');
     let rest = path.starts_with('/').then(|| site.route(&path));
     let mut routes = Vec::new();
     match rest {
-        None => routes.extend(page_sources(&physical)),
+        None => routes.extend(page_sources(&physical, directory)),
         Some(Some(rest)) => {
             let page = normalize(site.root.join(rest));
             routes.push(page.clone());
-            routes.extend(page_sources(&page));
+            routes.extend(page_sources(&page, directory));
         }
         Some(None) => {}
     }
@@ -175,7 +177,9 @@ pub(crate) fn local_link_targets(
 
 /// Markdown files a site generator renders at a route: `.html` names its
 /// source page, and an extensionless route names a page or a directory index.
-fn page_sources(route: &Path) -> Vec<PathBuf> {
+/// A route ending in `/` names the directory index first; MkDocs and Jekyll
+/// can still serve a same-named page there.
+fn page_sources(route: &Path, directory: bool) -> Vec<PathBuf> {
     if route
         .extension()
         .is_some_and(|extension| extension == "html")
@@ -192,14 +196,18 @@ fn page_sources(route: &Path) -> Vec<PathBuf> {
         path.push(suffix);
         PathBuf::from(path)
     };
-    vec![
-        suffixed(".md"),
-        suffixed(".mdx"),
+    let pages = [suffixed(".md"), suffixed(".mdx")];
+    let indexes = [
         route.join("index.md"),
         route.join("index.mdx"),
         route.join("README.md"),
         route.join("README.mdx"),
-    ]
+    ];
+    if directory {
+        indexes.into_iter().chain(pages).collect()
+    } else {
+        pages.into_iter().chain(indexes).collect()
+    }
 }
 
 /// Choose the first candidate that exists. A directory reached only as a route
@@ -349,6 +357,20 @@ mod tests {
                 route("site/intro/index.mdx"),
                 route("site/intro/README.md"),
                 route("site/intro/README.mdx"),
+                route("site/public/intro"),
+            ]
+        );
+        assert_eq!(
+            targets("/docs/intro/#x"),
+            [
+                ("docs/intro".to_owned(), false),
+                route("site/intro"),
+                route("site/intro/index.md"),
+                route("site/intro/index.mdx"),
+                route("site/intro/README.md"),
+                route("site/intro/README.mdx"),
+                route("site/intro.md"),
+                route("site/intro.mdx"),
                 route("site/public/intro"),
             ]
         );

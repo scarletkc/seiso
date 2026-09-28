@@ -167,6 +167,29 @@ fn base_is_stripped_from_root_relative_links_only_when_present() {
 }
 
 #[test]
+fn a_trailing_slash_prefers_the_directory_index_over_a_same_named_page() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    write(root, "seiso.toml", &format!("{LINKS}{SITE}"));
+    write(root, "site/guide.md", "# Guide page\n");
+    write(root, "site/guide/index.md", "# Guide\n\n## Install\n");
+    write(root, "site/other.md", "# Other\n");
+    write(
+        root,
+        "site/start.md",
+        "---\nkind: howto\n---\n# Start\n\n[index](/guide/#install) [page](/guide#install) [same-named page](/other/)\n",
+    );
+    let output = run(root, &["check", "--output-format", "json"]);
+    let diagnostics = value(&output);
+    assert_eq!(diagnostics.as_array().unwrap().len(), 1, "{diagnostics}");
+    assert_eq!(
+        diagnostics[0]["message"],
+        "Anchor \"install\" does not exist in site/guide.md."
+    );
+    assert_eq!(diagnostics[0]["location"]["column"], 26);
+}
+
+#[test]
 fn the_written_path_wins_over_a_route_and_the_dump_shows_resolved_targets() {
     let workspace = site_workspace(SITE);
     let root = workspace.path();
