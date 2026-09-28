@@ -5,7 +5,7 @@ expression: result.diagnostics
 [
   {
     "code": "KND001",
-    "message": "Document kind cannot be resolved because the frontmatter is invalid: did not find expected ',' or ']' at line 2 column 1, while parsing a flow sequence at line 1 column 7",
+    "message": "Document kind cannot be resolved because the frontmatter is invalid: did not find expected ',' or ']' at line 3 column 1, while parsing a flow sequence at line 2 column 7.",
     "filename": "docs/guide.md",
     "location": {
       "row": 1,

@@ -124,6 +124,38 @@ fn byte_mapping_survives_entities_escapes_unicode_and_crlf() {
 }
 
 #[test]
+fn language_detection_counts_latin_words_and_ignores_code_and_destinations() {
+    for (source, expected) in [
+        (
+            "目前版本是 v1.2.3，配置见 `docs/reference/configuration.md` 与 `src/config/mod.rs`。",
+            Language::Zh,
+        ),
+        (
+            "根据你的要求，我已经把 `DupSettings.min_identifiers` 改成 3。",
+            Language::Zh,
+        ),
+        ("运行 seiso check 检查 Markdown 文档。", Language::Zh),
+        (
+            "設定は `seiso.toml` の include で指定します。",
+            Language::Ja,
+        ),
+        ("See [the guide](指南/安装.md) for setup.", Language::En),
+        ("Set `名前` to the display name.", Language::En),
+        ("Thanks to 张三 for the fix.", Language::En),
+    ] {
+        let document = parse(source).unwrap();
+        assert_eq!(document.language, expected, "{source}");
+        assert!(
+            document
+                .sentences
+                .iter()
+                .all(|sentence| sentence.language == expected),
+            "{source}"
+        );
+    }
+}
+
+#[test]
 fn section_hierarchy_and_ranges_close_at_sibling_headings() {
     let source = "Preamble\n\n# A\n\nA text\n\n### Deep\n\nDeep text\n\n## B\n\n# C\n";
     let document = parse(source).unwrap();

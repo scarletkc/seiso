@@ -143,7 +143,7 @@ fn empty_reports_and_missing_source_are_valid() {
     assert_eq!(render_text(&[], &BTreeMap::new()), "No diagnostics.\n");
     let report = render_text(&[diagnostic("text", "TST001")], &BTreeMap::new());
     assert!(report.contains("suggestion: Inspect the original Markdown range."));
-    assert!(report.ends_with("Found 1 error.\n"));
+    assert!(report.ends_with("Found 1 diagnostic.\n"));
 }
 
 #[test]

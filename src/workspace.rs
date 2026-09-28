@@ -56,6 +56,8 @@ pub struct Snapshot {
     pub configurations: BTreeMap<String, Settings>,
     pub policies: BTreeMap<String, FilePolicy>,
     pub errors: Vec<InputError>,
+    /// Requested paths, or the whole workspace, that selected no document to check.
+    pub skipped: Vec<InputError>,
 }
 
 impl Snapshot {
@@ -147,7 +149,7 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
         if !is_markdown(&path) {
             return Err("The stdin filename must have a .md or .markdown extension.".into());
         }
-        if ignored_by_git(&root, &path)? {
+        if ignored_by_git(&root, &path, false)? {
             return Err(format!(
                 "{} is excluded by .gitignore; choose an included Markdown path.",
                 relative(&root, &path)
@@ -229,6 +231,7 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
     let mut config_cache = BTreeMap::new();
     let mut pending = Vec::new();
     let mut deferred_errors = Vec::new();
+    let mut excluded_inputs = Vec::new();
     let mut needs_index = scope == LoadScope::Workspace;
     for (path, source_override) in inputs {
         let selected = selected_path(&path);
@@ -265,7 +268,10 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
         } else {
             None
         };
-        if excluded.is_some() {
+        if let Some(field) = excluded {
+            if selected {
+                excluded_inputs.push((path.clone(), field, configuration.clone()));
+            }
             if source_override.is_some() {
                 errors.push(InputError {filename:filename.clone(),message:"The stdin filename is excluded by configuration; choose an included Markdown path.".into()});
             }
@@ -371,6 +377,19 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
             config,
         });
     }
+    let checked: Vec<_> = files
+        .iter()
+        .filter(|file| selected.contains(&file.filename))
+        .map(|file| file.path.as_path())
+        .collect();
+    let skipped = skipped_inputs(
+        &root,
+        &requested,
+        all_selected,
+        &checked,
+        &excluded_inputs,
+        &errors,
+    );
     let index = WorkspaceIndex::new(root, files, errors.is_empty());
     let mut snapshot = Snapshot {
         index,
@@ -379,9 +398,87 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
         configurations,
         policies,
         errors,
+        skipped,
     };
     snapshot.sort_errors();
     Ok(snapshot)
+}
+
+/// Explain each requested path, or an empty workspace, that selected no document.
+fn skipped_inputs(
+    root: &Path,
+    requested: &BTreeSet<PathBuf>,
+    all_selected: bool,
+    checked: &[&Path],
+    excluded: &[(PathBuf, &'static str, String)],
+    errors: &[InputError],
+) -> Vec<InputError> {
+    let targets: Vec<&Path> = if all_selected {
+        vec![root]
+    } else {
+        requested.iter().map(PathBuf::as_path).collect()
+    };
+    let mut skipped = Vec::new();
+    for target in targets {
+        if checked.iter().any(|path| path.starts_with(target))
+            || errors
+                .iter()
+                .any(|error| root.join(&error.filename).starts_with(target))
+        {
+            continue;
+        }
+        let excluded_here: Vec<_> = excluded
+            .iter()
+            .filter(|(path, ..)| path.starts_with(target))
+            .collect();
+        let reason = if target.is_file() {
+            if !is_markdown(target) {
+                "it is not a .md or .markdown file".to_owned()
+            } else if let Some((_, field, configuration)) = excluded_here.first() {
+                let configuration = configuration_label(configuration);
+                if *field == "exclude" {
+                    format!("`exclude` in {configuration} matches it")
+                } else {
+                    format!("`include` in {configuration} does not match it")
+                }
+            } else if ignored_by_git(root, target, false).unwrap_or(false) {
+                ".gitignore ignores it".to_owned()
+            } else {
+                "workspace discovery skipped it; symbolic links are not followed".to_owned()
+            }
+        } else if !excluded_here.is_empty() {
+            let count = excluded_here.len();
+            let files = if count == 1 { "file" } else { "files" };
+            format!("configuration excludes its {count} Markdown {files}; inspect `seiso policy`")
+        } else if target != root && ignored_by_git(root, target, true).unwrap_or(false) {
+            ".gitignore ignores it".to_owned()
+        } else {
+            "it contains no Markdown files".to_owned()
+        };
+        skipped.push(if target == root {
+            InputError {
+                filename: ".".into(),
+                message: format!(
+                    "No documents were checked in workspace {} because {reason}.",
+                    root.display()
+                ),
+            }
+        } else {
+            InputError {
+                filename: relative(root, target),
+                message: format!("Not checked because {reason}."),
+            }
+        });
+    }
+    skipped
+}
+
+fn configuration_label(configuration: &str) -> String {
+    if configuration == "<defaults>" {
+        "the default configuration".into()
+    } else {
+        configuration.to_owned()
+    }
 }
 
 fn discovery_error_path(error: &ignore::Error) -> Option<&Path> {
@@ -435,7 +532,7 @@ pub fn is_markdown(path: &Path) -> bool {
         })
 }
 
-fn ignored_by_git(root: &Path, path: &Path) -> Result<bool, String> {
+fn ignored_by_git(root: &Path, path: &Path, path_is_directory: bool) -> Result<bool, String> {
     let relative = path.strip_prefix(root).map_err(|error| error.to_string())?;
     let components = relative.components().collect::<Vec<_>>();
     let mut directory = root.to_path_buf();
@@ -457,7 +554,7 @@ fn ignored_by_git(root: &Path, path: &Path) -> Result<bool, String> {
             );
         }
         directory.push(component.as_os_str());
-        let is_directory = index + 1 < components.len();
+        let is_directory = index + 1 < components.len() || path_is_directory;
         for matcher in matchers.iter().rev() {
             let matched = matcher.matched(&directory, is_directory);
             if matched.is_ignore() {

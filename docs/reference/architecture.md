@@ -117,3 +117,10 @@ Missing, corrupt, incompatible, and unwritable entries fall back to parsing.
 Writes use temporary files and atomic persistence; concurrent processes do not
 share mutable parsed state. `--no-cache` bypasses reads and writes. Equivalent
 inputs must produce identical diagnostics with a cold, warm, or disabled cache.
+
+The cache directory holds its own `.gitignore` and `CACHEDIR.TAG`. Because
+entries are content-addressed, edited sources and earlier seiso versions leave
+entries that are never read again. At most once a day, a command that writes
+to the cache also removes entries older than `MAX_ENTRY_AGE` in
+[`src/cache/mod.rs`](../../src/cache/mod.rs); a removed entry only costs a
+later parse.

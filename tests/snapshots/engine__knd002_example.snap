@@ -22,6 +22,6 @@ expression: result.diagnostics
     "fix": null,
     "url": null,
     "related": [],
-    "suggestion": "Use readme, howto, reference, runbook, adr, plan, or changelog in frontmatter."
+    "suggestion": "Use one of the lowercase kinds readme, howto, reference, runbook, adr, plan, or changelog in frontmatter."
   }
 ]

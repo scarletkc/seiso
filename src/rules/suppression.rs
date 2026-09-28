@@ -369,7 +369,7 @@ fn stale_diagnostic(
         &document.source,
         "SUP002",
         record.span,
-        format!("Suppression for {code} did not suppress any diagnostic"),
+        format!("Suppression for {code} did not suppress any diagnostic."),
         format!(
             "Remove {code} from the declaration, or remove the comment if it lists no other rules."
         ),

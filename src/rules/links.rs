@@ -65,8 +65,8 @@ pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> L
             PathStatus::Exists => {}
             PathStatus::Missing => {
                 result.diagnostics.push(Diagnostic::new(context.filename, &context.document.source,
-                    "LNK001", link.span, format!("Relative link target {destination:?} does not exist in the workspace."),
-                    "Update the relative path or restore the target file; check the path from this document's directory."));
+                    "LNK001", link.span, format!("Local link target {destination:?} does not exist in the workspace."),
+                    "Update the path or restore the target; paths resolve from this document's directory, or from the workspace root when they start with /, and seiso does not add .md or index.md."));
             }
             PathStatus::Unknown => {
                 result.incomplete = true;

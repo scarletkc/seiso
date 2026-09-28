@@ -84,9 +84,9 @@ pub fn render_text(diagnostics: &[Diagnostic], sources: &BTreeMap<String, String
     }
     match diagnostics.len() {
         0 => output.push_str("No diagnostics.\n"),
-        1 => output.push_str("Found 1 error.\n"),
+        1 => output.push_str("Found 1 diagnostic.\n"),
         count => {
-            let _ = writeln!(output, "Found {count} errors.");
+            let _ = writeln!(output, "Found {count} diagnostics.");
         }
     }
     output

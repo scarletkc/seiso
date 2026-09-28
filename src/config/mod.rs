@@ -55,7 +55,7 @@ pub struct Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            include: vec!["**/*.md".into()],
+            include: vec!["**/*.md".into(), "**/*.markdown".into()],
             exclude: Vec::new(),
             preview: false,
             kinds: Vec::new(),
@@ -183,6 +183,15 @@ impl Config {
         let path = absolute(path)?;
         let value = load_extended(&path, &mut Vec::new())?;
         Self::from_value(value, parent(&path).to_path_buf(), Some(path))
+    }
+
+    /// Load an explicitly selected configuration whose patterns apply from `directory`.
+    ///
+    /// `extend` paths remain relative to the file declaring them.
+    pub fn load_from(path: &Path, directory: &Path) -> Result<Self, ConfigError> {
+        let path = absolute(path)?;
+        let value = load_extended(&path, &mut Vec::new())?;
+        Self::from_value(value, absolute(directory)?, Some(path))
     }
 
     /// Parse a standalone configuration; relative paths use `directory` as their base.
@@ -358,9 +367,12 @@ impl Workspace {
             } else {
                 cwd.join(path)
             };
-            let config = Config::load(&path)?;
+            // An explicit configuration selects policy, not the workspace: its
+            // patterns apply from the repository root around the caller.
+            let root = repository_root(&cwd);
+            let config = Config::load_from(&path, &root)?;
             return Ok(Self {
-                root: config.directory.clone(),
+                root,
                 config,
                 explicit_config: true,
             });
@@ -375,11 +387,7 @@ impl Workspace {
                 });
             }
         }
-        let root = cwd
-            .ancestors()
-            .find(|d| d.join(".git").exists())
-            .unwrap_or(&cwd)
-            .to_path_buf();
+        let root = repository_root(&cwd);
         let config = Config::defaults(&root)?;
         Ok(Self {
             root,
@@ -416,6 +424,13 @@ impl Workspace {
         }
         Ok(self.config.clone())
     }
+}
+
+fn repository_root(cwd: &Path) -> PathBuf {
+    cwd.ancestors()
+        .find(|d| d.join(".git").exists())
+        .unwrap_or(cwd)
+        .to_path_buf()
 }
 
 pub fn validate_selector(selector: &str) -> Result<(), ConfigError> {

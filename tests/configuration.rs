@@ -28,6 +28,7 @@ fn default_patterns_include_root_and_nested_markdown() {
     let (_dir, config) = parse("");
     assert!(config.includes(Path::new("README.md")));
     assert!(config.includes(Path::new("docs/中文/ガイド.md")));
+    assert!(config.includes(Path::new("docs/notes.markdown")));
     assert!(!config.includes(Path::new("README.txt")));
     assert!(!config.excludes(Path::new("docs/page.md")));
 }

@@ -42,7 +42,8 @@ way rustfmt settled formatting for Rust code.
 - Judgment calls a tool can't make are written down with a reason. An
   exception without one is itself a violation.
 
-seiso checks documents against this convention. Each diagnostic says where
+seiso's rules check documents against this convention; stable rules run by
+default, and the rest are opt-in previews. Each diagnostic says where
 the problem is and how to fix it, so an agent can repair the page from
 seiso's output alone. seiso doesn't guess whether prose sounds
 machine-written, and it leaves formatting and spelling to other tools. The
@@ -57,9 +58,11 @@ uv tool install seiso    # or: pipx install seiso
 npm install -g @scarletkc/seiso
 ```
 
-The PyPI and npm packages include prebuilt binaries for Linux x64 and Windows
-x64. Other platforms build from source, which requires a Rust toolchain. From a
-source checkout, run `cargo run -p seiso -- <command>`.
+The PyPI package includes prebuilt binaries for Linux x64 and Windows x64 and
+builds from source on other platforms, which requires a Rust toolchain. The npm
+package installs only on Linux x64 with glibc and on Windows x64; elsewhere, use
+cargo or the PyPI package. From a source checkout, run
+`cargo run -p seiso -- <command>`.
 
 ## Quick start
 
@@ -70,11 +73,16 @@ seiso init
 seiso check
 ```
 
-`seiso init` writes a `seiso.toml` with suggested kind mappings; review them
-before relying on the results. Default checks use accepted stable rules;
-`--preview` adds selected preview rules. `seiso rule <CODE>` explains a rule
-with examples, and `seiso parse` inspects the document model without running
-rules.
+`seiso init` writes a `seiso.toml` at the repository root with suggested
+exclusions and kind mappings; review them before relying on the results.
+
+`seiso check` runs only stable rules, which have met the
+[promotion criteria](https://github.com/scarletkc/seiso/blob/main/docs/evaluation/policy.md).
+The other rules are in preview: they are experimental, can report false
+positives, and run only with `--preview`. Try them locally before relying on
+them, and keep them out of CI gates. `seiso rule --all` lists every rule with
+its status, `seiso rule <CODE>` explains a rule with examples, and `seiso parse`
+inspects the document model without running rules.
 
 ## Documentation
 

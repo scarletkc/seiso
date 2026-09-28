@@ -3,21 +3,28 @@
 use std::collections::HashMap;
 use std::io::Write;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex, Weak};
+use std::sync::{Arc, Mutex, Once, Weak};
+use std::time::{Duration, SystemTime};
 
 use crate::diagnostics::Span;
 use crate::md::{Document, ParseError};
 use bincode::Options;
 use sha2::{Digest, Sha256};
 
-const SCHEMA: &str = "seiso-parse-cache-4-bincode-varint-le";
-const HEADER: &[u8] = b"seiso-parse-cache-4-bincode-varint-le\n";
+const SCHEMA: &str = "seiso-parse-cache-5-bincode-varint-le";
+const HEADER: &[u8] = b"seiso-parse-cache-5-bincode-varint-le\n";
+const GITIGNORE: &str = "# Automatically created by seiso.\n*\n";
+const CACHEDIR_TAG: &str = "Signature: 8a477f597d28d172789f06886806bc55\n# This file is a cache directory tag created by seiso.\n# For information about cache directory tags see https://bford.info/cachedir/\n";
+const PRUNE_MARKER: &str = ".pruned";
+const PRUNE_INTERVAL: Duration = Duration::from_secs(24 * 60 * 60);
+const MAX_ENTRY_AGE: Duration = Duration::from_secs(7 * 24 * 60 * 60);
 
 #[derive(Clone, Debug)]
 pub struct ParseCache {
     directory: PathBuf,
     enabled: bool,
     documents: Arc<Mutex<HashMap<[u8; 32], Weak<Document>>>>,
+    maintained: Arc<Once>,
 }
 
 impl ParseCache {
@@ -26,6 +33,7 @@ impl ParseCache {
             directory,
             enabled,
             documents: Arc::default(),
+            maintained: Arc::new(Once::new()),
         }
     }
 
@@ -111,6 +119,8 @@ impl ParseCache {
         if std::fs::create_dir_all(&self.directory).is_err() {
             return;
         }
+        self.maintained
+            .call_once(|| self.maintain(SystemTime::now()));
         let Ok(mut temporary) = tempfile::NamedTempFile::new_in(&self.directory) else {
             return;
         };
@@ -121,6 +131,50 @@ impl ParseCache {
             .and_then(|()| temporary.flush());
         if result.is_ok() {
             let _ = temporary.persist(path);
+        }
+    }
+
+    /// Keep the directory out of version control and backups, and bound its growth.
+    ///
+    /// Entries are content-addressed, so edited sources and older seiso versions
+    /// leave entries that are never read again. Removing any entry only costs a
+    /// later parse.
+    fn maintain(&self, now: SystemTime) {
+        for (name, contents) in [(".gitignore", GITIGNORE), ("CACHEDIR.TAG", CACHEDIR_TAG)] {
+            let path = self.directory.join(name);
+            if !path.exists() {
+                let _ = std::fs::write(path, contents);
+            }
+        }
+        let marker = self.directory.join(PRUNE_MARKER);
+        let pruned_recently = std::fs::metadata(&marker)
+            .and_then(|metadata| metadata.modified())
+            .is_ok_and(|time| {
+                now.duration_since(time)
+                    .is_ok_and(|age| age < PRUNE_INTERVAL)
+            });
+        if pruned_recently || std::fs::write(&marker, b"").is_err() {
+            return;
+        }
+        let Ok(entries) = std::fs::read_dir(&self.directory) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            let name = entry.file_name();
+            let name = name.to_string_lossy();
+            if !(name.ends_with(".cache") || name.starts_with(".tmp")) {
+                continue;
+            }
+            let expired = entry
+                .metadata()
+                .and_then(|metadata| metadata.modified())
+                .is_ok_and(|time| {
+                    now.duration_since(time)
+                        .is_ok_and(|age| age > MAX_ENTRY_AGE)
+                });
+            if expired {
+                let _ = std::fs::remove_file(entry.path());
+            }
         }
     }
 }
@@ -383,7 +437,61 @@ mod tests {
             }
         });
         assert!(cache.read(&cache.entry_path(SOURCE), SOURCE).is_some());
-        assert_eq!(std::fs::read_dir(temporary.path()).unwrap().count(), 1);
+        let entries = std::fs::read_dir(temporary.path())
+            .unwrap()
+            .filter(|entry| {
+                let name = entry.as_ref().unwrap().file_name();
+                !matches!(
+                    name.to_str(),
+                    Some(".gitignore" | "CACHEDIR.TAG" | PRUNE_MARKER)
+                )
+            })
+            .count();
+        assert_eq!(entries, 1);
+    }
+
+    #[test]
+    fn maintenance_ignores_the_directory_and_prunes_expired_entries_once_a_day() {
+        let temporary = tempfile::tempdir().unwrap();
+        let directory = temporary.path().join("cache");
+        let cache = ParseCache::new(directory.clone(), true);
+        cache.parse(SOURCE).unwrap();
+        assert_eq!(
+            std::fs::read_to_string(directory.join(".gitignore")).unwrap(),
+            GITIGNORE
+        );
+        assert!(
+            std::fs::read_to_string(directory.join("CACHEDIR.TAG"))
+                .unwrap()
+                .starts_with("Signature: 8a477f597d28d172789f06886806bc55")
+        );
+        let expired = directory.join(format!("{}.cache", "0".repeat(64)));
+        let leftover = directory.join(".tmpABCDEF");
+        let unrelated = directory.join("notes.txt");
+        let now = SystemTime::now();
+        for path in [&expired, &leftover, &unrelated] {
+            std::fs::write(path, b"old").unwrap();
+            std::fs::File::options()
+                .write(true)
+                .open(path)
+                .unwrap()
+                .set_modified(now - MAX_ENTRY_AGE - Duration::from_secs(60))
+                .unwrap();
+        }
+        // The first write already swept the directory today.
+        cache.maintain(now);
+        assert!(expired.exists());
+        std::fs::File::options()
+            .write(true)
+            .open(directory.join(PRUNE_MARKER))
+            .unwrap()
+            .set_modified(now - PRUNE_INTERVAL - Duration::from_secs(60))
+            .unwrap();
+        cache.maintain(now);
+        assert!(!expired.exists());
+        assert!(!leftover.exists());
+        assert!(unrelated.exists());
+        assert!(cache.read(&cache.entry_path(SOURCE), SOURCE).is_some());
     }
 
     #[test]

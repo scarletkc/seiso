@@ -11,13 +11,21 @@ seiso init
 seiso check
 ```
 
-Review the suggested kind mappings in `seiso.toml`. Add `kind` frontmatter to
+`seiso init` writes `seiso.toml` at the repository root. Review its suggested
+exclusions and kind mappings. Add `kind` frontmatter to
 documents that need a different role. Use `seiso rule KND001` for an example.
 
 Stable rules are enabled by default. Add `--preview` or `preview = true` in the
-configuration to opt into selected preview rules. `seiso rule <CODE>` shows a
+configuration to opt into selected preview rules. Preview rules are
+experimental and can report false positives; the
+[evaluation records](../README.md#evaluation) show how each one performed, so
+review them before using a preview rule as a gate. `seiso rule <CODE>` shows a
 rule's status; `seiso policy` shows the rules enabled for each file. The
 [evaluation policy](../evaluation/policy.md) records the promotion criteria.
+
+Language-specific rules use each sentence's detected language. Declare `lang`
+in frontmatter when detection picks the wrong one; see
+[document language](../reference/configuration.md#document-language).
 
 ## Select files and rules
 
@@ -30,7 +38,11 @@ seiso rule VOX001
 
 Paths are relative to the calling directory. Reported filenames are relative to
 the workspace root. Explicit paths still respect `.gitignore`, `include`, and
-`exclude`; the nearest configuration determines each file's policy.
+`exclude`; the nearest configuration determines each file's policy. When a
+named path selects no document, the check prints the reason to stderr: the file
+is not Markdown, `.gitignore` or the configuration excludes it, or the
+directory contains no Markdown files. A selector that names only preview rules
+also gets a notice when preview is not enabled.
 
 With only single-file rules enabled, a path check reads the selected sources.
 When an included file's policy can enable a cross-file rule, checking loads the
@@ -94,8 +106,9 @@ statistics go to stderr so stdout contains only annotation commands.
 | `1` | The check completed and found violations. |
 | `2` | A tool error or incomplete check occurred; any collected diagnostics are still reported. |
 
-`--exit-zero` preserves exit code `2` for errors. A check with no enabled rules
-prints a notice to stderr; inspect the policy before using it as a gate.
+`--exit-zero` preserves exit code `2` for errors. Unchecked paths, inactive
+preview selectors, and a check with no enabled rules print a notice to stderr
+and keep exit code `0`; inspect the policy before using such a check as a gate.
 
 ## Explain an exception
 
@@ -128,7 +141,9 @@ fresh inputs before writing; changed sources prevent the planned write.
 Checks store content-derived parse data in `.seiso_cache/`. Each run reads and
 hashes its required sources, then resolves path policy and links against the current
 workspace. Moving a file, editing configuration, or deleting a link target
-takes effect even when source content was cached.
+takes effect even when source content was cached. The directory contains its
+own `.gitignore`, and seiso removes expired entries itself; deleting the
+directory is always safe.
 
 Use `--no-cache` to bypass cache reads and writes. Missing, corrupt, outdated,
 or unwritable cache entries fall back to parsing; diagnostic output is the

@@ -631,6 +631,158 @@ fn init_preserves_existing_configuration_and_only_maps_known_directories() {
 }
 
 #[test]
+fn init_writes_at_the_repository_root_with_exclusions_and_community_kinds() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    std::fs::create_dir(root.join(".git")).unwrap();
+    write(root, "docs/guides/setup.md", "# Setup\n");
+    write(root, ".github/ISSUE_TEMPLATE/bug.md", "# Bug\n");
+    write(root, ".github/pull_request_template.md", "# Changes\n");
+    write(root, ".github/CONTRIBUTING.md", "# Contributing\n");
+    write(root, "SECURITY.md", "# Security\n");
+    write(root, "CODE_OF_CONDUCT.md", "# Conduct\n");
+    assert_eq!(
+        run(&root.join("docs"), &["init"], None).status.code(),
+        Some(0)
+    );
+    assert!(!root.join("docs/seiso.toml").exists());
+    let config = std::fs::read_to_string(root.join("seiso.toml")).unwrap();
+    for expected in [
+        "\".github/ISSUE_TEMPLATE/**\"",
+        "\".github/pull_request_template.md\"",
+        "\"CODE_OF_CONDUCT.md\"",
+        "path = \"docs/guides/**\"\nkind = \"howto\"",
+        "path = \".github/CONTRIBUTING.md\"\nkind = \"howto\"",
+        "path = \"SECURITY.md\"\nkind = \"howto\"",
+    ] {
+        assert!(config.contains(expected), "{config}");
+    }
+    let check = run(root, &["check", "--output-format", "json"], None);
+    assert_eq!(check.status.code(), Some(0), "{}", value(&check));
+    assert_eq!(
+        std::fs::read_to_string(root.join(".seiso_cache/.gitignore")).unwrap(),
+        "# Automatically created by seiso.\n*\n"
+    );
+    assert!(root.join(".seiso_cache/CACHEDIR.TAG").is_file());
+}
+
+#[test]
+fn explicit_configuration_keeps_the_repository_root_and_applies_patterns_from_it() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    std::fs::create_dir(root.join(".git")).unwrap();
+    write(
+        root,
+        "ci/seiso.toml",
+        "[lint]\nselect = ['KND']\n\n[[kinds]]\npath = 'docs/**'\nkind = 'howto'\n",
+    );
+    write(root, "README.md", "# Intro\n");
+    write(root, "docs/setup.md", "# Setup\n");
+    let output = run(
+        root,
+        &[
+            "check",
+            "--config",
+            "ci/seiso.toml",
+            "--output-format",
+            "json",
+        ],
+        None,
+    );
+    assert_eq!(output.status.code(), Some(1));
+    let diagnostics = value(&output);
+    assert_eq!(diagnostics.as_array().unwrap().len(), 1);
+    assert_eq!(diagnostics[0]["filename"], "README.md");
+    let nested = run(
+        &root.join("docs"),
+        &[
+            "check",
+            "--config",
+            "../ci/seiso.toml",
+            "setup.md",
+            "../README.md",
+            "--output-format",
+            "json",
+        ],
+        None,
+    );
+    assert_eq!(nested.status.code(), Some(1));
+    assert_eq!(value(&nested), diagnostics);
+}
+
+#[test]
+fn unchecked_inputs_and_inactive_preview_selectors_explain_themselves() {
+    let workspace = workspace();
+    let root = workspace.path();
+    write(root, "seiso.toml", "exclude = ['drafts/**']\n");
+    write(root, ".gitignore", "vendor/\n");
+    write(root, "notes.txt", "Text\n");
+    write(root, "vendor/lib/README.md", "# Vendored\n");
+    write(root, "drafts/idea.md", "# Idea\n");
+    write(root, "empty/.keep", "");
+    write(root, "a.md", "---\nkind: reference\n---\n# A\n");
+    let output = run(
+        root,
+        &[
+            "check",
+            "notes.txt",
+            "vendor/lib/README.md",
+            "vendor",
+            "drafts",
+            "drafts/idea.md",
+            "empty",
+            "a.md",
+        ],
+        None,
+    );
+    assert_eq!(output.status.code(), Some(0));
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    for expected in [
+        "seiso: notes.txt: Not checked because it is not a .md or .markdown file.",
+        "seiso: vendor/lib/README.md: Not checked because .gitignore ignores it.",
+        "seiso: vendor: Not checked because .gitignore ignores it.",
+        "seiso: drafts: Not checked because configuration excludes its 1 Markdown file;",
+        "seiso: drafts/idea.md: Not checked because `exclude` in seiso.toml matches it.",
+        "seiso: empty: Not checked because it contains no Markdown files.",
+    ] {
+        assert!(stderr.contains(expected), "{stderr}");
+    }
+    assert!(!stderr.contains("seiso: a.md:") && !stderr.contains("No rules enabled"));
+
+    write(root, "seiso.toml", "include = ['docs/**']\n");
+    let empty = run(root, &["check"], None);
+    assert_eq!(empty.status.code(), Some(0));
+    assert!(
+        String::from_utf8_lossy(&empty.stderr).contains("No documents were checked in workspace")
+    );
+
+    write(root, "seiso.toml", "");
+    let selectors = [
+        "check",
+        "a.md",
+        "--select",
+        "VOX,KND001",
+        "--extend-select",
+        "STL001",
+    ];
+    let inactive = String::from_utf8_lossy(&run(root, &selectors, None).stderr).into_owned();
+    assert!(
+        inactive.contains("VOX selects only preview rules"),
+        "{inactive}"
+    );
+    assert!(
+        inactive.contains("STL001 selects only preview rules"),
+        "{inactive}"
+    );
+    assert!(!inactive.contains("KND001 selects"), "{inactive}");
+    let enabled = run(root, &[&selectors[..], &["--preview"]].concat(), None);
+    assert!(!String::from_utf8_lossy(&enabled.stderr).contains("selects only preview rules"));
+    write(root, "seiso.toml", "preview = true\n");
+    let configured = run(root, &selectors, None);
+    assert!(!String::from_utf8_lossy(&configured.stderr).contains("selects only preview rules"));
+}
+
+#[test]
 fn rule_documents_are_available_and_future_features_are_rejected() {
     let workspace = workspace();
     let root = workspace.path();

@@ -51,7 +51,7 @@ pub fn resolve_kind(document: &Document, mapped: Option<&str>) -> KindResolution
                         "The generated kind can only be assigned in configuration.".into()
                     } else {
                         format!(
-                            "Unknown kind {kind:?}; use readme, howto, reference, runbook, adr, plan, or changelog."
+                            "Unknown kind {kind:?}; use one of the lowercase kinds readme, howto, reference, runbook, adr, plan, or changelog."
                         )
                     }),
                 }
@@ -204,15 +204,14 @@ fn kind_diagnostics(context: &CheckContext<'_>, enabled: &BTreeSet<String>) -> V
     let mut span = Span::new(0, 0);
     let mut message =
         "Document kind is not declared and no kind mapping matches this file.".to_owned();
-    let mut suggestion =
-        "Declare kind in YAML frontmatter or add a matching [[kinds]] configuration entry.";
+    let mut suggestion = "Declare kind as readme, howto, reference, runbook, adr, plan, or changelog in YAML frontmatter, or add a matching [[kinds]] configuration entry.";
     if let Some(frontmatter) = &document.frontmatter {
         span = frontmatter.span;
         if let Some(error) = frontmatter.errors.first() {
             span = error.span;
             message = format!(
-                "Document kind cannot be resolved because the frontmatter is invalid: {}",
-                error.message
+                "Document kind cannot be resolved because the frontmatter is invalid: {}.",
+                error.message.trim_end_matches('.')
             );
             suggestion = "Correct the YAML frontmatter so its kind declaration can be read.";
         } else if let Some(kind) = &frontmatter.kind {
@@ -225,7 +224,7 @@ fn kind_diagnostics(context: &CheckContext<'_>, enabled: &BTreeSet<String>) -> V
                 suggestion = "Remove this declaration and assign generated with a [[kinds]] path mapping if a tool generates this file.";
             } else {
                 message = format!("Unknown document kind {kind:?}.");
-                suggestion = "Use readme, howto, reference, runbook, adr, plan, or changelog in frontmatter.";
+                suggestion = "Use one of the lowercase kinds readme, howto, reference, runbook, adr, plan, or changelog in frontmatter.";
             }
         } else if context.config.kind_for(context.path).is_some() {
             return Vec::new();

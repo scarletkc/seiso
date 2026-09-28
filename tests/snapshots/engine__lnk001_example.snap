@@ -5,7 +5,7 @@ expression: result.diagnostics
 [
   {
     "code": "LNK001",
-    "message": "Relative link target \"missing-reference.md\" does not exist in the workspace.",
+    "message": "Local link target \"missing-reference.md\" does not exist in the workspace.",
     "filename": "docs/guide.md",
     "location": {
       "row": 5,
@@ -22,6 +22,6 @@ expression: result.diagnostics
     "fix": null,
     "url": null,
     "related": [],
-    "suggestion": "Update the relative path or restore the target file; check the path from this document's directory."
+    "suggestion": "Update the path or restore the target; paths resolve from this document's directory, or from the workspace root when they start with /, and seiso does not add .md or index.md."
   }
 ]

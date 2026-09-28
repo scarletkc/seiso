@@ -47,7 +47,7 @@ pub struct CheckArgs {
     /// Diagnostic output format.
     #[arg(long, value_enum, default_value_t = CheckFormat::Text)]
     output_format: CheckFormat,
-    /// Read stdin in place of this workspace file; never writes to disk.
+    /// Read stdin in place of this workspace file without writing to disk; excludes --fix.
     #[arg(long, value_name = "PATH", conflicts_with = "paths")]
     stdin_filename: Option<PathBuf>,
     /// Return success for violations; incomplete checks still return 2.
@@ -203,19 +203,69 @@ pub fn check(args: CheckArgs) -> Result<u8, String> {
     if args.statistics && matches!(args.output_format, CheckFormat::Github) {
         print_github_log(&statistics_text(&evaluation));
     }
-    print_errors(
-        &evaluation.snapshot,
-        matches!(args.output_format, CheckFormat::Github),
-    );
-    if evaluation.snapshot.enabled_count() == 0
+    let github = matches!(args.output_format, CheckFormat::Github);
+    print_errors(&evaluation.snapshot, github);
+    for notice in inactive_preview_selectors(&evaluation.snapshot, &args.selection) {
+        print_notice(&notice, github);
+    }
+    for skipped in &evaluation.snapshot.skipped {
+        if skipped.filename == "." {
+            print_notice(&skipped.message, github);
+        } else {
+            print_notice(
+                &format!("{}: {}", skipped.filename, skipped.message),
+                github,
+            );
+        }
+    }
+    if !evaluation.snapshot.selected.is_empty()
+        && evaluation.snapshot.enabled_count() == 0
         && evaluation.diagnostics.is_empty()
         && evaluation.snapshot.errors.is_empty()
     {
-        eprintln!(
-            "seiso: No rules enabled for the selected files. Inspect `seiso policy` for the effective selection and file kinds."
+        print_notice(
+            "No rules enabled for the selected files. Inspect `seiso policy` for the effective selection and file kinds.",
+            github,
         );
     }
     Ok(evaluation.exit_code(args.exit_zero))
+}
+
+fn print_notice(message: &str, github: bool) {
+    if github {
+        print_github_log(message);
+    } else {
+        eprintln!("seiso: {message}");
+    }
+}
+
+/// Name command-line selectors that cannot take effect because preview is off everywhere.
+fn inactive_preview_selectors(snapshot: &Snapshot, selection: &SelectionArgs) -> Vec<String> {
+    if selection.preview
+        || snapshot
+            .configurations
+            .values()
+            .any(|settings| settings.preview)
+    {
+        return Vec::new();
+    }
+    selection
+        .select
+        .iter()
+        .flatten()
+        .chain(&selection.extend_select)
+        .filter(|selector| {
+            // Codes and families are prefixes; `ALL` matches no prefix and stays silent.
+            let mut matched = seiso::rules::rules()
+                .iter()
+                .filter(|rule| rule.code.starts_with(selector.as_str()))
+                .peekable();
+            matched.peek().is_some() && matched.all(|rule| !rule.is_stable())
+        })
+        .map(|selector| {
+            format!("{selector} selects only preview rules, which are not enabled; add --preview or set `preview = true`.")
+        })
+        .collect()
 }
 
 pub fn policy(args: PolicyArgs) -> Result<u8, String> {
@@ -410,14 +460,16 @@ fn evaluate(
 
 pub fn rule(args: RuleArgs) -> Result<u8, String> {
     let docs = if args.all {
-        seiso::rules::rules()
-            .iter()
+        let mut rules: Vec<_> = seiso::rules::rules().iter().collect();
+        rules.sort_by_key(|rule| rule.code);
+        rules
+            .into_iter()
             .map(render_rule)
             .collect::<Vec<_>>()
             .join("\n\n")
     } else {
         let code = args.code.as_deref().unwrap_or_default();
-        let rule = seiso::rules::rule(code).ok_or_else(|| {
+        let rule = seiso::rules::rule(&code.to_ascii_uppercase()).ok_or_else(|| {
             format!(
                 "Rule {code:?} is not implemented; run `seiso rule --all` to list available rules."
             )
@@ -431,7 +483,16 @@ pub fn rule(args: RuleArgs) -> Result<u8, String> {
 fn render_rule(rule: &seiso::rules::Rule) -> String {
     let mut output = String::new();
     let mut status_added = false;
-    for line in rule.documentation.trim_end().lines() {
+    // The frontmatter declares the page kind for seiso's own checks, not for readers.
+    let mut lines = rule.documentation.trim_end().lines().peekable();
+    if lines.peek() == Some(&"---") {
+        lines.next();
+        lines.by_ref().find(|line| *line == "---");
+        while lines.peek().is_some_and(|line| line.trim().is_empty()) {
+            lines.next();
+        }
+    }
+    for line in lines {
         output.push_str(line);
         output.push('\n');
         if !status_added && line.starts_with("# ") {
@@ -451,38 +512,76 @@ pub fn init() -> Result<u8, String> {
             path.display()
         ));
     }
-    let mut contents = String::from(
-        "include = [\"**/*.md\", \"**/*.markdown\"]\npreview = false\n\n# Review these path mappings and declare other kinds in document frontmatter.\n",
+    // Without a configuration, discovery stops at the repository root.
+    let root = workspace.root;
+    let quote = |value: &str| toml::Value::String(value.to_owned()).to_string();
+    let mut contents = String::from("include = [\"**/*.md\", \"**/*.markdown\"]\n");
+    let mut excludes: Vec<String> = [
+        ".github/ISSUE_TEMPLATE",
+        ".github/DISCUSSION_TEMPLATE",
+        ".github/PULL_REQUEST_TEMPLATE",
+        "node_modules",
+        "vendor",
+        "third_party",
+    ]
+    .into_iter()
+    .filter(|directory| root.join(directory).is_dir())
+    .map(|directory| format!("{directory}/**"))
+    .collect();
+    excludes.extend(community_files(&root, "PULL_REQUEST_TEMPLATE.md"));
+    excludes.extend(community_files(&root, "CODE_OF_CONDUCT.md"));
+    if !excludes.is_empty() {
+        contents.push_str(
+            "# Templates, dependencies, and adopted texts are not project documentation.\nexclude = [\n",
+        );
+        for pattern in &excludes {
+            contents.push_str(&format!("  {},\n", quote(pattern)));
+        }
+        contents.push_str("]\n");
+    }
+    contents.push_str(
+        "preview = false\n\n# Review these path mappings and declare other kinds in document frontmatter.\n",
     );
-    for (path, kind, exists) in [
-        ("**/README.md", "readme", cwd.join("README.md").is_file()),
+    let mut kinds: Vec<(String, &str)> = [
+        ("**/README.md", "readme", root.join("README.md").is_file()),
         (
             "**/CHANGELOG.md",
             "changelog",
-            cwd.join("CHANGELOG.md").is_file(),
+            root.join("CHANGELOG.md").is_file(),
         ),
-        ("docs/guides/**", "howto", cwd.join("docs/guides").is_dir()),
-        ("docs/howto/**", "howto", cwd.join("docs/howto").is_dir()),
+        ("docs/guides/**", "howto", root.join("docs/guides").is_dir()),
+        ("docs/howto/**", "howto", root.join("docs/howto").is_dir()),
         (
             "docs/reference/**",
             "reference",
-            cwd.join("docs/reference").is_dir(),
+            root.join("docs/reference").is_dir(),
         ),
         (
             "docs/runbooks/**",
             "runbook",
-            cwd.join("docs/runbooks").is_dir(),
+            root.join("docs/runbooks").is_dir(),
         ),
-        ("docs/adr/**", "adr", cwd.join("docs/adr").is_dir()),
-        ("docs/plans/**", "plan", cwd.join("docs/plans").is_dir()),
-    ] {
-        if exists {
-            contents.push_str(&format!(
-                "\n[[kinds]]\npath = \"{path}\"\nkind = \"{kind}\"\n"
-            ));
-        }
+        ("docs/adr/**", "adr", root.join("docs/adr").is_dir()),
+        ("docs/plans/**", "plan", root.join("docs/plans").is_dir()),
+    ]
+    .into_iter()
+    .filter(|(_, _, exists)| *exists)
+    .map(|(path, kind, _)| (path.to_owned(), kind))
+    .collect();
+    for name in ["CONTRIBUTING.md", "SECURITY.md", "SUPPORT.md"] {
+        kinds.extend(
+            community_files(&root, name)
+                .into_iter()
+                .map(|path| (path, "howto")),
+        );
     }
-    let path = cwd.join("seiso.toml");
+    for (path, kind) in kinds {
+        contents.push_str(&format!(
+            "\n[[kinds]]\npath = {}\nkind = \"{kind}\"\n",
+            quote(&path)
+        ));
+    }
+    let path = root.join("seiso.toml");
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -495,10 +594,39 @@ pub fn init() -> Result<u8, String> {
         })?;
     file.write_all(contents.as_bytes())
         .map_err(|error| format!("Cannot write {}: {error}", path.display()))?;
-    write_stdout(
-        "Created seiso.toml. Review the suggested kind mappings, then run `seiso check`.\n",
-    )?;
+    let created = if root == seiso::paths::normalize(&cwd) {
+        "seiso.toml".to_owned()
+    } else {
+        path.display().to_string()
+    };
+    write_stdout(&format!(
+        "Created {created}. Review the suggested exclusions and kind mappings, then run `seiso check`.\n"
+    ))?;
     Ok(0)
+}
+
+/// Files GitHub reads from the repository root, `.github/`, or `docs/`, matched case-insensitively.
+fn community_files(root: &Path, name: &str) -> Vec<String> {
+    ["", ".github", "docs"]
+        .into_iter()
+        .filter_map(|directory| {
+            fs::read_dir(root.join(directory))
+                .ok()?
+                .flatten()
+                .find_map(|entry| {
+                    let file_name = entry.file_name().into_string().ok()?;
+                    (file_name.eq_ignore_ascii_case(name)
+                        && entry.file_type().is_ok_and(|kind| kind.is_file()))
+                    .then(|| {
+                        if directory.is_empty() {
+                            file_name
+                        } else {
+                            format!("{directory}/{file_name}")
+                        }
+                    })
+                })
+        })
+        .collect()
 }
 
 pub fn hook(command: HookCommand) -> u8 {

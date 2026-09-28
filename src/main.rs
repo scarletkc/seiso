@@ -35,7 +35,7 @@ enum Command {
     Index(commands::IndexArgs),
     /// Print a rule's explanation and examples.
     Rule(commands::RuleArgs),
-    /// Create a configuration with suggested kind mappings.
+    /// Create a repository-root configuration with suggested exclusions and kind mappings.
     Init,
     /// Adapt editor events to Markdown checks.
     Hook {

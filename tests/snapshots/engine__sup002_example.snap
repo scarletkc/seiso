@@ -5,7 +5,7 @@ expression: result.diagnostics
 [
   {
     "code": "SUP002",
-    "message": "Suppression for LNK001 did not suppress any diagnostic",
+    "message": "Suppression for LNK001 did not suppress any diagnostic.",
     "filename": "docs/guide.md",
     "location": {
       "row": 1,

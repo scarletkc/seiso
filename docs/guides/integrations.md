@@ -5,9 +5,9 @@ kind: howto
 # Integrate checks
 
 Configure and run [a local check](checking.md) before adding an automated gate.
-The integrations use stable rules by default. To opt into additional preview
-rules, enable them in project configuration or pass `--preview` to that entry
-point.
+The integrations use stable rules by default. Preview rules are experimental
+and can report false positives, so try them with a local
+`seiso check --preview` before enabling them in a hook or CI gate.
 
 ## Claude Code
 

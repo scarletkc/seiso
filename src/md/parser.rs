@@ -1,7 +1,9 @@
 use std::collections::BTreeMap;
+use std::sync::OnceLock;
 
 use crate::diagnostics::Span;
 use markdown::mdast::Node;
+use regex::Regex;
 use serde_yaml_ng::Value;
 
 use crate::md::{mapping, *};
@@ -58,7 +60,10 @@ pub fn parse_with_options(source: &str, options: ParseOptions) -> Result<Documen
                 });
         }
         if let Node::Yaml(yaml) = node {
-            document.frontmatter = Some(frontmatter(&yaml.value, node_span(node)));
+            let span = node_span(node);
+            // YAML locations count from the line after the opening fence.
+            let line_offset = source[..span.start].matches('\n').count() + 1;
+            document.frontmatter = Some(frontmatter(&yaml.value, span, line_offset));
         }
         if let Some(children) = node.children() {
             stack.extend(children.iter().rev());
@@ -234,7 +239,7 @@ pub fn parse_with_options(source: &str, options: ParseOptions) -> Result<Documen
         .sentences
         .iter()
         .flat_map(|sentence| &sentence.fragments)
-        .filter(|fragment| fragment.kind != FragmentKind::LinkDestination)
+        .filter(|fragment| is_language_evidence(fragment.kind))
         .map(|fragment| fragment.text.as_str())
         .collect::<String>();
     document.language = declared_language.unwrap_or_else(|| detect_language(&prose));
@@ -296,7 +301,7 @@ fn block_kind(node: &Node) -> Option<BlockKind> {
     })
 }
 
-fn frontmatter(raw: &str, span: Span) -> Frontmatter {
+fn frontmatter(raw: &str, span: Span, line_offset: usize) -> Frontmatter {
     let mut result = Frontmatter {
         span,
         raw: raw.to_owned(),
@@ -318,7 +323,7 @@ fn frontmatter(raw: &str, span: Span) -> Frontmatter {
         Err(error) => {
             result.errors.push(FrontmatterError {
                 span,
-                message: error.to_string(),
+                message: file_line_numbers(&error.to_string(), line_offset),
             });
             return result;
         }
@@ -346,6 +351,19 @@ fn frontmatter(raw: &str, span: Span) -> Frontmatter {
         }
     }
     result
+}
+
+/// Report YAML locations as lines of the Markdown file.
+fn file_line_numbers(message: &str, offset: usize) -> String {
+    static LINE: OnceLock<Regex> = OnceLock::new();
+    LINE.get_or_init(|| Regex::new(r"\bat line (\d+)").unwrap())
+        .replace_all(message, |captures: &regex::Captures<'_>| {
+            captures[1].parse::<usize>().map_or_else(
+                |_| captures[0].to_owned(),
+                |line| format!("at line {}", line + offset),
+            )
+        })
+        .into_owned()
 }
 
 struct Definition {
@@ -675,21 +693,33 @@ fn is_identifier(value: &str) -> bool {
             .all(|ch| ch.is_alphanumeric() || "_./:-$[]<>".contains(ch))
 }
 
+/// Inline code and link destinations name identifiers, not the language of the prose.
+fn is_language_evidence(kind: FragmentKind) -> bool {
+    matches!(kind, FragmentKind::Text | FragmentKind::LinkText)
+}
+
+/// Compare CJK characters with Latin words, so English terms in Chinese or
+/// Japanese prose do not outweigh the sentence around them.
 fn detect_language(text: &str) -> Language {
-    let mut latin = 0;
+    let mut latin_words = 0;
+    let mut in_word = false;
     let mut han = 0;
     let mut kana = 0;
     for ch in text.chars() {
+        let latin = ch.is_ascii_alphabetic();
+        if latin && !in_word {
+            latin_words += 1;
+        }
+        in_word = latin;
         match ch {
             '\u{3040}'..='\u{30ff}' | '\u{ff66}'..='\u{ff9f}' => kana += 1,
             '\u{3400}'..='\u{4dbf}' | '\u{4e00}'..='\u{9fff}' | '\u{20000}'..='\u{323af}' => {
                 han += 1
             }
-            ch if ch.is_ascii_alphabetic() => latin += 1,
             _ => {}
         }
     }
-    if han + kana > latin {
+    if han + kana > latin_words {
         if kana > 0 { Language::Ja } else { Language::Zh }
     } else {
         Language::En
@@ -796,7 +826,15 @@ fn sentences(fragments: Vec<Fragment>, block: usize, language: Option<Language>)
         result.push(Sentence {
             span,
             block,
-            language: language.unwrap_or_else(|| detect_language(text)),
+            language: language.unwrap_or_else(|| {
+                detect_language(
+                    &parts
+                        .iter()
+                        .filter(|fragment| is_language_evidence(fragment.kind))
+                        .map(|fragment| fragment.text.as_str())
+                        .collect::<String>(),
+                )
+            }),
             fragments: parts,
         });
     }

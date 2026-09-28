@@ -21,4 +21,4 @@ docs/mixed.md:3:7: TST003 Source mapping example.
    = suggestion: Inspect the original Markdown range.
    = related: docs/reference.md:1:3: Related definition.
 
-Found 3 errors.
+Found 3 diagnostics.
