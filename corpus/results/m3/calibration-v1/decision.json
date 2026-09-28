@@ -1,0 +1,12 @@
+{
+  "candidate_count": 11,
+  "candidates_sha256": "8ef0fbc67ea59e5625b37dc6eeaa42d144e51bcf496208cc4f82c391a7fdf7e0",
+  "changed_defaults": {},
+  "decision": "Retain all existing DupSettings defaults. All eleven one-factor candidates produced zero DUP/OWN diagnostics under the frozen kind profiles, so the corpus cannot distinguish their precision. Lower thresholds are not justified by this evidence.",
+  "documents": 1291,
+  "holdout_used": false,
+  "reviewer_kind": "author_agent",
+  "schema_version": 1,
+  "scope": "Numeric duplicate/ownership thresholds only; existing normative phrase lists have no numeric defaults. PTR002 has configured catalog exceptions, not a numeric threshold.",
+  "split": "tuning"
+}

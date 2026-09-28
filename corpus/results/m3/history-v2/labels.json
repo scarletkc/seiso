@@ -1,0 +1,56 @@
+{
+  "labels": [
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "203d32443170880cc151fd00489dc5333f1483768a489e2bf3803b1dfe65ea7f",
+      "input_sha256": "fc85f3430e7cd1cc9af09bde8e3b5ac7e1046b3895f5059f2b451e08a211a4d1",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference path fallback predates its explicit plan frontmatter."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "84bc2f7aef0714f8ff66a7be62f3efda4f928405aedb58f46f43478f5f2b5796",
+      "id": "1482ae98e028cab36898a05bfdbd8cfa341206fa24ced43f4ae58433600300d1",
+      "input_sha256": "fc85f3430e7cd1cc9af09bde8e3b5ac7e1046b3895f5059f2b451e08a211a4d1",
+      "label": "fp",
+      "reason": "The table names the class of unsupported claims; quoted words are examples of a rule's input, not the author making the claim."
+    },
+    {
+      "code": "VOX003",
+      "diagnostic_sha256": "64ef0b60e312960878bc4d7e7ea97ad2c6234554b08292cc996cda3e44790d14",
+      "id": "99f4eb3eb3779ec9c31c88bcfc2d117893dde5e8b7017b3188b3133f392fdb86",
+      "input_sha256": "fc85f3430e7cd1cc9af09bde8e3b5ac7e1046b3895f5059f2b451e08a211a4d1",
+      "label": "fp",
+      "reason": "This is a rule-catalog row quoting a production-narration example, not production narration by the document."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "ec442432b17377081995eb848ce9b8dba7d1a98fd70b906358df5037539778d4",
+      "id": "4b7d2eaea80a97064fd586efc56360917275ca574675e57dbb4434a47e911ae4",
+      "input_sha256": "fc85f3430e7cd1cc9af09bde8e3b5ac7e1046b3895f5059f2b451e08a211a4d1",
+      "label": "fp",
+      "reason": "The row defines an evaluative-claim detector and quotes candidate adjectives rather than endorsing a product."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "db2b5f9a37f8a289e1a6c290e9fc537d8664c7c6dfcf8391779052a3b5046296",
+      "id": "0bfa1d9dad27070eb369325a80fab4ecfe5a15db33d2047f879f0b9b1e14d9fa",
+      "input_sha256": "0ab33100f479b4f8438fe68984bd97e034e27f5471439292b722cbd5c220210e",
+      "label": "fp",
+      "reason": "The version is introduced by such as as a syntax example, not a package-state snapshot."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "9398b4ce861e4a1804ad68cc22c86984b559f64dccbf6acca057368d302b51f6",
+      "id": "ff666ba8ebaa6f1d40a367209161c22697eff98a50adc6caa133eb44c511df83",
+      "input_sha256": "0ab33100f479b4f8438fe68984bd97e034e27f5471439292b722cbd5c220210e",
+      "label": "fp",
+      "reason": "The v-prefixed version is the second syntax example after such as, not a package-state snapshot."
+    }
+  ],
+  "method": "Individual source-context review of every newly introduced diagnosis. Existing unchanged warnings are matched by code, source excerpt, and message. No human review claimed.",
+  "report_sha256": "879ff95bc9722331d9bd11c58c2f9ba46a08f3efe0a18e0fad45a8f2f76f8bbe",
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}

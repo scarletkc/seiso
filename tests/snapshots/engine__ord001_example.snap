@@ -1,0 +1,44 @@
+---
+source: tests/engine.rs
+expression: result.diagnostics
+---
+[
+  {
+    "code": "ORD001",
+    "message": "A long preamble delays the first procedure or runnable example.",
+    "filename": "docs/guide.md",
+    "location": {
+      "row": 4,
+      "column": 1
+    },
+    "end_location": {
+      "row": 15,
+      "column": 22
+    },
+    "byte_range": {
+      "start": 20,
+      "end": 273
+    },
+    "fix": null,
+    "url": null,
+    "related": [
+      {
+        "filename": "docs/guide.md",
+        "location": {
+          "row": 17,
+          "column": 1
+        },
+        "end_location": {
+          "row": 17,
+          "column": 20
+        },
+        "byte_range": {
+          "start": 275,
+          "end": 294
+        },
+        "message": "The main flow starts here."
+      }
+    ],
+    "suggestion": "Put the runnable example or ordered procedure before extended background and reference tables."
+  }
+]

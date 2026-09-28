@@ -1,0 +1,16 @@
+{
+  "labels": [
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "056d216bbe5381e190cd05efa6b3fd77d05004bfe7cb45123b2dac67647d0462",
+      "id": "b96848399b399809bbb3fea66e9728833bd42c84948083bb1db4dabc91ff3dc3",
+      "input_sha256": "945622d974f65e4e141ef9726c948c2640eebd222c5b101afb6445728283921e",
+      "label": "uncertain",
+      "reason": "The sentence explains choosing memory maps versus buffered search. The README contains benchmarks elsewhere, but the reviewed context does not establish whether those measurements support this specific comparison."
+    }
+  ],
+  "method": "Known development corpus; prior source judgments retained only for byte-identical diagnostic objects. No independent validation claimed.",
+  "report_sha256": "a58a2079afc4af07211c20ee25959631ab10e14aa64fb7ba0c16e9d71bba2e38",
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}

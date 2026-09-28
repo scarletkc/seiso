@@ -1,0 +1,714 @@
+{
+  "complete_documents_reviewed": [
+    "httpx/docs/advanced/resource-limits.md",
+    "httpx/docs/advanced/event-hooks.md",
+    "mkdocs/docs/dev-guide/api.md",
+    "mkdocs/docs/dev-guide/README.md",
+    "mkdocs/docs/about/contributing.md",
+    "hatch/docs/how-to/config/constrain-hatch.md",
+    "hatch/docs/config/context.md",
+    "hatch/docs/plugins/metadata-hook/reference.md",
+    "hatch/docs/intro.md"
+  ],
+  "corpus_sha256": "f63be15887931cecc1654b16f06e60764dc6fca3f62a7e1e5d8287328f08016b",
+  "documents": {
+    "hatch/README.md": {
+      "input_sha256": "cb063661396f4171a6f749a8f4c8efdd9f0b788611fc3c7e282d2dd50d586e18",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "hatch/docs/blog/index.md": {
+      "input_sha256": "809747d4b311fc0f5de1cc670fd27cb636ad54cdb21f28c441bf929e7f9eaee6",
+      "kind": "unknown",
+      "reason": "A community policy, legal text, empty index, or external include stub does not establish a reviewed responsibility in this corpus."
+    },
+    "hatch/docs/blog/posts/release-hatch-1100.md": {
+      "input_sha256": "eab6991cf39ce3094520d3fb8dece44a1e2b985f697524eb24299a89731230c1",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "hatch/docs/blog/posts/release-hatch-1160.md": {
+      "input_sha256": "674d0cf9fb2b31b5299a3a47501847eabe3f70dc078e6834cef9232a10bfb608",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "hatch/docs/blog/posts/release-hatch-1170.md": {
+      "input_sha256": "6c4352c451fcb44d72c78f1f9a6d40530d000eec943b71cc58ac1e4d6a780663",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "hatch/docs/blog/posts/release-hatch-1180.md": {
+      "input_sha256": "8e672041264f919070e7d1b094889b403769c0dc890eef624a3e85cdb02ebb14",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "hatch/docs/blog/posts/release-hatch-160.md": {
+      "input_sha256": "965cacbd6ba2723716c4249213ec57ad8ecb8f02811045a61a495e262f1c09c5",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "hatch/docs/blog/posts/release-hatch-180.md": {
+      "input_sha256": "cd68978023bd748e2ba24b2f9cf5249be73ad3360e1b8df194c4a26a9e803901",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "hatch/docs/blog/posts/release-hatch-190.md": {
+      "input_sha256": "8e5219d98899175239ad3e0294d75d5f6c13b26c24d0604cc3199f2ff4c9db37",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "hatch/docs/build.md": {
+      "input_sha256": "2240c678a64a205623a1696da1c4e595f395359499f584b8cd9cdbe4a0186dd8",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/cli/about.md": {
+      "input_sha256": "1a4ae16fb46913feee62e7fd1b810643520b983d40cfd45723597a3fe42fd8a8",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/cli/reference.md": {
+      "input_sha256": "cc99f92fa0c8d138e79a4cfe25a62f9912c00ebebdd8370066b72193272d47c0",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/community/contributing.md": {
+      "input_sha256": "f0eebbd3b5f70e081c51201e8096cad2a6b44990c0f9bb14522142a3cfda9bec",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/community/highlights.md": {
+      "input_sha256": "7c0db2bdead62d045dab675191b6c4dd8d76573250b20d859074baceb7f017fa",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/community/users.md": {
+      "input_sha256": "017f41cc27bc957ced7adbc4775b2cfee0adfb7621e1f5b06dea20fccbac7696",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/build.md": {
+      "input_sha256": "f9480f6eac7012cd6616d82913c8a8ddad8d993cf8e6acf2177b0297328ab052",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/context.md": {
+      "input_sha256": "02160f59a894d62691f3094c63765a44a6c64e188f0c7ce962bde2f74f6e4cee",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/dependency.md": {
+      "input_sha256": "4c8100a51ec09e4c753bf047d7e1df1cf8ac439d001b5b3a665c57f60aa786a8",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/environment/advanced.md": {
+      "input_sha256": "f1f87dfbf4b953dac1d1c3bf827dba722c5dc816fe2a554706a3ee5b52f36905",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/environment/overview.md": {
+      "input_sha256": "55ced1bccd777e0e0d3367e1a998ef218d9bd065b594820f67416c38fc89152b",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/environment/sources.md": {
+      "input_sha256": "e5a55ce7c5ee2ea86544492939abe1d119b08bb71abf0da38bb5920a83b901c9",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/hatch.md": {
+      "input_sha256": "b7631837988bd0ea0fa232c2b0b696cd7732ce7ce5bd714619ab4ba777dfea4c",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/internal/build.md": {
+      "input_sha256": "f19771c1077557402cf1eb9bad117d30efade148d8f2819c269b106b53a13ee2",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/internal/static-analysis.md": {
+      "input_sha256": "19ef0260bb7631737766334629bf98315cb38b9ba8ca324fd8b51a5681da2e90",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/internal/testing.md": {
+      "input_sha256": "576ec9c72ec80cad4ad5744690a2af1e9b224734e5bc2830dbdcdadcb015d37a",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/internal/type-checking.md": {
+      "input_sha256": "f31d62e68934e718b20aba2cff88c0a2cebe91fdfc5c590c07643f11ef4f624c",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/metadata.md": {
+      "input_sha256": "481ef41532ca16bbd6bd06fadfd99f84cfce10de51e10a58d63190e78f64870d",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/config/project-templates.md": {
+      "input_sha256": "c76c0e9fa4d0278116a58265ee0b53ca6bff4d57fb69705581829d6ead7b48b1",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/environment.md": {
+      "input_sha256": "644fafc1c87eeb1454927db1faa310036656450df772d6254e376203a83fbd3e",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/history/hatch.md": {
+      "input_sha256": "db7505eba028e174b5c6e2885539e0d89ebbbbe4d3b39236414fb955cf662668",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "hatch/docs/history/hatchling.md": {
+      "input_sha256": "259ce76997d7badcd4d15a85ce4197e1c669eb9a64c223d6274f61d0294101d0",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "hatch/docs/how-to/config/constrain-hatch.md": {
+      "input_sha256": "5401ce0ca66f16fbf6b32b75e3341f3673c58e9f8e23cb7a46c18fde73cee237",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/config/dynamic-metadata.md": {
+      "input_sha256": "54ad30b8c03bcc297d6d4cc958ae2a75ebebc06aef5bb57d2fc187f9efe19e87",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/environment/dependency-resolution.md": {
+      "input_sha256": "f5835941ae1dce8dd61088349d5e88306a59222b564253b7c1c1f6dc1ba273f7",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/environment/lockfiles.md": {
+      "input_sha256": "3b1f2693c478f5fa6a21fff4cf87dc2c2158ae7080573835d40f14e494552c29",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/environment/select-installer.md": {
+      "input_sha256": "ffe1b6eaecaeef4d6fc006ada90986090cbf149f574b7c329d517080b9808da5",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/environment/workspace.md": {
+      "input_sha256": "7988b37f5eb52f4f797d85025dc3c5f87dad7a80ae8124539d3c1cd362e00621",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/integrate/vscode.md": {
+      "input_sha256": "1c6dab8031ea3e4c214d4ed9304d3d73503fd9e5ad265bce60678c14c29d26b2",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/meta/report-issues.md": {
+      "input_sha256": "792c718e946c9b90957230253ab1b3c528384ebf67d58450eefac050ec796c44",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/plugins/testing-builds.md": {
+      "input_sha256": "4960ac50a419d30f74273df7ee49b083db4a7af1bb4f139456284feb201abe96",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/publish/auth.md": {
+      "input_sha256": "a1aa537fdca55ae24c8283daa2ba2b6b97b4eaf35313fb64d87c2cdb44d66ea7",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/publish/repo.md": {
+      "input_sha256": "392e354456f7a4f3bbfb9cdfeae6640f590160372cf9c253ccdad608a1dda3a3",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/python/custom.md": {
+      "input_sha256": "92119ec2d8420ef35679cb49c7ec89c14b4d6181a334240e4ff64b200987548a",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/run/python-scripts.md": {
+      "input_sha256": "b96a3c398cbabb02d9b59cb760f90d85f8a9867c9a7585098a644d84b0f1ec91",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/how-to/static-analysis/behavior.md": {
+      "input_sha256": "edf5798a61923a00abb831f4a930e24fffc461ec152536ed8e7d8eb856808c83",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/index.md": {
+      "input_sha256": "c606c25d067896cb3f42efd72e6bbf052280e380be68b99e5af7c82ad667e53f",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "hatch/docs/install.md": {
+      "input_sha256": "4a95ed8ce72550b42a724bda0d05e9275e3cd9207436da6c45c6c8bf80093139",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/intro.md": {
+      "input_sha256": "93f1a72c203e1b19b06d8f62d0805b60aa9648abc259702163c8dae1e9f3ec5d",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/meta/authors.md": {
+      "input_sha256": "7453e339b20dace4a4ebd3d9910dbeb72f1e165f64b3a2881327080e4cc7de8f",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/meta/faq.md": {
+      "input_sha256": "169e425870a5ef9909e175fa6c45b4f35f0a9bc9ce64b9bd5f8a993e445c22ba",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/next-steps.md": {
+      "input_sha256": "5e8fafe66b9b4ecdd80caacd367b74f7a40b33f963bc412ccb1c1cf10ce9dc32",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "hatch/docs/plugins/about.md": {
+      "input_sha256": "0d2fd1ff005309281d662e20aa9369ffae646b3ef805c849cbcf3c795b4d9766",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/build-hook/custom.md": {
+      "input_sha256": "167b53a6e3f7ee550dad423b3428047dedf3f79bd181030267308621c0803aa1",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/build-hook/reference.md": {
+      "input_sha256": "f81945a88fa338810840e004913b65b249664b3013eb8f89c59db0ea817c4c03",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/build-hook/version.md": {
+      "input_sha256": "3a6226cab1ea732da7066e446e9d78eeab360a0febdb75c4295fb63a37446474",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/builder/binary.md": {
+      "input_sha256": "8d6a0139a0bb41aea0bd2b62d10c728d8bbd447453daaf5d31421f6ec9b04f31",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/builder/custom.md": {
+      "input_sha256": "c834e670623b790cd302d5114a42615a08444288efe9a91f800ff5cf8f542024",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/builder/reference.md": {
+      "input_sha256": "1986ee38e530cebb05191fe79eb7d2565c7202b06f53799970d19c5ebcc0df05",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/builder/sdist.md": {
+      "input_sha256": "626945ef775d9e16bf6ed4070b92b485645097a2e29196380d6cfd8e9ec1d5de",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/builder/wheel.md": {
+      "input_sha256": "e3eaa4d6ffc619f2cd3f5db28a6aa83fe81308c3a79a28e2b22428b7488fecd8",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/environment-collector/custom.md": {
+      "input_sha256": "b0a0915a7465d8ddbe3ce3b9a494118e0b790145e51956d419dbc940ff0cf614",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/environment-collector/default.md": {
+      "input_sha256": "1599d06b9841a8392c8da143424e10c4ab3a7462c694989d011ef2caa1901401",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/environment-collector/reference.md": {
+      "input_sha256": "b554b6b4012522cfc0bc085b7d8b6adc374b2abd3b25bd9d92916180324b6e25",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/environment/reference.md": {
+      "input_sha256": "7936e8ed29d694bbfa2fbd4edfeb29ca84dd7b22a3c19f9cf8f3829835ce4826",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/environment/virtual.md": {
+      "input_sha256": "4bcdceb0662b0fb9455cfa5ebe94e7f84668585f06149dcd1774ff631c7d425c",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/locker.md": {
+      "input_sha256": "ba1f329a0bdeba80bb1ec67017bff08e8379172481f7360fc14a5d387b4f094f",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/metadata-hook/custom.md": {
+      "input_sha256": "ed8a0e7c2f497f1c798a96224b89c4113a8b0662c7d8a17a1d7df6a20bbd7e75",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/metadata-hook/reference.md": {
+      "input_sha256": "d3ec41b425d556a78c46c59975266fe26b5ae81a9379a917c7a17202f19260f9",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/publisher/package-index.md": {
+      "input_sha256": "60a9d71ee2a640213b01ff5d7bc146299ff3244c23cf2cf0adf181d211a45fd6",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/publisher/reference.md": {
+      "input_sha256": "69cd1443cc2e3658ad6426a5a66936e7677194ba1392779224b218082df25b31",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/utilities.md": {
+      "input_sha256": "e4dd639adbb2418b5ae92edc541a47d770926ed82bab2c6150f43dce1d5c5745",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/version-scheme/reference.md": {
+      "input_sha256": "29eb12bd81d2eb64a0787e175e261eddcb5bcbb4513f59811eff58882ececf71",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/version-scheme/standard.md": {
+      "input_sha256": "5adad82b98f46c58aa808aa192d8d24f61378faee759cf1b5506db1936818251",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/version-source/code.md": {
+      "input_sha256": "aeea5acf7a50b5b03b93626431d093c5f010b54bf5f63ca3ae59d65aee936492",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/version-source/env.md": {
+      "input_sha256": "2f9f12183306ddbf19d298fbc849c3edf130661aaafc4b46acfd2ee059fcc965",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/version-source/reference.md": {
+      "input_sha256": "af4d32d18df693a9fbe0120ed23d102bed8e6494b690647bb1350d927abba60d",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/plugins/version-source/regex.md": {
+      "input_sha256": "9dcfac3234861b3ed119e9b98446c293d89a87088ef099b42c69fb3987a16ad3",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "hatch/docs/publish.md": {
+      "input_sha256": "3fab0a9d1999b7b56e74136f6c4e8844ce9b94c76a07ea65b45a5b2a6814b9ce",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/tutorials/environment/basic-usage.md": {
+      "input_sha256": "b294d2d34d53817f0df7aa80a67476212c147016a2527853a3c5f71842e60790",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/tutorials/python/manage.md": {
+      "input_sha256": "92d0ba277a12adfcffdfafd4a3c5cb28bcccd12960a1e622c1c5d7425f8194c9",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/tutorials/testing/overview.md": {
+      "input_sha256": "d8095bc0d53ec75b324435de3547443ffd5d4352d81c6ce699171085fce12838",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/version.md": {
+      "input_sha256": "8ec531b510fbd33bd338672025d1b243bc1e39ae57da06a321d5df90f37fb329",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "hatch/docs/why.md": {
+      "input_sha256": "f6e130cccaa22eb4989ca63f17f7985ab9c59b66e784a6944630ad76d13f7697",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "httpx/README.md": {
+      "input_sha256": "d58f476c1273c9c06c978467c6596620d3840ea8c99ba9d32300ab3286f0e0c3",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "httpx/docs/advanced/authentication.md": {
+      "input_sha256": "490c0393f5af1bdcf70ed5dc6e296d75f4a4035d1916f2262102de61c623dc04",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/advanced/clients.md": {
+      "input_sha256": "fdbd23682e9e97b4b7362a45ce6e452980ccd529940ee3f8766f2b81858371d0",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/advanced/event-hooks.md": {
+      "input_sha256": "96d292f95b3412c54f7f862fd38a569b0efb2bd51a6cacdd5b391072262b9558",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "httpx/docs/advanced/extensions.md": {
+      "input_sha256": "b0fb02059b00203114478faa48a808fd16a8b004e6c50cab672a7d63ee6c496f",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "httpx/docs/advanced/proxies.md": {
+      "input_sha256": "38f3be3b3babe015f9b9878c8ed207144e860a572b5c1dbf8eb7924d4a738960",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/advanced/resource-limits.md": {
+      "input_sha256": "48463dfbcc09e28b174cf07695a937119da537436dc534421b64dcca7a024559",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "httpx/docs/advanced/ssl.md": {
+      "input_sha256": "be16dfabdcdb5b1bd1081cf3302d232a22dc71065785d146ea202ac4a8fac591",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/advanced/text-encodings.md": {
+      "input_sha256": "6810e718430df5676d2102cbc35ea3388f2c0fb442f8162bf9548c9596f741cc",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/advanced/timeouts.md": {
+      "input_sha256": "48959a587ecc6430f9051ab1b1c76fcebc3f3e95ec01199281aab813a2dcfaa1",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/advanced/transports.md": {
+      "input_sha256": "55648dd15c551f151f538aa79c8d2934bb581528d85bcc0fe3d810ac4a5ca382",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/api.md": {
+      "input_sha256": "1a06eb7913abdafce110b6373e6c838b65c73b25113bbafdde68c224d0e95759",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "httpx/docs/async.md": {
+      "input_sha256": "b0722b05e5b8aad6b2518fda345907092a5d4f11c337d50242f7a0a03e739e5b",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/code_of_conduct.md": {
+      "input_sha256": "711021e871cb55ba15ae4fc040e404e5edece35f649fcbe517126382e7e4f30f",
+      "kind": "unknown",
+      "reason": "A community policy, legal text, empty index, or external include stub does not establish a reviewed responsibility in this corpus."
+    },
+    "httpx/docs/compatibility.md": {
+      "input_sha256": "2a9b79a4c0fcf9f8b765e0e45792dd72114ea845ef11ad353a3582227eebf218",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "httpx/docs/contributing.md": {
+      "input_sha256": "88182650dd83fc38ac39de2fa8cadbee937ff72afdbdd7d4721f4e84aef2f520",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/environment_variables.md": {
+      "input_sha256": "1eba9a41026ed8058802f50b4036685c205717690fcdc8b9588698671fafedaa",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "httpx/docs/exceptions.md": {
+      "input_sha256": "5e59ac5575373f359c45b8685cfb5813ba8d3a834052c7c0427789b32722324f",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "httpx/docs/http2.md": {
+      "input_sha256": "51010101b5aff566dcdfdf94cb5e0ef644caf5411b84749753a9da79d28caaf7",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/index.md": {
+      "input_sha256": "00d2d9161b50c16430085c4567b6a8f20def7195fd5f04cb84738c44f1aebaf5",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "httpx/docs/logging.md": {
+      "input_sha256": "45fa8302ac520253fd178e45d266c5e8557adce887b39ddb3aefb2ec6ef365a9",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/quickstart.md": {
+      "input_sha256": "c911c7def119041a4ad2b436548eacc00a825ee5cb5c234b85a8e04c8da64811",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "httpx/docs/third_party_packages.md": {
+      "input_sha256": "607d99b1826bcc78b9b2cc8859d3d3c311d461cfbde142063d80bfd8af10bf21",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "httpx/docs/troubleshooting.md": {
+      "input_sha256": "3a9f68c58a03575ac88ce94da22d2f7c93d2e88df54e7f9be1061ca6fafd3c96",
+      "kind": "runbook",
+      "reason": "Organizes operational symptoms, causes, and recovery steps."
+    },
+    "mkdocs/README.md": {
+      "input_sha256": "46cf6024fc50fca19117e869cdbaa750edfb6586e28bc9ecfe5e3517dbd15c26",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "mkdocs/docs/about/contributing.md": {
+      "input_sha256": "e6872f1e4c41a31120d8fefbdaa4be9f6cef9ed0331bb45044a8fe0d4f131f82",
+      "kind": "unknown",
+      "reason": "A community policy, legal text, empty index, or external include stub does not establish a reviewed responsibility in this corpus."
+    },
+    "mkdocs/docs/about/license.md": {
+      "input_sha256": "9263c69ea49f938516831e56f7f62372d67004b1a74648a0b59b13aacf40a701",
+      "kind": "unknown",
+      "reason": "A community policy, legal text, empty index, or external include stub does not establish a reviewed responsibility in this corpus."
+    },
+    "mkdocs/docs/about/release-notes.md": {
+      "input_sha256": "bef5bffed63dfea1be5e6f086864166a84fb0e3f33eeb80b0bc28533e3c75d81",
+      "kind": "changelog",
+      "reason": "Records named releases and their historical changes."
+    },
+    "mkdocs/docs/dev-guide/README.md": {
+      "input_sha256": "365859997540c07679c46dffd2c1b065dcdeeea61de0bb979a2d862481edb279",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "mkdocs/docs/dev-guide/api.md": {
+      "input_sha256": "6437c0b4f048512bf2d4f0ba864f9dd5c18120b79ab1f3cd054f47850942f454",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "mkdocs/docs/dev-guide/plugins.md": {
+      "input_sha256": "c6f985b10e432c31fdbca36ee9f569b2b860dcee1c94be1847257325f546b97b",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "mkdocs/docs/dev-guide/themes.md": {
+      "input_sha256": "d5699d1699fad81cfbf918c90da24c22292bfa3b47bdbdd0a7e0d84e3ebd0674",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "mkdocs/docs/dev-guide/translations.md": {
+      "input_sha256": "1bbcf58f2c09248a64a9a16a29271c9609f235452257d8d6f95aaf944fa37665",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "mkdocs/docs/getting-started.md": {
+      "input_sha256": "ae84eec620f2648c7e6ee7f19d9a75bda390a97e029b347028e1dfe9e06ed944",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "mkdocs/docs/index.md": {
+      "input_sha256": "937e7fd0cb40463b99e7929230b11df754b6c15274ae8da5706fdd666750748a",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "mkdocs/docs/user-guide/README.md": {
+      "input_sha256": "0c64f3b74b9abf96cf53b829495d3c2735749ff2f6dda30f5d8e35a837ed8cde",
+      "kind": "readme",
+      "reason": "Project or documentation entry point, orientation, or positioning; its opening and headings direct readers into project use."
+    },
+    "mkdocs/docs/user-guide/choosing-your-theme.md": {
+      "input_sha256": "dbbb1744f875c313a53e1e53884e54c73a3b514dd33667e4dd4336f6101f91fa",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "mkdocs/docs/user-guide/cli.md": {
+      "input_sha256": "660c9d2faff0244070496332c9966958d0325ad89daec0424c8b3ea66ab02a9f",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "mkdocs/docs/user-guide/configuration.md": {
+      "input_sha256": "18ef4f7e72a22b07130a8daa42be00fec836b748419b83d3bd035266e0e6e4fb",
+      "kind": "reference",
+      "reason": "Defines named interfaces, settings, option semantics, precedence, or a maintained catalog; examples support the contract."
+    },
+    "mkdocs/docs/user-guide/customizing-your-theme.md": {
+      "input_sha256": "df97ab2b1bc3b515818a1d1af8bb39d73625cc7af58aba2ab31848c619d2593c",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "mkdocs/docs/user-guide/deploying-your-docs.md": {
+      "input_sha256": "f18c58d56a1e4b0cf5ebf5b6d55f4985af544b63803deae305a5f8ba1fffb390",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "mkdocs/docs/user-guide/installation.md": {
+      "input_sha256": "bf3520a6736e9f34a2f759e805c48d73db873639d4192e613aeea4b48989da7f",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "mkdocs/docs/user-guide/localizing-your-theme.md": {
+      "input_sha256": "095c69dca5cae8c36514f2e3aa0ad1311b47c73ab94ae7f6dffa84d591ec572d",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    },
+    "mkdocs/docs/user-guide/writing-your-docs.md": {
+      "input_sha256": "a6b69d1318ae84455bae021b6655b71274f29c19ba43d021d872d100b7b38cba",
+      "kind": "howto",
+      "reason": "The title, opening, and outline organize concrete installation, configuration, development, or usage actions for readers."
+    }
+  },
+  "implementation": {
+    "Cargo.lock": "dd2258f0424762aa84ce73d5128e3b2171997e84b5f7453ca3384cf17cb64ec0",
+    "Cargo.toml": "8ec657b2ab33498ebd37be2b3a09d2060af81a41c29a669ca7814a7e31a40fd4",
+    "docs/rules/DUP001.md": "bb253dcedf0e166565fc3cbd73d4cb56fadef1e1d755f56fdef304786f5b34bf",
+    "docs/rules/DUP002.md": "6e46eea405ee005dcc0254c62142efef0b561071de1f18f35b0b1450c6730254",
+    "docs/rules/DUP003.md": "9f5ebac5b3a6eb4c056b9aea9aa4f40b301c2d75e0a0e8973244c93b1d5a4cc1",
+    "docs/rules/EVD001.md": "a632ea6c7b69ff951d605b468d629751cf8cef918d8ace54e093db5d8e224aa9",
+    "docs/rules/KND001.md": "377ec6a68518b1b351e1f909272c900c31386c108f6399391b3490eb28d4010a",
+    "docs/rules/KND002.md": "fcffad518d2459f84c2af95d0d861ac736847bf4f019275e96c5bdfb7368f9ed",
+    "docs/rules/LNK001.md": "73a4bf054b50aaca4089d09893c8e41349589cb3345a04c646716e3dbe972ba2",
+    "docs/rules/LNK002.md": "8d00583e75f7a54684f8e3906675b51e0ad3d1a6b7e87a562b0f38dd520e0f39",
+    "docs/rules/MIX001.md": "7221e3d1cdcaa71c5a87e7ff3039df6920b81f08b57a80ded4db899f7a8ea78a",
+    "docs/rules/ORD001.md": "d4bfda2788b28491a84d7422b1ab25f35e6043e74881938f671a52faaf922e4a",
+    "docs/rules/ORD002.md": "d4a5f630c94c9344cf205d7fe4ce609c9e2eab50022a1344667e1ef9cfec80f1",
+    "docs/rules/OWN001.md": "d5f45bbadaebf34b2e1070a437e431c5e03589252aabd038416808a009b6fb1b",
+    "docs/rules/OWN002.md": "17d2ffa6b78268c714fa4fda47e987d6f988074cca311a1b372f1ef2b514e3b1",
+    "docs/rules/PTR001.md": "d965092b9391d97d1848504a166243e55390b9fb6f90a9f8449e4ab652fd9ecf",
+    "docs/rules/PTR002.md": "51f2bc8525afe93742ca83675c985e795d46b48fdcddd2dc747b5c67a5cf59dc",
+    "docs/rules/PTR003.md": "2f56a3ae35b1a8f52a3cb457cc1ef4d8d86c6a3059768f0bb756a22c76981ec6",
+    "docs/rules/RAT001.md": "4b115162c1c422cc4837f6463c0f53e9421cd5cafe4ecb8be64fed471da1fe14",
+    "docs/rules/RAT002.md": "f92c2d306d115eebab250407a13e11a429c66abf6a4faf574a8d6e97764cc61a",
+    "docs/rules/STL001.md": "d19ab777cbd52d3838cf87ae001931e7f1736b6c17e76f2374eaa191c24bcd63",
+    "docs/rules/STL002.md": "058e482ff2b9531b00c4c8492dad1dff732ef8ada9bc7768d711eaec89b45f2e",
+    "docs/rules/STL003.md": "7d5218b22e1035c905b0d81b6349004b54d38df65d14e03933c5c50620f8270d",
+    "docs/rules/STL004.md": "b63a996e0315d47f0042b3b48a2c45d703ae7f205b2dea6001b4f8ef110df9d6",
+    "docs/rules/SUP001.md": "fb96047424b3a0a203ae3f5e143486e444975bc9775c1c19297a7670ead42de6",
+    "docs/rules/SUP002.md": "68fb5d0470ecd21d0aeaa9c40c14bc2cf94ddaea712af0c64d42f44ddbc78c38",
+    "docs/rules/VOX001.md": "aa8d8a3a26d075dc19d3622e9c88b8ce99d4e87717c870f3c03835fb163de21c",
+    "docs/rules/VOX002.md": "0afb43a33a6e1561f7ea7cf196a34c4537da7ff818abaf9766214159d9e3d08c",
+    "docs/rules/VOX003.md": "a11670a9658630cfa675a8329711c86010957c0cd7531f6a526568718edf3d71",
+    "examples/evaluate_m2.rs": "ef2c1ff214f2bf66703ee3b800142c4632f65b3acbc494f2ce98910c2f45f9f3",
+    "scripts/evaluate_m2.py": "5887e01946cef8cf5cc21b24b38553839ffe0237dbdf2253dfd711086a944060",
+    "src/analysis.rs": "9c4485db69de87a02813b878505078ede263d74a953ae4c1f6dccb59b2302247",
+    "src/cache/mod.rs": "2dff00c4fec2ea24d7cb9f938a136b1ccc2117e8852f15607451f3b5b7e89c02",
+    "src/commands.rs": "3f8f813db7ccaacda3a37ebc872c4693d910f2c7a7f7cc96da2b042c47362ba6",
+    "src/config/mod.rs": "76fc36aa724dad6e5d29bbb7c7f0d1119c11fc1d21dab4d07bfb294b8a0ec01c",
+    "src/diagnostics/mod.rs": "3b0b7fd1d71cf9598fce70d64ba47aafb1d8dd8d7b666e1e73b9b07add46c4c2",
+    "src/diagnostics/outputs.rs": "d28aa632d9fcf583e01f0ca31e5d4cc6f10c44683d092661444fcab51a41bbae",
+    "src/diagnostics/render.rs": "0973fc49292c3219211c4a01f05639cfe4460fc0eca4931c87a119ac42b08013",
+    "src/diagnostics/source_map.rs": "ed8fbf32335dd91feea916a425ee3d9e246ee59f7624a0bdd5bad47a379ab02b",
+    "src/index/mod.rs": "419f70a18aa09a7c57eba28e91423a9bfb88e1af147482d7044e301567491d20",
+    "src/lib.rs": "630fa51ff866236135140d12d8399cc08af9696f66d00894906e93bfd6fb99da",
+    "src/main.rs": "742f89666ed7446fdbd03cfd4dd4e43e857d14ebf74ec33ed3e56b776b814bc2",
+    "src/md/mapping.rs": "ef4c82ed0f82d1dd0c6768a511132a4899216e94f3d3f1383b848fc2c66aa276",
+    "src/md/mod.rs": "9b8f909df86cb9b8a8a58e354dde3960ef753444a188e24008855946303b818d",
+    "src/md/parser.rs": "923f785ac96364d4249b5b2d52f0375565f2e25993fe9d54d28fdea8ae43e2a6",
+    "src/md/prose.rs": "1733fa523af6bcd7f976effeb59be2a1f5a02188843fa457972da0f04f81b59f",
+    "src/paths.rs": "050436c8892fce52746bbba2a34d75926f0a095a89e331f2e8c7db8823e181d8",
+    "src/rules/cross_file.rs": "dd74ad15034d0091aeb4aece191257aea75140a3659ce655c5742a1887dc1242",
+    "src/rules/fixes.rs": "d6d26091c0969da8cf17e7acfe42c7979bc9f212b8383ac1b4f17fa6489db649",
+    "src/rules/heuristic.rs": "e597fa9b2b72877e09f4967e38fec709cd3aff05934e77f765c1fb01b560cf3b",
+    "src/rules/links.rs": "a52e2540ebfd9aa592725db96e511f56a6fc465f9bdc733a74df403e55761972",
+    "src/rules/mod.rs": "fbd9030539ca85c34698c2fcf6545ce125ce9e82e3452a6ef868bab14c3bb39f",
+    "src/rules/normative.rs": "2b1def3ad1158b1f92d13e21fccdaa96713c588fa3dd7521a0484612eb6c2e1e",
+    "src/rules/suppression.rs": "fdc69f66d7d3c282e383149f9338ca3c602538df6fbf87a3c18c55657f1feece",
+    "src/sections.rs": "3db9c5d7d8244f6a9944e526973560133b0c6d25e5d32096d0ae95e00ba5cd97",
+    "src/workspace.rs": "534fb3baaba9c4ae9e6e0403960125825498b25c10d1f08a592485504a2d7fd2"
+  },
+  "previous_profile_sha256": "4581d240c9b07fd565301d7243dc47b2515d18b5c3bb04c5bff66e190304371a",
+  "reuse": "Unchanged responsibility judgments; first cohort is development data after its initial diagnostics were reviewed.",
+  "review_basis": "All selected path/title outlines and opening excerpts reviewed after the implementation freeze and before diagnostic generation. Representative complete documents listed below establish scope semantics. No full-text review of every document or upstream acceptance of these kinds is claimed. Classification uses intended responsibility, not compliance with a rule.",
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}

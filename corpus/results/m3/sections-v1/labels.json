@@ -1,0 +1,274 @@
+{
+  "labels": [
+    {
+      "annotation_sha256": "1317c832d29b3fd1665530f3de908297d410aeeff94d75c55017d3da7c12fb43",
+      "expected_type": "background",
+      "id": "000d8081bcd369286b3201b9bcb20fea0d7b4429a1ef98e49b62eaf191d6d9ad",
+      "input_sha256": "90abfd1b806a09c086c46eb17115636d81167850e1e5e1556062aa380d7fb30c",
+      "reason": "Introduces what skills are and why activation supplies specialized instructions."
+    },
+    {
+      "annotation_sha256": "3c2263a59025b88bf78b0f6695c8a21cf927a1cb30df3147f5177c65fe941f1e",
+      "expected_type": "reference",
+      "id": "0010c444bc555460d98863010bccbb7a9ce85931116c0e4b389ddfc826ef21ce",
+      "input_sha256": "4153b147b93544cb8c7f30302e9ddf7dd71cfc1eabe5f4789b229decd51fdf3e",
+      "reason": "Lists map insertion/removal APIs, return semantics, and a subscript caveat without a procedure."
+    },
+    {
+      "annotation_sha256": "8ad5c0c83e7e8246bc776bc5616cbe87a7d4ffb96815ce73ce6a423e177c8bac",
+      "expected_type": "steps",
+      "id": "001492c3a25a1c17c4b659680cce95cb9fdc6f425c08fd5fd2e58b481bbfbfd0",
+      "input_sha256": "ffe0640ebe778795737937f2d4ec6f0149d7d55b72692e25369a668f985d1dfe",
+      "reason": "This is the eighth action in an analysis workflow: ask whether to propose remediation."
+    },
+    {
+      "annotation_sha256": "bc03363d2beac7be35dda5be7241871cdfa65e451860d375c7f55ede238b9912",
+      "expected_type": "reference",
+      "id": "00211bfee86ad5ab354e8a7233d799eab55d3dc29a99c0c91229b21c850d8b2f",
+      "input_sha256": "b3dc6716209116a311dce67ddd490d7d0b998031734720524ad407fe67c7cf48",
+      "reason": "Specifies request-payload field annotations and cursor-pagination contracts."
+    },
+    {
+      "annotation_sha256": "eeef090a4a9000f1d884ee6dadc6fea13112d86475ceea3b64709d1507c872ac",
+      "expected_type": "steps",
+      "id": "0021f6fde92b1fe647bde98075e42cf5783981f116c9de57cc6dc8886e7056ff",
+      "input_sha256": "70a0935ddc79b679f49d9daac6fff99abf1a5e529ee38b7305756f6e4765b35c",
+      "reason": "Walks the reader through creating JavaScript and HTML files and opening the result; shell fences are unnecessary."
+    },
+    {
+      "annotation_sha256": "cca3da84fb72cd3376762d5af0511214a691f3cd459003685c10f15079999b27",
+      "expected_type": "reference",
+      "id": "0025a6ca26f5642403651bd17bf55725ba63b3a3d770cd5fe36131bea6a2aa59",
+      "input_sha256": "13652a59a36d74aba676615233c75c68990ae66703051dd96a4e53b4f2e77555",
+      "reason": "Defines useModel types, arguments, behavior, and API examples."
+    },
+    {
+      "annotation_sha256": "eebc493f65287561f0f0ec544de4f22a01341183a8af9f2caa819f73f81367ea",
+      "expected_type": "steps",
+      "id": "0026188dc2c859eacc741b572af0ed6b7c03cdd5cbac4c626eb935d968a7c6d8",
+      "input_sha256": "a6389b23a0e8fb9a3ddd296de4a1a282e97bf1bc7e4f266ca07d059648677d77",
+      "reason": "Shows how to chunk data and then create embeddings, including the transformation code."
+    },
+    {
+      "annotation_sha256": "42e2434514d050327bf4e34959e58a888c56ab94448de99a7d97126d87154f7d",
+      "expected_type": "troubleshooting",
+      "id": "00328303be0ef2cbe4d0205a9de810250b7a8965eb079b265d1e710a8d24e2a9",
+      "input_sha256": "2e4341acc9f25844e52655a30f4d25ffd1c9e947bd39c484aad45a37102416f1",
+      "reason": "Explains a message-formatting failure and the gateway's compatibility limitation."
+    },
+    {
+      "annotation_sha256": "a759de7ebbaed312be55c8fbcb1c55e636fa2c0318de000e7777f073dd2fd89b",
+      "expected_type": "steps",
+      "id": "0036b074496637b33931a9429591dc638e267684a2211c72008757600bf9f29a",
+      "input_sha256": "f5a06f1aecdf238f9e72a7a48857e81c4e67ccb3561c7a22789314b4fb828ebc",
+      "reason": "Provides the command to install the Groq optional dependency."
+    },
+    {
+      "annotation_sha256": "a9e9e02df60966367652cf77977ac37c83cd7cc96613c24de266fec29e5b77c8",
+      "expected_type": "steps",
+      "id": "003faf7297ffb35b3df7f64c1a7fd76d5867449e661922a154b36caa415cebb8",
+      "input_sha256": "bea0c8dcc00d12f1895b2ee3e217c321c494d84aa71df97adb1d25880fec3d60",
+      "reason": "Provides commands for compiling multiple dependency input formats into lock files."
+    },
+    {
+      "annotation_sha256": "f16d94532d2d7e0413281b22dbe3c9ef238b703bd8e9623308083205243f85a7",
+      "expected_type": "background",
+      "id": "00483530dadefdf0f6616d0b244510617568639507413b8107e57552d8dcfb54",
+      "input_sha256": "8a9908f3b83e22ca14aa19ae0297ba1b02bb7273915a1abae483e80c3990ef23",
+      "reason": "Explains Redis cluster ping selection, timing, and metadata propagation."
+    },
+    {
+      "annotation_sha256": "38274f42349247b37bb39235c426548d5c9de6a2585a5a2555f0827acde7638a",
+      "expected_type": "other",
+      "id": "004aff520dfc802eda795ff169ceafbe9da6a3e74e94f3bc13d8f8a93e57df6d",
+      "input_sha256": "78d2641ea2386ff284b4709d8fed867797bd1fb5b21e0a02830ef1cf95d1a744",
+      "reason": "A knowledge-check question with answer choices, not an ordered procedure."
+    },
+    {
+      "annotation_sha256": "ee682147d0e99d8fc85123a117d9973c4c64c1f7ddc9aa09830c33bcf6d94ca8",
+      "expected_type": "reference",
+      "id": "006540cb2b88b2c8ea5e3ef054bbffab62d1f2e23f84f4c3340e464b036b84c3",
+      "input_sha256": "14052bddbdaf190fbd0fa19754cf396735a2cb0a4df6562494ea3503fddd8da5",
+      "reason": "Tabulates evaluator names, purposes, return types, costs, and speeds."
+    },
+    {
+      "annotation_sha256": "24ce4f1961582fc440c0f6bea3b0170edc97742af018b895e0293e3568066b16",
+      "expected_type": "background",
+      "id": "010002867182646708f20511805d12ba67fd956bf57bc91b9e06fd16af0bbbb6",
+      "input_sha256": "370ecf9929f4e1fb0c35ec9963222d9b44f188e958da4364fdc76958c2e1378d",
+      "reason": "Introduces the testing concepts that the following sections discuss."
+    },
+    {
+      "annotation_sha256": "516cd6b8efd59c9995343c1c8f3690f10a04498de1d3831bcbccd44097c19776",
+      "expected_type": "rationale",
+      "id": "0120d51886e8d5f65f821a8f0cfba69421cf2e099f7c33d6909faff2d85bb19e",
+      "input_sha256": "49a843f826e0dcbe1b8520b61c507c8898e6e24ff47b9aa2a8f70fcccf28ba48",
+      "reason": "Compares the benefits, trade-offs, and reasons to choose SSR over a client-only application."
+    },
+    {
+      "annotation_sha256": "089bf8312f80d0e8f7a7f6e713f04bd1f54f223537772dbf2ce594b7d5336e1e",
+      "expected_type": "reference",
+      "id": "02200ce98cf3a80235bc7e62a5e530cb98c945f074378be0d9ec23ff11ed1ed6",
+      "input_sha256": "c386cb6dcf4310f064e4f3d61327168384f8226b17a02f0b1cd57ead3a2dfb78",
+      "reason": "Describes supported tracing integrations and compatible backends. The phrase alternative clients is a link label, not a design argument."
+    },
+    {
+      "annotation_sha256": "498d376ed174e3d03ea6e332b99c4f0cf33c16c3cef8e3b05049a964b06c09b9",
+      "expected_type": "steps",
+      "id": "023f1b249b547764bce58ae881f6dd00183d6595074114ebed6c9b67eff4829f",
+      "input_sha256": "fa908dee7f975ef8d5dc28bdcdb7b91a98c025f23fc224167b372ffeb28910e2",
+      "reason": "Gives the squash merge command and the follow-up commit operation with effects and caveats."
+    },
+    {
+      "annotation_sha256": "2fbecb8648cd606ff460593307ad2adf7ab898a8d50583e516169161c92ca2c5",
+      "expected_type": "reference",
+      "id": "0301e2d1b63f514acb62ae159771a0fa6ff71183ffb2b2509ac4ffc144b5aaf3",
+      "input_sha256": "3ab39955f91808de1016c59d0ce69787937adff2382378b4ee6cf9933001203e",
+      "reason": "Catalogs Azure DevOps auth schemes with provider configuration examples."
+    },
+    {
+      "annotation_sha256": "3c9b9318d9a1d682736ebf375628e3fd72601224e301a263fae31013f0e5bf82",
+      "expected_type": "background",
+      "id": "03034f9f005c6912a6d8f1a2cf2b26cb8510fd4b1e1cd6d51cb525fbf4ca65ea",
+      "input_sha256": "817d0fd2d6f02835f9fd46e2b0e628b554ded024273e6c4497928ab9136039e9",
+      "reason": "Teaches Rust string-indexing semantics through a failing example and compiler output, rather than an operational task."
+    },
+    {
+      "annotation_sha256": "f9e8a934db7daea8efcdaf0b89cf8b88e403ee7b1fddc42241136b94869b380b",
+      "expected_type": "background",
+      "id": "0319df0fca58b2322e130d1d1c78e4139e23931043b784402ae7ed34638a2918",
+      "input_sha256": "567aa5f65194b4b53ba1f9875db624abf0c1133c6fc9940c10ce008901891124",
+      "reason": "Explains main-thread asynchronous execution with an experiment; the trade-off mention does not turn it into a design decision."
+    },
+    {
+      "annotation_sha256": "661b7609726074be1e61332a5ac19832ea2e85984bb5f754bcc882e8c5f304c8",
+      "expected_type": "other",
+      "id": "033fc38cd9440a54963fa1c7425a7f323a91484dc6cbf669a760569d1789b508",
+      "input_sha256": "fe858e73a4689319231baf9d108c1da9e93a5270b9164ed1d82cda2661b49d03",
+      "reason": "A navigation list of concept pages, with no substantive explanation of the concepts in this section."
+    },
+    {
+      "annotation_sha256": "0cf48af5292a5dacb0884fd20763ca256a625fb5b3987c54842150e549602992",
+      "expected_type": "background",
+      "id": "03408b8db6e1ef9bd9acccb3152447e770c5ab905cad130bd88c69abff2f99f8",
+      "input_sha256": "626ad719f6294275b09120eb713c14c6bb1bc9e4f66c646477a03708b5b11e55",
+      "reason": "Explains why iterator/generator coverage is needed in the course outline."
+    },
+    {
+      "annotation_sha256": "61a5847c3c92f8e39b270dcb404640fbf91143f6e218bfd9b0300f9cc2a7dfaf",
+      "expected_type": "steps",
+      "id": "03ffc3afa133f772581ac195a015c33cf7a6db062b68aac7b2503281aefda9aa",
+      "input_sha256": "c610ae685d1ae98923751888d2db6e6084fc49c1ecc2958f706e541df7ca15c1",
+      "reason": "Presents concrete mitigation actions with sanitization and structured-message examples."
+    },
+    {
+      "annotation_sha256": "ec5b039e885adf7d5d7478c8760f57507b44fafd391ac813996dc76964312c72",
+      "expected_type": "troubleshooting",
+      "id": "04a0e307a16d4fb8e9ad1725c8a6af32ec119773c5751149fc0de422b448d7e6",
+      "input_sha256": "4359aaf42d65b787d70c94085108c3f4cf3d4169284b5fb60a98085caaa13c81",
+      "reason": "A FAQ catalog and answers to common usage and operational questions."
+    },
+    {
+      "annotation_sha256": "c70f20e2fb4b870c3c44714a07a84f782defe6dbb878ac691cf7bd8187c2c386",
+      "expected_type": "reference",
+      "id": "04b86b4936cd739f4400a90e062d19fdc528b17e096950a6fc133e7c54d92753",
+      "input_sha256": "c7703e6fa4175722caf9c8e044c078e83761dd6b62529b69452d098db88e94b4",
+      "reason": "Defines environment-variable names and meanings in a table; setup steps live elsewhere."
+    },
+    {
+      "annotation_sha256": "879f85a94add9491135aac85bbdc69ab41699b362f57b4411061489d2d9606ca",
+      "expected_type": "background",
+      "id": "04ece38b74be14a37f7e34b7bb633bfafc41107f94e4fb7b4e203ab60b5ed5f3",
+      "input_sha256": "cbe53d65f9bae313c7745f135f14fd432192573f43a753f20b99397e6c2ba896",
+      "reason": "Introduces JavaScript exception-handling concepts, not recovery from a user-facing fault."
+    },
+    {
+      "annotation_sha256": "d1f6d8a0fee55f56a7e5a4130f3bc1a4e1188d775f801ed6778ae8285b264599",
+      "expected_type": "background",
+      "id": "050ceddc68e71a30e14386d5993995960abc264d38d1b7613e045c858c7e96a3",
+      "input_sha256": "f63f100a0398ffa0cb045ee334f6585cffb0f6d3d8bca71f7f122a242be2e2bc",
+      "reason": "Defines the purpose of evaluators at the start of the overview."
+    },
+    {
+      "annotation_sha256": "e4a9627371a08b028f149316107fdd36dfb466f8eeb3ebc8be8dde27d08d4e44",
+      "expected_type": "background",
+      "id": "050fa29c53a2ad978146b39ab710c7c52c51cba56dedc9c2e61fb7fc854eb727",
+      "input_sha256": "911a834b537a56d87a143df3abfb1347cc6dcd291e11362c3d49fee20051ccf1",
+      "reason": "Introduces heterogeneous values and motivates trait objects in a tutorial; it is not a project decision record."
+    },
+    {
+      "annotation_sha256": "f9f23eff131e36f19d4b7a141517b4de69eb915f4c28ea82c29233a153575066",
+      "expected_type": "steps",
+      "id": "05607e7f251fc4239c12addcb7dae6d790f743b569eb29461bcbac3e37e48878",
+      "input_sha256": "0f835eb7fe56bbbac6c0ba7e47d771858ed10e7fff847c5087f10f57581fe2a6",
+      "reason": "Walks through implementing can_hold, its signature, expected result, and code changes."
+    },
+    {
+      "annotation_sha256": "b3c8e25a13cb131d2d61504ba10da8361bb94d270faae032b6432487e204b76b",
+      "expected_type": "troubleshooting",
+      "id": "05daf55eb89b0b2978fc792c83174ea9c3c4720fba5e47c32c3ef4d993e17c72",
+      "input_sha256": "9f71268de0cc3249e878a243ae4f72d1e7f22aa11449f65fda78dab2274e711f",
+      "reason": "Answers concrete cf-tool startup, PATH, test-data, and completion problems."
+    },
+    {
+      "annotation_sha256": "2ee3015f9b587033b57988c70140246747387ee8a95b88e2bfebfefd87d52dea",
+      "expected_type": "background",
+      "id": "074cf366371675fb3d5ab5c24fd88efd1c673eeac2cdf03869491593a8fb62c3",
+      "input_sha256": "75a0b9fd3a7dead9cabf2c8e50e923921c3325aba6e0bab940070a7fc92c1f06",
+      "reason": "Teaches Rust return-value and expression semantics with illustrative code and output."
+    },
+    {
+      "annotation_sha256": "dd0ebfacdc10f2bf78b75de94a3ec501267c198c50c2172ca0ea16df1a949b13",
+      "expected_type": "troubleshooting",
+      "id": "0790acff9ba6b12d462cc23dc15cdea469590b71659f28546d1a49d1a72ea8b5",
+      "input_sha256": "ef19b2c355d863b66ddf34a1da409bc1d2e5f2a33794c099b0a57635ba290ad7",
+      "reason": "Lists failure symptoms and corrective commands for tool shims."
+    },
+    {
+      "annotation_sha256": "c1c44110d2c5f2b7ec1198146fccb70a7a6e38960dc0f63225d4dbc17e11d148",
+      "expected_type": "reference",
+      "id": "07d2eb3c67785d7f0cf07459510e4e97d432bfbfb09d246043d4e2306f58ffb7",
+      "input_sha256": "5ba654908574b53ee30ad9827da9cc9d22098a338e80b6535b76336351f00785",
+      "reason": "Maps debugger commands and output-format characters to their behavior."
+    },
+    {
+      "annotation_sha256": "ee44b33ac538ee68a82cd321d18c086df3574e289c3bb54ac13d8c600166bad2",
+      "expected_type": "background",
+      "id": "0c5e81af08f0fa04cb2ecf0f49dbabe4444cb9637dc69837dc998f2217e00ea3",
+      "input_sha256": "3468475c1c5f7e2458a46d7b755ae9c04e115ea1c075f1ee52056531a08908db",
+      "reason": "Explains unsafe-function obligations and compiler behavior with an illustrative error example."
+    },
+    {
+      "annotation_sha256": "013afb5f1a805d21b4d5da457d36977e6721d1aa2c854ec55a1aa218855c9acd",
+      "expected_type": "steps",
+      "id": "12e7298b903bc36489e398d03f266f6383ad02a5a76a9a5e70776f6e0711995a",
+      "input_sha256": "6c15e90d08818154792e5f5e5a4dd906a26450173c94c5c696dade61feca8976",
+      "reason": "Explains how to switch to shallow reactive APIs and replace root state to reduce overhead."
+    },
+    {
+      "annotation_sha256": "70b99df9013c977e916060cb6a4e6961c2d580a4edd7221703d8db000a311ca7",
+      "expected_type": "background",
+      "id": "1fb02ec1a9c8a2e1ff829113ba647629f2cf6d60757af5ec79ef49d71977bcc9",
+      "input_sha256": "97f79a12d56c982daa4610f6a2376c9c0d20cfdae3e75f6981843a1d779bef99",
+      "reason": "Introduces the kinds of tests and the coming implementation discussion."
+    },
+    {
+      "annotation_sha256": "ab0bde2b4c30ed1d951decc1814758dcc57b5e1dd940916b4f3a0a32538accd8",
+      "expected_type": "troubleshooting",
+      "id": "765249426d4aa52bf5ed0da2f434e6f12d617ea5124aa6938feb64d85835619b",
+      "input_sha256": "0aa58c9a0176d35ba5c4ca43d17acc86432bbb6d3a27c091aac72a9f5667686f",
+      "reason": "The FAQ introduction identifies the reader prerequisites for the following common questions."
+    },
+    {
+      "annotation_sha256": "3b915dfbf56052e0debf56c42464f8771b38984984d855c5ba57455788680120",
+      "expected_type": "reference",
+      "id": "8cee1d900d1b24d28637c129917bf6b6d23c7f0167679be6d115c155822dc22e",
+      "input_sha256": "350e8f373a9e6013df55d6de3eab5166378d6c6d1f77802cad66ea7e0ea77b9b",
+      "reason": "Maps Elasticsearch terms to database terms in a concise lookup table."
+    }
+  ],
+  "method": "Individual review of the heading and direct original section content. Roles describe the dominant reader task, not merely lexical matches. Mixed tutorial examples remain a classification limitation. No independent or human review claimed.",
+  "reviewer_kind": "author_agent",
+  "sample_sha256": "bceccb3a5359be5790839aab893757e94b8f994e9d2f354486ab11f3c5c32807",
+  "schema_version": 1
+}

@@ -1,0 +1,27 @@
+---
+source: tests/engine.rs
+expression: result.diagnostics
+---
+[
+  {
+    "code": "EVD001",
+    "message": "This evaluative claim has no nearby measurement or source.",
+    "filename": "docs/guide.md",
+    "location": {
+      "row": 4,
+      "column": 21
+    },
+    "end_location": {
+      "row": 4,
+      "column": 30
+    },
+    "byte_range": {
+      "start": 40,
+      "end": 49
+    },
+    "fix": null,
+    "url": null,
+    "related": [],
+    "suggestion": "Add a measurement or source in this or an adjacent block, or replace the judgment with the specific behavior."
+  }
+]

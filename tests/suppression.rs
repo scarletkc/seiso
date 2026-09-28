@@ -34,12 +34,12 @@ fn run(source: &str, diagnostics: Vec<Diagnostic>, enabled: &[&str]) -> Suppress
 
 #[test]
 fn inspection_reports_declaration_validity_without_assuming_rule_activity() {
-    let document = parse("<!-- seiso: allow-file LNK001, PTR001 -- Generated links. -->\n\n<!-- seiso: allow STL002 -- Planned rule. -->\n\n[Link](missing.md)").unwrap();
+    let document = parse("<!-- seiso: allow-file LNK001, PTR001 -- Generated links. -->\n\n<!-- seiso: allow STL999 -- Planned rule. -->\n\n[Link](missing.md)").unwrap();
     let records = inspect(&document, &codes(&["LNK001", "SUP001", "SUP002"]));
     assert_eq!(records.len(), 2);
     assert_eq!(records[0].states["LNK001"], SuppressionState::NotEvaluated);
     assert_eq!(records[0].states["PTR001"], SuppressionState::RuleDisabled);
-    assert_eq!(records[1].states["STL002"], SuppressionState::Invalid);
+    assert_eq!(records[1].states["STL999"], SuppressionState::Invalid);
     assert!(
         records[1]
             .error

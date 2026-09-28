@@ -1,0 +1,584 @@
+{
+  "schema_version": 1,
+  "corpus_sha256": "3904c6c396606d13a21de7296624bfff99054f60d872cb4da6a346ddb80487cb",
+  "added": [
+    {
+      "code": "STL004",
+      "commit": "04ed836c8cde23e540cc77d256992e00be99298b",
+      "diagnostic": {
+        "byte_range": {
+          "end": 3074,
+          "start": 3067
+        },
+        "code": "STL004",
+        "end_location": {
+          "column": 56,
+          "row": 90
+        },
+        "filename": "documentation/docs/mcp/chatrecall-mcp.md",
+        "fix": null,
+        "location": {
+          "column": 49,
+          "row": 90
+        },
+        "message": "This version has no lasting constraint or historical context.",
+        "related": [],
+        "suggestion": "State the supported version range, or link to the manifest or release record that owns the version.",
+        "url": null
+      },
+      "git_blob": "bb117cc5d7e541d576d76e0aa5cf639bd8e76045",
+      "id": "33428dd06ef86e75f3af076f5a0dd92833297f4a2ae7059fb2f58e64b19e9140",
+      "input_sha256": "9f55aa0c8f206fe18fb84dc73d7c7210318b50e4735952ca7cb467cc424f3d49",
+      "kind": "howto",
+      "language": "en",
+      "path": "documentation/docs/mcp/chatrecall-mcp.md",
+      "related_inputs": [],
+      "repository": "aaif-goose/goose",
+      "source": "goose",
+      "span": {
+        "end": 3074,
+        "start": 3067
+      },
+      "split": "holdout"
+    },
+    {
+      "code": "STL004",
+      "commit": "04ed836c8cde23e540cc77d256992e00be99298b",
+      "diagnostic": {
+        "byte_range": {
+          "end": 3295,
+          "start": 3288
+        },
+        "code": "STL004",
+        "end_location": {
+          "column": 44,
+          "row": 89
+        },
+        "filename": "documentation/docs/mcp/neon-mcp.md",
+        "fix": null,
+        "location": {
+          "column": 37,
+          "row": 89
+        },
+        "message": "This version has no lasting constraint or historical context.",
+        "related": [],
+        "suggestion": "State the supported version range, or link to the manifest or release record that owns the version.",
+        "url": null
+      },
+      "git_blob": "ae10389cfd1d4cc90f942cf1f380ba4a6d76e3c7",
+      "id": "e215c71488be28f063fbcdbb7d071ff9775f8800a96bda94d377674874d43cd8",
+      "input_sha256": "a4099d01bc71ac632adc0a580805d780ade052f716ac61ef6ef3076cb19de7e1",
+      "kind": "howto",
+      "language": "en",
+      "path": "documentation/docs/mcp/neon-mcp.md",
+      "related_inputs": [],
+      "repository": "aaif-goose/goose",
+      "source": "goose",
+      "span": {
+        "end": 3295,
+        "start": 3288
+      },
+      "split": "holdout"
+    },
+    {
+      "code": "STL002",
+      "commit": "04ed836c8cde23e540cc77d256992e00be99298b",
+      "diagnostic": {
+        "byte_range": {
+          "end": 4674,
+          "start": 4657
+        },
+        "code": "STL002",
+        "end_location": {
+          "column": 53,
+          "row": 124
+        },
+        "filename": "documentation/docs/mcp/netlify-mcp.md",
+        "fix": null,
+        "location": {
+          "column": 36,
+          "row": 124
+        },
+        "message": "This sentence asserts a deployment state in a long-lived page.",
+        "related": [],
+        "suggestion": "Replace the state with the command or dashboard that checks it; keep dated results in a release record.",
+        "url": null
+      },
+      "git_blob": "9443a2a4d8c1328066336b5a4bb4e7c6edddb831",
+      "id": "18014511bc61944f483f399411465b891d2c7fe017f6582c9a67ce83d2e64e2c",
+      "input_sha256": "1be9c246af3a49e491c4f6664781e7c7b271aede386a1a3319a7dc50e9a73cc6",
+      "kind": "howto",
+      "language": "en",
+      "path": "documentation/docs/mcp/netlify-mcp.md",
+      "related_inputs": [],
+      "repository": "aaif-goose/goose",
+      "source": "goose",
+      "span": {
+        "end": 4674,
+        "start": 4657
+      },
+      "split": "holdout"
+    },
+    {
+      "code": "ORD001",
+      "commit": "04ed836c8cde23e540cc77d256992e00be99298b",
+      "diagnostic": {
+        "byte_range": {
+          "end": 330,
+          "start": 95
+        },
+        "code": "ORD001",
+        "end_location": {
+          "column": 86,
+          "row": 9
+        },
+        "filename": "documentation/docs/mcp/nostrbook-mcp.md",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 6
+        },
+        "message": "A long preamble delays the first procedure or runnable example.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 6187,
+              "start": 6002
+            },
+            "end_location": {
+              "column": 1,
+              "row": 204
+            },
+            "filename": "documentation/docs/mcp/nostrbook-mcp.md",
+            "location": {
+              "column": 1,
+              "row": 200
+            },
+            "message": "The main flow starts here."
+          }
+        ],
+        "suggestion": "Put the runnable example or ordered procedure before extended background and reference tables.",
+        "url": null
+      },
+      "git_blob": "b666db58a538dbdad7b50af33fbb7fc62b50628e",
+      "id": "da2ddfcb8fc2a51ed656823f3030530bfe61c599fa3d8facecefd543d6c78122",
+      "input_sha256": "78031d2a2fe2ae996a1fd8954bb382ef5b610d2db7e89a5f2ed6a90d5e729a8b",
+      "kind": "howto",
+      "language": "en",
+      "path": "documentation/docs/mcp/nostrbook-mcp.md",
+      "related_inputs": [
+        {
+          "git_blob": "b666db58a538dbdad7b50af33fbb7fc62b50628e",
+          "path": "documentation/docs/mcp/nostrbook-mcp.md",
+          "sha256": "78031d2a2fe2ae996a1fd8954bb382ef5b610d2db7e89a5f2ed6a90d5e729a8b",
+          "span": {
+            "end": 6187,
+            "start": 6002
+          }
+        }
+      ],
+      "repository": "aaif-goose/goose",
+      "source": "goose",
+      "span": {
+        "end": 330,
+        "start": 95
+      },
+      "split": "holdout"
+    },
+    {
+      "code": "EVD001",
+      "commit": "3fce3b5bb0236da2df6d99672afb8a719642eca7",
+      "diagnostic": {
+        "byte_range": {
+          "end": 10882,
+          "start": 10873
+        },
+        "code": "EVD001",
+        "end_location": {
+          "column": 52,
+          "row": 199
+        },
+        "filename": "README.md",
+        "fix": null,
+        "location": {
+          "column": 43,
+          "row": 199
+        },
+        "message": "This evaluative claim has no nearby measurement or source.",
+        "related": [],
+        "suggestion": "Add a measurement or source in this or an adjacent block, or replace the judgment with the specific behavior.",
+        "url": null
+      },
+      "git_blob": "54a7158a564faae22988da41efb1ef279e06fe5e",
+      "id": "b96848399b399809bbb3fea66e9728833bd42c84948083bb1db4dabc91ff3dc3",
+      "input_sha256": "945622d974f65e4e141ef9726c948c2640eebd222c5b101afb6445728283921e",
+      "kind": "readme",
+      "language": "en",
+      "path": "README.md",
+      "related_inputs": [],
+      "repository": "BurntSushi/ripgrep",
+      "source": "ripgrep",
+      "span": {
+        "end": 10882,
+        "start": 10873
+      },
+      "split": "tuning"
+    },
+    {
+      "code": "ORD001",
+      "commit": "c00dc0551583428a10a94443c58c6a41e5e0138c",
+      "diagnostic": {
+        "byte_range": {
+          "end": 202,
+          "start": 18
+        },
+        "code": "ORD001",
+        "end_location": {
+          "column": 43,
+          "row": 5
+        },
+        "filename": "docs/reference/authentication.md",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 3
+        },
+        "message": "A long preamble delays the first procedure or runnable example.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 8862,
+              "start": 8752
+            },
+            "end_location": {
+              "column": 4,
+              "row": 278
+            },
+            "filename": "docs/reference/authentication.md",
+            "location": {
+              "column": 1,
+              "row": 274
+            },
+            "message": "The main flow starts here."
+          }
+        ],
+        "suggestion": "Put the runnable example or ordered procedure before extended background and reference tables.",
+        "url": null
+      },
+      "git_blob": "bf82eff107a58775950e5a44646328001b6303a2",
+      "id": "4e4b3e7c3a455daa7d04289e2c22f2018ebb3544def0eb82b8e82d7b6ac22224",
+      "input_sha256": "3ab39955f91808de1016c59d0ce69787937adff2382378b4ee6cf9933001203e",
+      "kind": "reference",
+      "language": "en",
+      "path": "docs/reference/authentication.md",
+      "related_inputs": [
+        {
+          "git_blob": "bf82eff107a58775950e5a44646328001b6303a2",
+          "path": "docs/reference/authentication.md",
+          "sha256": "3ab39955f91808de1016c59d0ce69787937adff2382378b4ee6cf9933001203e",
+          "span": {
+            "end": 8862,
+            "start": 8752
+          }
+        }
+      ],
+      "repository": "github/spec-kit",
+      "source": "spec-kit",
+      "span": {
+        "end": 202,
+        "start": 18
+      },
+      "split": "holdout"
+    },
+    {
+      "code": "ORD001",
+      "commit": "136ef97330781a0f5f2be6613aac4382ebbcecea",
+      "diagnostic": {
+        "byte_range": {
+          "end": 472,
+          "start": 224
+        },
+        "code": "ORD001",
+        "end_location": {
+          "column": 94,
+          "row": 14
+        },
+        "filename": "docs/guides/integration/github.md",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 12
+        },
+        "message": "A long preamble delays the first procedure or runnable example.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 13637,
+              "start": 13575
+            },
+            "end_location": {
+              "column": 4,
+              "row": 455
+            },
+            "filename": "docs/guides/integration/github.md",
+            "location": {
+              "column": 1,
+              "row": 452
+            },
+            "message": "The main flow starts here."
+          }
+        ],
+        "suggestion": "Put the runnable example or ordered procedure before extended background and reference tables.",
+        "url": null
+      },
+      "git_blob": "f538c3ae864c630a7d7b206d681823d2b267b3bd",
+      "id": "d354fab9c0df3a2e24ac7c1209427d85b8fa56f3e3ff05b730c7bc0aa83194de",
+      "input_sha256": "eca0a91c41cca78f6b5439e336e8138a631643f09a3d65884b2fa17fd16f41ca",
+      "kind": "howto",
+      "language": "en",
+      "path": "docs/guides/integration/github.md",
+      "related_inputs": [
+        {
+          "git_blob": "f538c3ae864c630a7d7b206d681823d2b267b3bd",
+          "path": "docs/guides/integration/github.md",
+          "sha256": "eca0a91c41cca78f6b5439e336e8138a631643f09a3d65884b2fa17fd16f41ca",
+          "span": {
+            "end": 13637,
+            "start": 13575
+          }
+        }
+      ],
+      "repository": "astral-sh/uv",
+      "source": "uv",
+      "span": {
+        "end": 472,
+        "start": 224
+      },
+      "split": "holdout"
+    },
+    {
+      "code": "EVD001",
+      "commit": "136ef97330781a0f5f2be6613aac4382ebbcecea",
+      "diagnostic": {
+        "byte_range": {
+          "end": 5395,
+          "start": 5383
+        },
+        "code": "EVD001",
+        "end_location": {
+          "column": 70,
+          "row": 133
+        },
+        "filename": "docs/guides/integration/jupyter.md",
+        "fix": null,
+        "location": {
+          "column": 58,
+          "row": 133
+        },
+        "message": "This evaluative claim has no nearby measurement or source.",
+        "related": [],
+        "suggestion": "Add a measurement or source in this or an adjacent block, or replace the judgment with the specific behavior.",
+        "url": null
+      },
+      "git_blob": "921dfb188ffe12cde0fd9a829a221576364f1eea",
+      "id": "0d79302c6add33e3b9fe191fdf0726b3b89fe849d17d3470bd5e1605e4c50c12",
+      "input_sha256": "4b964789b9dd79a9bc0b5afb0e71d762731723f7b1e036df4eb8c91e53245824",
+      "kind": "howto",
+      "language": "en",
+      "path": "docs/guides/integration/jupyter.md",
+      "related_inputs": [],
+      "repository": "astral-sh/uv",
+      "source": "uv",
+      "span": {
+        "end": 5395,
+        "start": 5383
+      },
+      "split": "holdout"
+    },
+    {
+      "code": "ORD001",
+      "commit": "136ef97330781a0f5f2be6613aac4382ebbcecea",
+      "diagnostic": {
+        "byte_range": {
+          "end": 545,
+          "start": 244
+        },
+        "code": "ORD001",
+        "end_location": {
+          "column": 7,
+          "row": 13
+        },
+        "filename": "docs/guides/integration/pytorch.md",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 10
+        },
+        "message": "A long preamble delays the first procedure or runnable example.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 13251,
+              "start": 13157
+            },
+            "end_location": {
+              "column": 4,
+              "row": 456
+            },
+            "filename": "docs/guides/integration/pytorch.md",
+            "location": {
+              "column": 1,
+              "row": 454
+            },
+            "message": "The main flow starts here."
+          }
+        ],
+        "suggestion": "Put the runnable example or ordered procedure before extended background and reference tables.",
+        "url": null
+      },
+      "git_blob": "c4e6d1d510f40fe43721b481954f8464b46cf80e",
+      "id": "ffe209f7cd03a93adc84fac7d5b41b8662a43043f0f02efd47ab2f338ccba61b",
+      "input_sha256": "6f602fcab3cac57f89976ad3f0167b4aaee3108bf0b5ad2b983f5391181c2ed7",
+      "kind": "howto",
+      "language": "en",
+      "path": "docs/guides/integration/pytorch.md",
+      "related_inputs": [
+        {
+          "git_blob": "c4e6d1d510f40fe43721b481954f8464b46cf80e",
+          "path": "docs/guides/integration/pytorch.md",
+          "sha256": "6f602fcab3cac57f89976ad3f0167b4aaee3108bf0b5ad2b983f5391181c2ed7",
+          "span": {
+            "end": 13251,
+            "start": 13157
+          }
+        }
+      ],
+      "repository": "astral-sh/uv",
+      "source": "uv",
+      "span": {
+        "end": 545,
+        "start": 244
+      },
+      "split": "holdout"
+    },
+    {
+      "code": "ORD001",
+      "commit": "edc1273e61d3f46668bd78b29d18ef04adcf5138",
+      "diagnostic": {
+        "byte_range": {
+          "end": 143,
+          "start": 80
+        },
+        "code": "ORD001",
+        "end_location": {
+          "column": 22,
+          "row": 5
+        },
+        "filename": "src/api/application.md",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 5
+        },
+        "message": "A long preamble delays the first procedure or runnable example.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 17053,
+              "start": 16800
+            },
+            "end_location": {
+              "column": 1,
+              "row": 500
+            },
+            "filename": "src/api/application.md",
+            "location": {
+              "column": 3,
+              "row": 497
+            },
+            "message": "The main flow starts here."
+          }
+        ],
+        "suggestion": "Put the runnable example or ordered procedure before extended background and reference tables.",
+        "url": null
+      },
+      "git_blob": "875a500bf9febb756d356620bedb7ad6c019b0f5",
+      "id": "ef6c7cb673b5c8e45b92fc9948614ee65f44c72e67a04ea78cf69499f5a7b745",
+      "input_sha256": "823fe806be3b999899838762e44c6b1ba4345cff778bacd38f8384a54ffbf159",
+      "kind": "reference",
+      "language": "ja",
+      "path": "src/api/application.md",
+      "related_inputs": [
+        {
+          "git_blob": "875a500bf9febb756d356620bedb7ad6c019b0f5",
+          "path": "src/api/application.md",
+          "sha256": "823fe806be3b999899838762e44c6b1ba4345cff778bacd38f8384a54ffbf159",
+          "span": {
+            "end": 17053,
+            "start": 16800
+          }
+        }
+      ],
+      "repository": "vuejs-translations/docs-ja",
+      "source": "vue-ja",
+      "span": {
+        "end": 143,
+        "start": 80
+      },
+      "split": "holdout"
+    },
+    {
+      "code": "EVD001",
+      "commit": "edc1273e61d3f46668bd78b29d18ef04adcf5138",
+      "diagnostic": {
+        "byte_range": {
+          "end": 3581,
+          "start": 3566
+        },
+        "code": "EVD001",
+        "end_location": {
+          "column": 150,
+          "row": 84
+        },
+        "filename": "src/api/sfc-script-setup.md",
+        "fix": null,
+        "location": {
+          "column": 145,
+          "row": 84
+        },
+        "message": "This evaluative claim has no nearby measurement or source.",
+        "related": [],
+        "suggestion": "Add a measurement or source in this or an adjacent block, or replace the judgment with the specific behavior.",
+        "url": null
+      },
+      "git_blob": "6fc1e7ced7696fa636adb163bd5a6c2db74b1dc8",
+      "id": "35fa57591b4ca6219466f845915fc8dd1c9e48eb98c139cb5b5a5de8eff71437",
+      "input_sha256": "c925376d428fe95cde07c1885ed79207abb194d330baab33f002840ffbe5d80b",
+      "kind": "reference",
+      "language": "ja",
+      "path": "src/api/sfc-script-setup.md",
+      "related_inputs": [],
+      "repository": "vuejs-translations/docs-ja",
+      "source": "vue-ja",
+      "span": {
+        "end": 3581,
+        "start": 3566
+      },
+      "split": "holdout"
+    }
+  ],
+  "removed": [],
+  "changed": [],
+  "counts": {
+    "added": {
+      "EVD001": 3,
+      "ORD001": 5,
+      "STL002": 1,
+      "STL004": 2
+    },
+    "removed": {},
+    "changed": {}
+  },
+  "before_report_sha256": "fa5360cfe8f476fc7a9e47b0dc254d890a5e206f99a5395f14750f0fcd1ed4d3",
+  "after_report_sha256": "76584407f251f52640212df283510bbd186603eec4964e2af382f9fa9b44a0bb"
+}

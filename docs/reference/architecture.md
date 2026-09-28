@@ -16,6 +16,7 @@ input loading, analysis, and command rendering.
 | [`md`](../../src/md/mod.rs) | Content-derived document model and original source mappings |
 | [`paths`](../../src/paths.rs) | Path normalization, local destination parsing, and filesystem target status |
 | [`index`](../../src/index/mod.rs) | Workspace facts, anchors, comparison domains, and resolved links |
+| [`sections`](../../src/sections.rs) | Heuristic section roles with source evidence |
 | [`rules`](../../src/rules/mod.rs) | Rule registry, rule functions, suppression states, and safe edit construction |
 | [`diagnostics`](../../src/diagnostics/mod.rs) | Diagnostics, locations, related evidence, and fix data |
 | [`cache`](../../src/cache/mod.rs) | Content-addressed parse storage |
@@ -68,6 +69,11 @@ The index combines parsed facts with current kind, language, domain, and path
 policy. Generated files remain index sources but run no rules. Files without a
 valid kind receive only the kind-independent checks. Excluded and non-Markdown
 files may be checked for physical existence but do not supply Markdown anchors.
+
+Section classification is computed from the parsed document when requested by
+`parse` or a heuristic rule. It is separate from the cached parse facts and
+does not assign a document kind. The [section reference](sections.md) defines
+its roles, evidence, and boundaries.
 
 ## Links
 

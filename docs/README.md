@@ -43,10 +43,11 @@ fresh evidence and historical replay. Dated records preserve their results:
 - [M1 protocol decision](evaluation/m1-gate-proposal.md)
 - [M2 evaluation](evaluation/m2-2026-09-28.md)
 - [M2 baseline decision](evaluation/m2-baseline-decision.md)
+- [M3 heuristic evaluation](evaluation/m3-2026-09-28.md)
+- [M3 context and abstention evaluation](evaluation/m3-optimization-2026-09-28.md)
 
 ## Design
 
 The [design history](design/history.md) records the original motivation and
-links to the original proposal. The [M3 and M4 roadmap](design/roadmap.md)
-describes planned rules, integrations, classification experiments, and their
-acceptance criteria.
+links to the original proposal. The [roadmap](design/roadmap.md) links milestone results and describes planned
+integrations, classification experiments, and their acceptance criteria.

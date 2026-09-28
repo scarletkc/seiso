@@ -1,0 +1,1571 @@
+{
+  "first_fresh_cohort": {
+    "after": 0,
+    "before": 20,
+    "before_labels": {
+      "fp": 20
+    },
+    "files": 127,
+    "role": "failed holdout for iteration one, then reused as development data"
+  },
+  "fresh_holdout": {
+    "completeness_inspection_preserved_diagnostics_and_sections": true,
+    "files": 25,
+    "incomplete_rule_files": {
+      "EVD001": 1,
+      "ORD001": 5,
+      "ORD002": 5,
+      "RAT001": 9
+    },
+    "kinds": {
+      "changelog": 1,
+      "howto": 13,
+      "readme": 3,
+      "reference": 6,
+      "unknown": 2
+    },
+    "role": "independent repositories for the final implementation; English-focused",
+    "rules": {
+      "EVD001": {
+        "by_kind": {
+          "adr": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "changelog": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "generated": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "howto": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "plan": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "readme": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "reference": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "runbook": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "unknown": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "by_language": {
+          "en": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "ja": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "zh": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "conservative_precision": null,
+        "diagnostics": 0,
+        "fp": 0,
+        "precision": null,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "MIX001": {
+        "by_kind": {
+          "adr": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "changelog": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "generated": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "howto": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "plan": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "readme": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "reference": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "runbook": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "unknown": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "by_language": {
+          "en": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "ja": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "zh": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "conservative_precision": null,
+        "diagnostics": 0,
+        "fp": 0,
+        "precision": null,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "ORD001": {
+        "by_kind": {
+          "adr": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "changelog": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "generated": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "howto": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "plan": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "readme": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "reference": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "runbook": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "unknown": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "by_language": {
+          "en": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "ja": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "zh": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "conservative_precision": null,
+        "diagnostics": 0,
+        "fp": 0,
+        "precision": null,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "ORD002": {
+        "by_kind": {
+          "adr": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "changelog": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "generated": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "howto": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "plan": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "readme": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "reference": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "runbook": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "unknown": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "by_language": {
+          "en": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "ja": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "zh": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "conservative_precision": null,
+        "diagnostics": 0,
+        "fp": 0,
+        "precision": null,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "RAT001": {
+        "by_kind": {
+          "adr": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "changelog": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "generated": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "howto": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "plan": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "readme": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "reference": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "runbook": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "unknown": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "by_language": {
+          "en": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "ja": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "zh": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "conservative_precision": null,
+        "diagnostics": 0,
+        "fp": 0,
+        "precision": null,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "STL002": {
+        "by_kind": {
+          "adr": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "changelog": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "generated": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "howto": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "plan": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "readme": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "reference": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "runbook": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "unknown": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "by_language": {
+          "en": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "ja": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "zh": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "conservative_precision": null,
+        "diagnostics": 0,
+        "fp": 0,
+        "precision": null,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "STL004": {
+        "by_kind": {
+          "adr": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "changelog": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "generated": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "howto": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "plan": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "readme": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "reference": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "runbook": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "unknown": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "by_language": {
+          "en": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "ja": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "zh": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "conservative_precision": null,
+        "diagnostics": 0,
+        "fp": 0,
+        "precision": null,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "VOX002": {
+        "by_kind": {
+          "adr": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "changelog": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "generated": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "howto": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "plan": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "readme": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "reference": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "runbook": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "unknown": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "by_language": {
+          "en": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "ja": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "zh": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "conservative_precision": null,
+        "diagnostics": 0,
+        "fp": 0,
+        "precision": null,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "VOX003": {
+        "by_kind": {
+          "adr": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "changelog": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "generated": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "howto": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "plan": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "readme": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "reference": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "runbook": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "unknown": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "by_language": {
+          "en": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "ja": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          },
+          "zh": {
+            "conservative_precision": null,
+            "diagnostics": 0,
+            "fp": 0,
+            "precision": null,
+            "tp": 0,
+            "uncertain": 0
+          }
+        },
+        "conservative_precision": null,
+        "diagnostics": 0,
+        "fp": 0,
+        "precision": null,
+        "tp": 0,
+        "uncertain": 0
+      }
+    }
+  },
+  "history": {
+    "after_blocked_changes": 6,
+    "after_diagnostics": 6,
+    "before_blocked_changes": 7,
+    "before_diagnostics": 26,
+    "changes": 155,
+    "role": "known regression under the original fixed kind profile",
+    "rules": {
+      "EVD001": {
+        "changes": 155,
+        "changes_with_diagnostics": 0,
+        "changes_with_new_diagnostics": 0,
+        "conservative_blocks_per_100_changes": 0.0,
+        "diagnostic_labels": {
+          "fp": 0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "diagnostics": 0,
+        "incorrect_blocks": 0,
+        "incorrect_blocks_per_100_changes": 0.0,
+        "promotion": false,
+        "status": "preview",
+        "uncertain_blocks": 0
+      },
+      "MIX001": {
+        "changes": 155,
+        "changes_with_diagnostics": 0,
+        "changes_with_new_diagnostics": 0,
+        "conservative_blocks_per_100_changes": 0.0,
+        "diagnostic_labels": {
+          "fp": 0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "diagnostics": 0,
+        "incorrect_blocks": 0,
+        "incorrect_blocks_per_100_changes": 0.0,
+        "promotion": false,
+        "status": "preview",
+        "uncertain_blocks": 0
+      },
+      "ORD001": {
+        "changes": 155,
+        "changes_with_diagnostics": 0,
+        "changes_with_new_diagnostics": 0,
+        "conservative_blocks_per_100_changes": 0.0,
+        "diagnostic_labels": {
+          "fp": 0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "diagnostics": 0,
+        "incorrect_blocks": 0,
+        "incorrect_blocks_per_100_changes": 0.0,
+        "promotion": false,
+        "status": "preview",
+        "uncertain_blocks": 0
+      },
+      "ORD002": {
+        "changes": 155,
+        "changes_with_diagnostics": 0,
+        "changes_with_new_diagnostics": 0,
+        "conservative_blocks_per_100_changes": 0.0,
+        "diagnostic_labels": {
+          "fp": 0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "diagnostics": 0,
+        "incorrect_blocks": 0,
+        "incorrect_blocks_per_100_changes": 0.0,
+        "promotion": false,
+        "status": "preview",
+        "uncertain_blocks": 0
+      },
+      "RAT001": {
+        "changes": 155,
+        "changes_with_diagnostics": 0,
+        "changes_with_new_diagnostics": 0,
+        "conservative_blocks_per_100_changes": 0.0,
+        "diagnostic_labels": {
+          "fp": 0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "diagnostics": 0,
+        "incorrect_blocks": 0,
+        "incorrect_blocks_per_100_changes": 0.0,
+        "promotion": false,
+        "status": "preview",
+        "uncertain_blocks": 0
+      },
+      "STL002": {
+        "changes": 155,
+        "changes_with_diagnostics": 0,
+        "changes_with_new_diagnostics": 0,
+        "conservative_blocks_per_100_changes": 0.0,
+        "diagnostic_labels": {
+          "fp": 0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "diagnostics": 0,
+        "incorrect_blocks": 0,
+        "incorrect_blocks_per_100_changes": 0.0,
+        "promotion": false,
+        "status": "preview",
+        "uncertain_blocks": 0
+      },
+      "STL004": {
+        "changes": 155,
+        "changes_with_diagnostics": 0,
+        "changes_with_new_diagnostics": 0,
+        "conservative_blocks_per_100_changes": 0.0,
+        "diagnostic_labels": {
+          "fp": 0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "diagnostics": 0,
+        "incorrect_blocks": 0,
+        "incorrect_blocks_per_100_changes": 0.0,
+        "promotion": false,
+        "status": "preview",
+        "uncertain_blocks": 0
+      },
+      "VOX002": {
+        "changes": 155,
+        "changes_with_diagnostics": 6,
+        "changes_with_new_diagnostics": 1,
+        "conservative_blocks_per_100_changes": 3.870967741935484,
+        "diagnostic_labels": {
+          "fp": 6,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "diagnostics": 6,
+        "incorrect_blocks": 6,
+        "incorrect_blocks_per_100_changes": 3.870967741935484,
+        "promotion": false,
+        "status": "preview",
+        "uncertain_blocks": 0
+      },
+      "VOX003": {
+        "changes": 155,
+        "changes_with_diagnostics": 0,
+        "changes_with_new_diagnostics": 0,
+        "conservative_blocks_per_100_changes": 0.0,
+        "diagnostic_labels": {
+          "fp": 0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "diagnostics": 0,
+        "incorrect_blocks": 0,
+        "incorrect_blocks_per_100_changes": 0.0,
+        "promotion": false,
+        "status": "preview",
+        "uncertain_blocks": 0
+      }
+    }
+  },
+  "implementation": {
+    "Cargo.lock": "dd2258f0424762aa84ce73d5128e3b2171997e84b5f7453ca3384cf17cb64ec0",
+    "Cargo.toml": "8ec657b2ab33498ebd37be2b3a09d2060af81a41c29a669ca7814a7e31a40fd4",
+    "docs/rules/DUP001.md": "bb253dcedf0e166565fc3cbd73d4cb56fadef1e1d755f56fdef304786f5b34bf",
+    "docs/rules/DUP002.md": "6e46eea405ee005dcc0254c62142efef0b561071de1f18f35b0b1450c6730254",
+    "docs/rules/DUP003.md": "9f5ebac5b3a6eb4c056b9aea9aa4f40b301c2d75e0a0e8973244c93b1d5a4cc1",
+    "docs/rules/EVD001.md": "a632ea6c7b69ff951d605b468d629751cf8cef918d8ace54e093db5d8e224aa9",
+    "docs/rules/KND001.md": "377ec6a68518b1b351e1f909272c900c31386c108f6399391b3490eb28d4010a",
+    "docs/rules/KND002.md": "fcffad518d2459f84c2af95d0d861ac736847bf4f019275e96c5bdfb7368f9ed",
+    "docs/rules/LNK001.md": "73a4bf054b50aaca4089d09893c8e41349589cb3345a04c646716e3dbe972ba2",
+    "docs/rules/LNK002.md": "8d00583e75f7a54684f8e3906675b51e0ad3d1a6b7e87a562b0f38dd520e0f39",
+    "docs/rules/MIX001.md": "7221e3d1cdcaa71c5a87e7ff3039df6920b81f08b57a80ded4db899f7a8ea78a",
+    "docs/rules/ORD001.md": "d4bfda2788b28491a84d7422b1ab25f35e6043e74881938f671a52faaf922e4a",
+    "docs/rules/ORD002.md": "d4a5f630c94c9344cf205d7fe4ce609c9e2eab50022a1344667e1ef9cfec80f1",
+    "docs/rules/OWN001.md": "d5f45bbadaebf34b2e1070a437e431c5e03589252aabd038416808a009b6fb1b",
+    "docs/rules/OWN002.md": "17d2ffa6b78268c714fa4fda47e987d6f988074cca311a1b372f1ef2b514e3b1",
+    "docs/rules/PTR001.md": "d965092b9391d97d1848504a166243e55390b9fb6f90a9f8449e4ab652fd9ecf",
+    "docs/rules/PTR002.md": "51f2bc8525afe93742ca83675c985e795d46b48fdcddd2dc747b5c67a5cf59dc",
+    "docs/rules/PTR003.md": "2f56a3ae35b1a8f52a3cb457cc1ef4d8d86c6a3059768f0bb756a22c76981ec6",
+    "docs/rules/RAT001.md": "4b115162c1c422cc4837f6463c0f53e9421cd5cafe4ecb8be64fed471da1fe14",
+    "docs/rules/RAT002.md": "f92c2d306d115eebab250407a13e11a429c66abf6a4faf574a8d6e97764cc61a",
+    "docs/rules/STL001.md": "d19ab777cbd52d3838cf87ae001931e7f1736b6c17e76f2374eaa191c24bcd63",
+    "docs/rules/STL002.md": "058e482ff2b9531b00c4c8492dad1dff732ef8ada9bc7768d711eaec89b45f2e",
+    "docs/rules/STL003.md": "7d5218b22e1035c905b0d81b6349004b54d38df65d14e03933c5c50620f8270d",
+    "docs/rules/STL004.md": "b63a996e0315d47f0042b3b48a2c45d703ae7f205b2dea6001b4f8ef110df9d6",
+    "docs/rules/SUP001.md": "fb96047424b3a0a203ae3f5e143486e444975bc9775c1c19297a7670ead42de6",
+    "docs/rules/SUP002.md": "68fb5d0470ecd21d0aeaa9c40c14bc2cf94ddaea712af0c64d42f44ddbc78c38",
+    "docs/rules/VOX001.md": "aa8d8a3a26d075dc19d3622e9c88b8ce99d4e87717c870f3c03835fb163de21c",
+    "docs/rules/VOX002.md": "0afb43a33a6e1561f7ea7cf196a34c4537da7ff818abaf9766214159d9e3d08c",
+    "docs/rules/VOX003.md": "a11670a9658630cfa675a8329711c86010957c0cd7531f6a526568718edf3d71",
+    "examples/evaluate_m2.rs": "ef2c1ff214f2bf66703ee3b800142c4632f65b3acbc494f2ce98910c2f45f9f3",
+    "scripts/evaluate_m2.py": "5887e01946cef8cf5cc21b24b38553839ffe0237dbdf2253dfd711086a944060",
+    "src/analysis.rs": "9c4485db69de87a02813b878505078ede263d74a953ae4c1f6dccb59b2302247",
+    "src/cache/mod.rs": "2dff00c4fec2ea24d7cb9f938a136b1ccc2117e8852f15607451f3b5b7e89c02",
+    "src/commands.rs": "3f8f813db7ccaacda3a37ebc872c4693d910f2c7a7f7cc96da2b042c47362ba6",
+    "src/config/mod.rs": "76fc36aa724dad6e5d29bbb7c7f0d1119c11fc1d21dab4d07bfb294b8a0ec01c",
+    "src/diagnostics/mod.rs": "3b0b7fd1d71cf9598fce70d64ba47aafb1d8dd8d7b666e1e73b9b07add46c4c2",
+    "src/diagnostics/outputs.rs": "d28aa632d9fcf583e01f0ca31e5d4cc6f10c44683d092661444fcab51a41bbae",
+    "src/diagnostics/render.rs": "0973fc49292c3219211c4a01f05639cfe4460fc0eca4931c87a119ac42b08013",
+    "src/diagnostics/source_map.rs": "ed8fbf32335dd91feea916a425ee3d9e246ee59f7624a0bdd5bad47a379ab02b",
+    "src/index/mod.rs": "419f70a18aa09a7c57eba28e91423a9bfb88e1af147482d7044e301567491d20",
+    "src/lib.rs": "630fa51ff866236135140d12d8399cc08af9696f66d00894906e93bfd6fb99da",
+    "src/main.rs": "742f89666ed7446fdbd03cfd4dd4e43e857d14ebf74ec33ed3e56b776b814bc2",
+    "src/md/mapping.rs": "ef4c82ed0f82d1dd0c6768a511132a4899216e94f3d3f1383b848fc2c66aa276",
+    "src/md/mod.rs": "9b8f909df86cb9b8a8a58e354dde3960ef753444a188e24008855946303b818d",
+    "src/md/parser.rs": "923f785ac96364d4249b5b2d52f0375565f2e25993fe9d54d28fdea8ae43e2a6",
+    "src/md/prose.rs": "1733fa523af6bcd7f976effeb59be2a1f5a02188843fa457972da0f04f81b59f",
+    "src/paths.rs": "050436c8892fce52746bbba2a34d75926f0a095a89e331f2e8c7db8823e181d8",
+    "src/rules/cross_file.rs": "dd74ad15034d0091aeb4aece191257aea75140a3659ce655c5742a1887dc1242",
+    "src/rules/fixes.rs": "d6d26091c0969da8cf17e7acfe42c7979bc9f212b8383ac1b4f17fa6489db649",
+    "src/rules/heuristic.rs": "e597fa9b2b72877e09f4967e38fec709cd3aff05934e77f765c1fb01b560cf3b",
+    "src/rules/links.rs": "a52e2540ebfd9aa592725db96e511f56a6fc465f9bdc733a74df403e55761972",
+    "src/rules/mod.rs": "fbd9030539ca85c34698c2fcf6545ce125ce9e82e3452a6ef868bab14c3bb39f",
+    "src/rules/normative.rs": "2b1def3ad1158b1f92d13e21fccdaa96713c588fa3dd7521a0484612eb6c2e1e",
+    "src/rules/suppression.rs": "fdc69f66d7d3c282e383149f9338ca3c602538df6fbf87a3c18c55657f1feece",
+    "src/sections.rs": "3db9c5d7d8244f6a9944e526973560133b0c6d25e5d32096d0ae95e00ba5cd97",
+    "src/workspace.rs": "534fb3baaba9c4ae9e6e0403960125825498b25c10d1f08a592485504a2d7fd2"
+  },
+  "inputs": {
+    "history-v3/labels.json": "9b76af995d413c71d5dcc44326daf42417d1715449dea57333423e81052b8c45",
+    "history-v3/replay.json.gz": "9bbd27c0f3653d661a118116c815545c0a5451efc74f95676d4e797287350f98",
+    "natural-v1/diagnostics.json.gz": "76584407f251f52640212df283510bbd186603eec4964e2af382f9fa9b44a0bb",
+    "natural-v1/labels.json": "98416a7673ef85e9d01b6dff53d9d15bebc385e46ad50cc2e742b7d6a87dd5c6",
+    "optimization-v1/fresh-holdout/diagnostics.json.gz": "dfccd907633139a5c659d1f1d7217b57bb98a4ec0160a8f0337ee7cfaa4ae808",
+    "optimization-v1/fresh-holdout/labels.json": "668e194dab94b249e81ad7bdd7df88c30f1bcc0c7d00132bd3b33d16e9ef77e6",
+    "optimization-v1/fresh-holdout/run.json": "f1e0cf9ec5b80fb49302d8a399aea91cb827d8879e420b1b9820972b21d7c4b7",
+    "optimization-v2/first-cohort-kinds.json": "8bdfe9f06fb2ab8ea3fb7d67dd0d38e198cfb7a378426ca7e5da62fa1e30f917",
+    "optimization-v2/first-cohort-replay/diagnostics.json.gz": "15e2640867ff88f1c72d45b1e3178da5b69c6ae50c82bef0fa3bf06db91f520c",
+    "optimization-v2/first-cohort-replay/labels.json": "3246ef24dfcb02a6a1ebac5938e5e0f84551d4a4d9ac6e95ddcac10e842daf4d",
+    "optimization-v2/first-cohort-replay/run.json": "34382315ced94c8f3533b54aeadf8a2e4d093809bd21d6db629b815a796702ab",
+    "optimization-v2/freeze-final.json": "3ffffde1a1fa7c4267fec1c1a2a5b27031425ff973d8d14312ae09babd5e9fd0",
+    "optimization-v2/fresh-complete/diagnostics.json.gz": "5d3ac7a2775bf1aec7c2fb65509cb039f88fbacf2c1a7bc97dd8c8b8e31e31e2",
+    "optimization-v2/fresh-complete/labels.json": "e9e6c3436828b0619d2f1633f5a1e95ef9c634fbe511571e25ba8fd6b22dcc59",
+    "optimization-v2/fresh-complete/run.json": "9e76d69c69ef62789c424fb6d56a980a053bb71c38d6ab8d8f14b2e6a87161ad",
+    "optimization-v2/fresh-holdout/diagnostics.json.gz": "410ba409113385ca6d969e0c4912c3a60f3852f5ac0ad76706863baf2a27ce5c",
+    "optimization-v2/fresh-holdout/labels.json": "b8c6919b155c04c1840eb3e4c9f2d3940cbc3a826a02ed415d088da917e17172",
+    "optimization-v2/fresh-holdout/run.json": "b5e2097483403e2bb2c9f2d72fb0cd34926479e40d37a4822a4bc422d66c0dd3",
+    "optimization-v2/fresh-inputs/corpus.lock.json": "e5f82a878e473750b3fa6d020c8fa24a4522de75e76c8083551fea25c865cbe8",
+    "optimization-v2/fresh-inputs/kinds.json": "dffb15f623bfbc1dacbde28fefc6ec45f1bb294b3fd3941c53bb085a870fc012",
+    "optimization-v2/fresh-inputs/selection.json": "27618fb3c56366a21719951b55b37cc689294531c878f686387034eaf8f1ae6e",
+    "optimization-v2/history/labels.json": "4c2ed8d2445c75381980ac29a46e4e3f04101c1b720f2341b42981b56d79bd39",
+    "optimization-v2/history/replay.json.gz": "cb2d6d7498c7de29b9b01405ee756cdc66e54bf1b2fafb515827c9557ad59065",
+    "optimization-v2/history/run.json": "2a95c7d20045a221f360f4f73afbf4b53dc08089b4580a4ecaf859e875e1dc94",
+    "optimization-v2/known-corpus/diagnostics.json.gz": "a58a2079afc4af07211c20ee25959631ab10e14aa64fb7ba0c16e9d71bba2e38",
+    "optimization-v2/known-corpus/labels.json": "7ed3c39f338b27b5770ef4c3e503c2e32a2f630a8d85045e99b7af3255d38df9",
+    "optimization-v2/known-corpus/run.json": "2d3b4fdefdb09f557b6d62d1417ff948f09d7d2f18442488439174d4dc4bd754",
+    "optimization-v2/sections/labels.json": "0613cd3de102e1ceee76f49f5620eac96ba7f1fffa8b634dc8b6934c2f6f5286",
+    "optimization-v2/sections/sample.json": "04ce809fd0265f6d00717ab6eed2e74afa58053d809a6908f74965c0515d2578",
+    "optimization-v2/sections/summary.json": "c9533ca66fc0f328b39488b99c552a28f228e99ca0e95112891a646bcadf7c18"
+  },
+  "known_corpus": {
+    "existing_diagnostics_unchanged": 4480,
+    "files": 1953,
+    "new_diagnostics": 1,
+    "new_labels": {
+      "uncertain": 1
+    },
+    "old_diagnostics": 11,
+    "old_labels": {
+      "fp": 10,
+      "uncertain": 1
+    },
+    "role": "development regression; former holdout is no longer independent"
+  },
+  "promotion": {
+    "human_review": false,
+    "natural_precision_established": false,
+    "rule_recall_measured": false,
+    "rules": []
+  },
+  "schema_version": 1,
+  "script_sha256": "076d9c5c397e52a56553c19d3d942ae3ef727680fda7633fbad430d263d111dd",
+  "sections": {
+    "fresh": {
+      "after_matches": 3,
+      "before_matches": 3,
+      "rows": [
+        {
+          "after": "steps",
+          "before": "steps",
+          "id": "0238d1f261185f0c5dc6fa5850aeb10c031191d61ca66f1c8e0081aa5155710c",
+          "reviewed": "steps"
+        },
+        {
+          "after": "steps",
+          "before": "steps",
+          "id": "02cea67200a5817bc972a324788d13a70eb47dc6ac6f2cc27756edf7d31a497f",
+          "reviewed": "steps"
+        },
+        {
+          "after": "background",
+          "before": "background",
+          "id": "0377f4443de18189b810f3b3aa86581841c360a7ae5ce453f9d9fe1348c602c8",
+          "reviewed": "reference"
+        },
+        {
+          "after": "background",
+          "before": "background",
+          "id": "03ae058525fc2375df509912fbfc7067bf5d5d6ca0c183fb04fc3e9dedf7e987",
+          "reviewed": "steps"
+        },
+        {
+          "after": "steps",
+          "before": "steps",
+          "id": "041c4e3a89ea918b5ee13fda3dadcb378f2f7ac1f81a057163aa9213555da7da",
+          "reviewed": "background"
+        },
+        {
+          "after": "background",
+          "before": "background",
+          "id": "05fe8bbf73642e4b229e1ee254a9daf8ca120bf93ff6f2acbffc59f99e9fd9bc",
+          "reviewed": "steps"
+        },
+        {
+          "after": "other",
+          "before": "other",
+          "id": "085a589a5e596cca27a07b40744172fa6e4affc93622c2ebfd6676f9279346d8",
+          "reviewed": "reference"
+        },
+        {
+          "after": "reference",
+          "before": "reference",
+          "id": "0d8298d017fc1d87c872446ca298406045ba592ee1caa4479343a593e5324c51",
+          "reviewed": "reference"
+        }
+      ],
+      "samples": 8
+    },
+    "known": {
+      "after_matches": 34,
+      "before_matches": 18,
+      "rows": [
+        {
+          "after": "background",
+          "before": "other",
+          "id": "000d8081bcd369286b3201b9bcb20fea0d7b4429a1ef98e49b62eaf191d6d9ad",
+          "reviewed": "background"
+        },
+        {
+          "after": "reference",
+          "before": "other",
+          "id": "0010c444bc555460d98863010bccbb7a9ce85931116c0e4b389ddfc826ef21ce",
+          "reviewed": "reference"
+        },
+        {
+          "after": "steps",
+          "before": "other",
+          "id": "001492c3a25a1c17c4b659680cce95cb9fdc6f425c08fd5fd2e58b481bbfbfd0",
+          "reviewed": "steps"
+        },
+        {
+          "after": "reference",
+          "before": "other",
+          "id": "00211bfee86ad5ab354e8a7233d799eab55d3dc29a99c0c91229b21c850d8b2f",
+          "reviewed": "reference"
+        },
+        {
+          "after": "steps",
+          "before": "other",
+          "id": "0021f6fde92b1fe647bde98075e42cf5783981f116c9de57cc6dc8886e7056ff",
+          "reviewed": "steps"
+        },
+        {
+          "after": "reference",
+          "before": "other",
+          "id": "0025a6ca26f5642403651bd17bf55725ba63b3a3d770cd5fe36131bea6a2aa59",
+          "reviewed": "reference"
+        },
+        {
+          "after": "background",
+          "before": "other",
+          "id": "0026188dc2c859eacc741b572af0ed6b7c03cdd5cbac4c626eb935d968a7c6d8",
+          "reviewed": "steps"
+        },
+        {
+          "after": "troubleshooting",
+          "before": "other",
+          "id": "00328303be0ef2cbe4d0205a9de810250b7a8965eb079b265d1e710a8d24e2a9",
+          "reviewed": "troubleshooting"
+        },
+        {
+          "after": "steps",
+          "before": "steps",
+          "id": "0036b074496637b33931a9429591dc638e267684a2211c72008757600bf9f29a",
+          "reviewed": "steps"
+        },
+        {
+          "after": "steps",
+          "before": "steps",
+          "id": "003faf7297ffb35b3df7f64c1a7fd76d5867449e661922a154b36caa415cebb8",
+          "reviewed": "steps"
+        },
+        {
+          "after": "background",
+          "before": "other",
+          "id": "00483530dadefdf0f6616d0b244510617568639507413b8107e57552d8dcfb54",
+          "reviewed": "background"
+        },
+        {
+          "after": "other",
+          "before": "other",
+          "id": "004aff520dfc802eda795ff169ceafbe9da6a3e74e94f3bc13d8f8a93e57df6d",
+          "reviewed": "other"
+        },
+        {
+          "after": "reference",
+          "before": "reference",
+          "id": "006540cb2b88b2c8ea5e3ef054bbffab62d1f2e23f84f4c3340e464b036b84c3",
+          "reviewed": "reference"
+        },
+        {
+          "after": "background",
+          "before": "background",
+          "id": "010002867182646708f20511805d12ba67fd956bf57bc91b9e06fd16af0bbbb6",
+          "reviewed": "background"
+        },
+        {
+          "after": "rationale",
+          "before": "rationale",
+          "id": "0120d51886e8d5f65f821a8f0cfba69421cf2e099f7c33d6909faff2d85bb19e",
+          "reviewed": "rationale"
+        },
+        {
+          "after": "background",
+          "before": "rationale",
+          "id": "02200ce98cf3a80235bc7e62a5e530cb98c945f074378be0d9ec23ff11ed1ed6",
+          "reviewed": "reference"
+        },
+        {
+          "after": "steps",
+          "before": "steps",
+          "id": "023f1b249b547764bce58ae881f6dd00183d6595074114ebed6c9b67eff4829f",
+          "reviewed": "steps"
+        },
+        {
+          "after": "reference",
+          "before": "reference",
+          "id": "0301e2d1b63f514acb62ae159771a0fa6ff71183ffb2b2509ac4ffc144b5aaf3",
+          "reviewed": "reference"
+        },
+        {
+          "after": "background",
+          "before": "steps",
+          "id": "03034f9f005c6912a6d8f1a2cf2b26cb8510fd4b1e1cd6d51cb525fbf4ca65ea",
+          "reviewed": "background"
+        },
+        {
+          "after": "background",
+          "before": "rationale",
+          "id": "0319df0fca58b2322e130d1d1c78e4139e23931043b784402ae7ed34638a2918",
+          "reviewed": "background"
+        },
+        {
+          "after": "other",
+          "before": "background",
+          "id": "033fc38cd9440a54963fa1c7425a7f323a91484dc6cbf669a760569d1789b508",
+          "reviewed": "other"
+        },
+        {
+          "after": "background",
+          "before": "background",
+          "id": "03408b8db6e1ef9bd9acccb3152447e770c5ab905cad130bd88c69abff2f99f8",
+          "reviewed": "background"
+        },
+        {
+          "after": "steps",
+          "before": "steps",
+          "id": "03ffc3afa133f772581ac195a015c33cf7a6db062b68aac7b2503281aefda9aa",
+          "reviewed": "steps"
+        },
+        {
+          "after": "troubleshooting",
+          "before": "troubleshooting",
+          "id": "04a0e307a16d4fb8e9ad1725c8a6af32ec119773c5751149fc0de422b448d7e6",
+          "reviewed": "troubleshooting"
+        },
+        {
+          "after": "reference",
+          "before": "reference",
+          "id": "04b86b4936cd739f4400a90e062d19fdc528b17e096950a6fc133e7c54d92753",
+          "reviewed": "reference"
+        },
+        {
+          "after": "background",
+          "before": "troubleshooting",
+          "id": "04ece38b74be14a37f7e34b7bb633bfafc41107f94e4fb7b4e203ab60b5ed5f3",
+          "reviewed": "background"
+        },
+        {
+          "after": "background",
+          "before": "background",
+          "id": "050ceddc68e71a30e14386d5993995960abc264d38d1b7613e045c858c7e96a3",
+          "reviewed": "background"
+        },
+        {
+          "after": "background",
+          "before": "rationale",
+          "id": "050fa29c53a2ad978146b39ab710c7c52c51cba56dedc9c2e61fb7fc854eb727",
+          "reviewed": "background"
+        },
+        {
+          "after": "steps",
+          "before": "reference",
+          "id": "05607e7f251fc4239c12addcb7dae6d790f743b569eb29461bcbac3e37e48878",
+          "reviewed": "steps"
+        },
+        {
+          "after": "troubleshooting",
+          "before": "troubleshooting",
+          "id": "05daf55eb89b0b2978fc792c83174ea9c3c4720fba5e47c32c3ef4d993e17c72",
+          "reviewed": "troubleshooting"
+        },
+        {
+          "after": "steps",
+          "before": "reference",
+          "id": "074cf366371675fb3d5ab5c24fd88efd1c673eeac2cdf03869491593a8fb62c3",
+          "reviewed": "background"
+        },
+        {
+          "after": "troubleshooting",
+          "before": "troubleshooting",
+          "id": "0790acff9ba6b12d462cc23dc15cdea469590b71659f28546d1a49d1a72ea8b5",
+          "reviewed": "troubleshooting"
+        },
+        {
+          "after": "reference",
+          "before": "reference",
+          "id": "07d2eb3c67785d7f0cf07459510e4e97d432bfbfb09d246043d4e2306f58ffb7",
+          "reviewed": "reference"
+        },
+        {
+          "after": "background",
+          "before": "steps",
+          "id": "0c5e81af08f0fa04cb2ecf0f49dbabe4444cb9637dc69837dc998f2217e00ea3",
+          "reviewed": "background"
+        },
+        {
+          "after": "background",
+          "before": "rationale",
+          "id": "12e7298b903bc36489e398d03f266f6383ad02a5a76a9a5e70776f6e0711995a",
+          "reviewed": "steps"
+        },
+        {
+          "after": "background",
+          "before": "background",
+          "id": "1fb02ec1a9c8a2e1ff829113ba647629f2cf6d60757af5ec79ef49d71977bcc9",
+          "reviewed": "background"
+        },
+        {
+          "after": "troubleshooting",
+          "before": "troubleshooting",
+          "id": "765249426d4aa52bf5ed0da2f434e6f12d617ea5124aa6938feb64d85835619b",
+          "reviewed": "troubleshooting"
+        },
+        {
+          "after": "reference",
+          "before": "background",
+          "id": "8cee1d900d1b24d28637c129917bf6b6d23c7f0167679be6d115c155822dc22e",
+          "reviewed": "reference"
+        }
+      ],
+      "samples": 38
+    },
+    "scope": "Stratified author-agent labels; neither sample is a population accuracy estimate."
+  }
+}

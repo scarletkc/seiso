@@ -70,6 +70,10 @@ fn repeated_runs_and_argument_order_produce_identical_bytes() {
     let report = json(&first);
     assert_eq!(report["files"][0]["filename"], "a.md");
     assert_eq!(report["files"][1]["filename"], "b.md");
+    assert_eq!(
+        report["files"][0]["section_annotations"][0]["section_type"],
+        "other"
+    );
 }
 
 #[test]

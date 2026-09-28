@@ -58,6 +58,10 @@ cargo run -p seiso -- parse --config seiso.toml README.md
 be inside the workspace and selected by the active configuration. The file
 does not need to exist, and its contents are never written to disk.
 
+`parse --output-format json` also includes `section_annotations` for each file.
+The [section reference](../reference/sections.md) describes these heuristic
+predictions and their source evidence.
+
 The document model records frontmatter errors as content facts. A failed
 frontmatter declaration has no effective kind, even if a path mapping exists.
 The KND rules turn these facts into lint diagnostics during checking.

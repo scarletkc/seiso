@@ -5,6 +5,7 @@
 
 mod mapping;
 mod parser;
+pub(crate) mod prose;
 
 use crate::diagnostics::Span;
 use serde::{Deserialize, Serialize};

@@ -1,0 +1,16 @@
+{
+  "labels": [
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "056d216bbe5381e190cd05efa6b3fd77d05004bfe7cb45123b2dac67647d0462",
+      "id": "b96848399b399809bbb3fea66e9728833bd42c84948083bb1db4dabc91ff3dc3",
+      "input_sha256": "945622d974f65e4e141ef9726c948c2640eebd222c5b101afb6445728283921e",
+      "label": "uncertain",
+      "reason": "The sentence explains choosing memory maps versus buffered search. The README contains benchmarks elsewhere, but the reviewed context does not establish whether those measurements support this specific comparison."
+    }
+  ],
+  "method": "Recheck after tuning corrections, before reading holdout diagnostics.",
+  "report_sha256": "715b822215ed317b59a1bd3c17e3d02c6a8a3a2db80d62af944fb1a369f2b975",
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}

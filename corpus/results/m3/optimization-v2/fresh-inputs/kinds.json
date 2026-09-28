@@ -1,0 +1,197 @@
+{
+  "complete_documents_reviewed": [
+    "pdm/docs/reference/build.md",
+    "pdm/docs/usage/uv.md",
+    "pdm/docs/dev/fixtures.md",
+    "pdm/docs/dev/benchmark.md"
+  ],
+  "corpus_sha256": "e5f82a878e473750b3fa6d020c8fa24a4522de75e76c8083551fea25c865cbe8",
+  "documents": {
+    "pdm/README.md": {
+      "input_sha256": "c1dba09fbd9ab8219e43374e72d2caa0d90a7316fd18127a98a7968c28b56a49",
+      "kind": "readme",
+      "reason": "Introduces the project, capabilities, installation entry points, and further documentation."
+    },
+    "pdm/docs/dev/benchmark.md": {
+      "input_sha256": "316d670885e1884dd149ac303bfbcea40a9872173de222eb4e5d99b22c050004",
+      "kind": "unknown",
+      "reason": "An external include or a redirect does not supply enough original content to evaluate its intended responsibility."
+    },
+    "pdm/docs/dev/changelog.md": {
+      "input_sha256": "3b3e872bfda19919f3430f6124fe4ef1d1da90893d336d04f3e06a90477404d9",
+      "kind": "changelog",
+      "reason": "An explicitly titled release-history entry point; the included history itself is not in the sampled source."
+    },
+    "pdm/docs/dev/contributing.md": {
+      "input_sha256": "e6872f1e4c41a31120d8fefbdaa4be9f6cef9ed0331bb45044a8fe0d4f131f82",
+      "kind": "unknown",
+      "reason": "An external include or a redirect does not supply enough original content to evaluate its intended responsibility."
+    },
+    "pdm/docs/dev/fixtures.md": {
+      "input_sha256": "d97c103347276e7ee079f1b8179ef5f0006bae31d4d385ebf2a22a1095d34d3e",
+      "kind": "reference",
+      "reason": "Defines API/configuration/metadata or lifecycle/lockfile command semantics; examples illustrate those contracts."
+    },
+    "pdm/docs/dev/write.md": {
+      "input_sha256": "89157e92f2e513d324e2939a4c32dd301d36ea1d3f2f2bb1fdcded6a4e4b32b6",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/index.md": {
+      "input_sha256": "9a519b9c20dc11b1f224410d65acb29af4f4e9becd12b58c4de6f5e78d9e6ec6",
+      "kind": "readme",
+      "reason": "Introduces the project, capabilities, installation entry points, and further documentation."
+    },
+    "pdm/docs/reference/api.md": {
+      "input_sha256": "cdeea03ac512ebde67d3f27e707c621cad9828f3fceb56d4b78b2a7defe43c8e",
+      "kind": "reference",
+      "reason": "Defines API/configuration/metadata or lifecycle/lockfile command semantics; examples illustrate those contracts."
+    },
+    "pdm/docs/reference/build.md": {
+      "input_sha256": "21661582bcbcdfc3f4e24fab5faa39ce40f0de8106562ec3f9a7540638cf188f",
+      "kind": "reference",
+      "reason": "Defines API/configuration/metadata or lifecycle/lockfile command semantics; examples illustrate those contracts."
+    },
+    "pdm/docs/reference/pep621.md": {
+      "input_sha256": "5e0bfc228b30f4057fe5210605614630856b04b01def1852174f35274404706c",
+      "kind": "reference",
+      "reason": "Defines API/configuration/metadata or lifecycle/lockfile command semantics; examples illustrate those contracts."
+    },
+    "pdm/docs/usage/advanced.md": {
+      "input_sha256": "e7fbf87c5afcbb8f08a00bb814055ecd2eafab5098ab6baad50bcffd607d411a",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/config.md": {
+      "input_sha256": "65053d9ee3d5ad51093b817ec344e669092a5dc8767bc22f23c1b22a8b104f36",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/dependency.md": {
+      "input_sha256": "50890fcb1d126b973d83db156c46472ac3848c1fff5221deae87e55a06dd1ccf",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/hooks.md": {
+      "input_sha256": "be6480b9344700d5046326bf35f343e091e50dcef8ee1ffd4905697553f1eaff",
+      "kind": "reference",
+      "reason": "Defines API/configuration/metadata or lifecycle/lockfile command semantics; examples illustrate those contracts."
+    },
+    "pdm/docs/usage/lock-targets.md": {
+      "input_sha256": "12b68ba89049199983006aae94cef65659251ff7939583ffc4fd6fe9995ac46c",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/lockfile.md": {
+      "input_sha256": "e4a7d0eff5b3c18441456a9e590c356ecab921179fa4e40b7ef7b8aab7549fb5",
+      "kind": "reference",
+      "reason": "Defines API/configuration/metadata or lifecycle/lockfile command semantics; examples illustrate those contracts."
+    },
+    "pdm/docs/usage/pep582.md": {
+      "input_sha256": "80f9fe63520eae2be8c11bdb405d09f5eddcc1d5847ddb241f61572516151a7b",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/project.md": {
+      "input_sha256": "8b04d6871f4186530f5889c3713f751fb304aea490db9fdfa9a9047068c442b8",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/publish.md": {
+      "input_sha256": "9541991f76a4d6274f2989d5778dac42a4a517411671516747768a02deb008b5",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/scripts.md": {
+      "input_sha256": "364868557a187b7a6b17ed509625216a515ceaaa9b39bbd89d3e389c6b2e0509",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/template.md": {
+      "input_sha256": "5a5ebec604ea572ec4f827a2308e8e24519fbdd804d96d8e162d53efd6cba7a1",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/uv.md": {
+      "input_sha256": "c4cba8e8e31a42e4d6ef5a277be7a6d2ad8569365f6b17c07fabafa3d4c862f7",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/venv.md": {
+      "input_sha256": "0d9119c28155fd6c8b20eecc8030b8f77f98a79bbcc557d1a2f1ba53217a1684",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pdm/docs/usage/workspace.md": {
+      "input_sha256": "33fc9b62092aafa59b492dbbdecbfc7b6bc4d4de4b4736b8414683465b1957da",
+      "kind": "howto",
+      "reason": "The heading outline and opening explain concrete project setup, configuration, integration, or usage actions."
+    },
+    "pipx/docs/README.md": {
+      "input_sha256": "0a1a1328fd00df5386a59b9eccf595427d09303a59da4a8601806c6a112dc341",
+      "kind": "readme",
+      "reason": "Introduces the project, capabilities, installation entry points, and further documentation."
+    }
+  },
+  "implementation": {
+    "Cargo.lock": "dd2258f0424762aa84ce73d5128e3b2171997e84b5f7453ca3384cf17cb64ec0",
+    "Cargo.toml": "8ec657b2ab33498ebd37be2b3a09d2060af81a41c29a669ca7814a7e31a40fd4",
+    "docs/rules/DUP001.md": "bb253dcedf0e166565fc3cbd73d4cb56fadef1e1d755f56fdef304786f5b34bf",
+    "docs/rules/DUP002.md": "6e46eea405ee005dcc0254c62142efef0b561071de1f18f35b0b1450c6730254",
+    "docs/rules/DUP003.md": "9f5ebac5b3a6eb4c056b9aea9aa4f40b301c2d75e0a0e8973244c93b1d5a4cc1",
+    "docs/rules/EVD001.md": "a632ea6c7b69ff951d605b468d629751cf8cef918d8ace54e093db5d8e224aa9",
+    "docs/rules/KND001.md": "377ec6a68518b1b351e1f909272c900c31386c108f6399391b3490eb28d4010a",
+    "docs/rules/KND002.md": "fcffad518d2459f84c2af95d0d861ac736847bf4f019275e96c5bdfb7368f9ed",
+    "docs/rules/LNK001.md": "73a4bf054b50aaca4089d09893c8e41349589cb3345a04c646716e3dbe972ba2",
+    "docs/rules/LNK002.md": "8d00583e75f7a54684f8e3906675b51e0ad3d1a6b7e87a562b0f38dd520e0f39",
+    "docs/rules/MIX001.md": "7221e3d1cdcaa71c5a87e7ff3039df6920b81f08b57a80ded4db899f7a8ea78a",
+    "docs/rules/ORD001.md": "d4bfda2788b28491a84d7422b1ab25f35e6043e74881938f671a52faaf922e4a",
+    "docs/rules/ORD002.md": "d4a5f630c94c9344cf205d7fe4ce609c9e2eab50022a1344667e1ef9cfec80f1",
+    "docs/rules/OWN001.md": "d5f45bbadaebf34b2e1070a437e431c5e03589252aabd038416808a009b6fb1b",
+    "docs/rules/OWN002.md": "17d2ffa6b78268c714fa4fda47e987d6f988074cca311a1b372f1ef2b514e3b1",
+    "docs/rules/PTR001.md": "d965092b9391d97d1848504a166243e55390b9fb6f90a9f8449e4ab652fd9ecf",
+    "docs/rules/PTR002.md": "51f2bc8525afe93742ca83675c985e795d46b48fdcddd2dc747b5c67a5cf59dc",
+    "docs/rules/PTR003.md": "2f56a3ae35b1a8f52a3cb457cc1ef4d8d86c6a3059768f0bb756a22c76981ec6",
+    "docs/rules/RAT001.md": "4b115162c1c422cc4837f6463c0f53e9421cd5cafe4ecb8be64fed471da1fe14",
+    "docs/rules/RAT002.md": "f92c2d306d115eebab250407a13e11a429c66abf6a4faf574a8d6e97764cc61a",
+    "docs/rules/STL001.md": "d19ab777cbd52d3838cf87ae001931e7f1736b6c17e76f2374eaa191c24bcd63",
+    "docs/rules/STL002.md": "058e482ff2b9531b00c4c8492dad1dff732ef8ada9bc7768d711eaec89b45f2e",
+    "docs/rules/STL003.md": "7d5218b22e1035c905b0d81b6349004b54d38df65d14e03933c5c50620f8270d",
+    "docs/rules/STL004.md": "b63a996e0315d47f0042b3b48a2c45d703ae7f205b2dea6001b4f8ef110df9d6",
+    "docs/rules/SUP001.md": "fb96047424b3a0a203ae3f5e143486e444975bc9775c1c19297a7670ead42de6",
+    "docs/rules/SUP002.md": "68fb5d0470ecd21d0aeaa9c40c14bc2cf94ddaea712af0c64d42f44ddbc78c38",
+    "docs/rules/VOX001.md": "aa8d8a3a26d075dc19d3622e9c88b8ce99d4e87717c870f3c03835fb163de21c",
+    "docs/rules/VOX002.md": "0afb43a33a6e1561f7ea7cf196a34c4537da7ff818abaf9766214159d9e3d08c",
+    "docs/rules/VOX003.md": "a11670a9658630cfa675a8329711c86010957c0cd7531f6a526568718edf3d71",
+    "examples/evaluate_m2.rs": "ef2c1ff214f2bf66703ee3b800142c4632f65b3acbc494f2ce98910c2f45f9f3",
+    "scripts/evaluate_m2.py": "5887e01946cef8cf5cc21b24b38553839ffe0237dbdf2253dfd711086a944060",
+    "src/analysis.rs": "9c4485db69de87a02813b878505078ede263d74a953ae4c1f6dccb59b2302247",
+    "src/cache/mod.rs": "2dff00c4fec2ea24d7cb9f938a136b1ccc2117e8852f15607451f3b5b7e89c02",
+    "src/commands.rs": "3f8f813db7ccaacda3a37ebc872c4693d910f2c7a7f7cc96da2b042c47362ba6",
+    "src/config/mod.rs": "76fc36aa724dad6e5d29bbb7c7f0d1119c11fc1d21dab4d07bfb294b8a0ec01c",
+    "src/diagnostics/mod.rs": "3b0b7fd1d71cf9598fce70d64ba47aafb1d8dd8d7b666e1e73b9b07add46c4c2",
+    "src/diagnostics/outputs.rs": "d28aa632d9fcf583e01f0ca31e5d4cc6f10c44683d092661444fcab51a41bbae",
+    "src/diagnostics/render.rs": "0973fc49292c3219211c4a01f05639cfe4460fc0eca4931c87a119ac42b08013",
+    "src/diagnostics/source_map.rs": "ed8fbf32335dd91feea916a425ee3d9e246ee59f7624a0bdd5bad47a379ab02b",
+    "src/index/mod.rs": "419f70a18aa09a7c57eba28e91423a9bfb88e1af147482d7044e301567491d20",
+    "src/lib.rs": "630fa51ff866236135140d12d8399cc08af9696f66d00894906e93bfd6fb99da",
+    "src/main.rs": "742f89666ed7446fdbd03cfd4dd4e43e857d14ebf74ec33ed3e56b776b814bc2",
+    "src/md/mapping.rs": "ef4c82ed0f82d1dd0c6768a511132a4899216e94f3d3f1383b848fc2c66aa276",
+    "src/md/mod.rs": "9b8f909df86cb9b8a8a58e354dde3960ef753444a188e24008855946303b818d",
+    "src/md/parser.rs": "923f785ac96364d4249b5b2d52f0375565f2e25993fe9d54d28fdea8ae43e2a6",
+    "src/md/prose.rs": "1733fa523af6bcd7f976effeb59be2a1f5a02188843fa457972da0f04f81b59f",
+    "src/paths.rs": "050436c8892fce52746bbba2a34d75926f0a095a89e331f2e8c7db8823e181d8",
+    "src/rules/cross_file.rs": "dd74ad15034d0091aeb4aece191257aea75140a3659ce655c5742a1887dc1242",
+    "src/rules/fixes.rs": "d6d26091c0969da8cf17e7acfe42c7979bc9f212b8383ac1b4f17fa6489db649",
+    "src/rules/heuristic.rs": "e597fa9b2b72877e09f4967e38fec709cd3aff05934e77f765c1fb01b560cf3b",
+    "src/rules/links.rs": "a52e2540ebfd9aa592725db96e511f56a6fc465f9bdc733a74df403e55761972",
+    "src/rules/mod.rs": "fbd9030539ca85c34698c2fcf6545ce125ce9e82e3452a6ef868bab14c3bb39f",
+    "src/rules/normative.rs": "2b1def3ad1158b1f92d13e21fccdaa96713c588fa3dd7521a0484612eb6c2e1e",
+    "src/rules/suppression.rs": "fdc69f66d7d3c282e383149f9338ca3c602538df6fbf87a3c18c55657f1feece",
+    "src/sections.rs": "3db9c5d7d8244f6a9944e526973560133b0c6d25e5d32096d0ae95e00ba5cd97",
+    "src/workspace.rs": "534fb3baaba9c4ae9e6e0403960125825498b25c10d1f08a592485504a2d7fd2"
+  },
+  "review_basis": "All 25 path/title outlines and opening excerpts reviewed before diagnostic generation. Complete representative sources are listed below. Kind describes intent, not conformity. No full-text review of every document or human review is claimed.",
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}

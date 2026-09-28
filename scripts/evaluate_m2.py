@@ -35,7 +35,7 @@ def fingerprints():
 
 
 def reverse_inputs(batch):
-    return {"sources": [source | {"documents": list(reversed(source["documents"])),
+    return batch | {"sources": [source | {"documents": list(reversed(source["documents"])),
                                   "entries": list(reversed(source["entries"]))}
                         for source in reversed(batch["sources"])]}
 
@@ -98,12 +98,16 @@ def counts(diagnostics):
     return all_counts, m2_counts
 
 
-def run(output, corpus=ROOT / "corpus"):
+def run(output, corpus=ROOT / "corpus", split=None, sections=False):
     if output.exists():
         raise ValueError(f"Preserve the existing run before creating another: {output}")
     corpus = corpus.resolve()
     lock_path = corpus / "corpus.lock.json"
     lock = read(lock_path)
+    if split is not None:
+        if split not in {"tuning", "holdout"}:
+            raise ValueError("Unknown evaluation split")
+        lock = lock | {"sources": [source for source in lock["sources"] if source["split"] == split]}
     lock_hash = digest(lock_path.read_bytes())
     profile_path = corpus / "evaluation/kinds.json"
     profiles = read(profile_path)
@@ -113,7 +117,9 @@ def run(output, corpus=ROOT / "corpus"):
         raise ValueError("Kind profile and inventory must describe this corpus lock")
     subprocess.run([sys.executable, str(corpus / "inventory.py"), "verify"], check=True)
     inputs = prepare_inputs(corpus, lock, profiles, inventory)
-    work = ROOT / "target/m2-evaluation"
+    if sections:
+        inputs["sections"] = True
+    work = ROOT / "target" / ("m3-evaluation" if sections else "m2-evaluation")
     work.mkdir(parents=True, exist_ok=True)
     (work / "forward-input.json").write_bytes(encode(inputs))
     (work / "reverse-input.json").write_bytes(encode(reverse_inputs(inputs)))
@@ -135,6 +141,8 @@ def run(output, corpus=ROOT / "corpus"):
         "inventory_sha256": digest(inventory_path.read_bytes()), "implementation": before, "probe_sha256": digest(binary.read_bytes()),
         "link_backend": "case-sensitive pinned Git trees; symlinks and submodules undetermined; anchors only in pinned corpus documents",
         "reverse_byte_identical": True, "reverse_dimensions": ["sources", "documents", "tree_entries"], "raw_result_sha256": digest(raw)}
+    if sections:
+        metadata.update(evaluation_split=split or "all", section_classifier="deterministic heuristic; annotations are predictions, not review labels")
     packed = gzip.compress(encode(metadata | {"files": files, "diagnostics": diagnostics}), mtime=0)
     output.mkdir(parents=True)
     (output / "diagnostics.json.gz").write_bytes(packed)

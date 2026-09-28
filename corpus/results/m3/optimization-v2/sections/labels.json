@@ -1,0 +1,64 @@
+{
+  "labels": [
+    {
+      "annotation_sha256": "51c5fb6d31431c3c778c3200f5cd639d345efa01aec60dac09bfba43ffceb5c2",
+      "expected_type": "steps",
+      "id": "0238d1f261185f0c5dc6fa5850aeb10c031191d61ca66f1c8e0081aa5155710c",
+      "input_sha256": "12b68ba89049199983006aae94cef65659251ff7939583ffc4fd6fe9995ac46c",
+      "reason": "Shows commands for creating, merging, and using target-specific lock files."
+    },
+    {
+      "annotation_sha256": "b2356da333c752cea5283942919cfeb3d267bc633b542d042de42074445dc168",
+      "expected_type": "steps",
+      "id": "02cea67200a5817bc972a324788d13a70eb47dc6ac6f2cc27756edf7d31a497f",
+      "input_sha256": "80f9fe63520eae2be8c11bdb405d09f5eddcc1d5847ddb241f61572516151a7b",
+      "reason": "Provides editor configuration and the pyright installation command."
+    },
+    {
+      "annotation_sha256": "c40d5707695d44d3583c8cca60aa4d2ff6dfe6f827ac7779bf310b55aa57b2b2",
+      "expected_type": "reference",
+      "id": "0377f4443de18189b810f3b3aa86581841c360a7ae5ce453f9d9fe1348c602c8",
+      "input_sha256": "5e0bfc228b30f4057fe5210605614630856b04b01def1852174f35274404706c",
+      "reason": "Specifies backend-specific syntax for environment-variable interpolation in dependency metadata."
+    },
+    {
+      "annotation_sha256": "d9c23885bb716564a093c90b1937eac3aba446685ce121f6143f89f97127bb5f",
+      "expected_type": "steps",
+      "id": "03ae058525fc2375df509912fbfc7067bf5d5d6ca0c183fb04fc3e9dedf7e987",
+      "input_sha256": "8b04d6871f4186530f5889c3713f751fb304aea490db9fdfa9a9047068c442b8",
+      "reason": "Explains choosing and changing the project interpreter using PDM and environment settings."
+    },
+    {
+      "annotation_sha256": "7acfeb42b72ba2246222e896bdc39d015fa04c44cae6c125577050be99dc0b69",
+      "expected_type": "background",
+      "id": "041c4e3a89ea918b5ee13fda3dadcb378f2f7ac1f81a057163aa9213555da7da",
+      "input_sha256": "c1dba09fbd9ab8219e43374e72d2caa0d90a7316fd18127a98a7968c28b56a49",
+      "reason": "Lists project capabilities; Install Pythons names a capability in a feature list rather than a reader procedure."
+    },
+    {
+      "annotation_sha256": "af1a4f0997a0ee693954b58db4f2f6b6fd95db3310f3f9506a66918c7ceb967f",
+      "expected_type": "steps",
+      "id": "05fe8bbf73642e4b229e1ee254a9daf8ca120bf93ff6f2acbffc59f99e9fd9bc",
+      "input_sha256": "80f9fe63520eae2be8c11bdb405d09f5eddcc1d5847ddb241f61572516151a7b",
+      "reason": "Gives Windows and Unix actions for enabling PEP 582 globally, with shell configuration steps."
+    },
+    {
+      "annotation_sha256": "63e751a1a9d4d6468933cd3fe1a9e2d27d905bfd50d6e0b90d7070dbdd838499",
+      "expected_type": "reference",
+      "id": "085a589a5e596cca27a07b40744172fa6e4affc93622c2ebfd6676f9279346d8",
+      "input_sha256": "5e0bfc228b30f4057fe5210605614630856b04b01def1852174f35274404706c",
+      "reason": "Defines static and dynamic package-version metadata and lookup behavior."
+    },
+    {
+      "annotation_sha256": "7b0b172e8066c8fc20bf6f985089c449e305f04c0835623d36d16dc0efaf9664",
+      "expected_type": "reference",
+      "id": "0d8298d017fc1d87c872446ca298406045ba592ee1caa4479343a593e5324c51",
+      "input_sha256": "e4a7d0eff5b3c18441456a9e590c356ecab921179fa4e40b7ef7b8aab7549fb5",
+      "reason": "Defines command effects on declared requirements, lock files, and installed state."
+    }
+  ],
+  "method": "Fresh source-section review after code freeze. Dominant reader responsibility judged from heading and original direct content. No tuning followed these judgments.",
+  "reviewer_kind": "author_agent",
+  "sample_sha256": "04ce809fd0265f6d00717ab6eed2e74afa58053d809a6908f74965c0515d2578",
+  "schema_version": 1
+}

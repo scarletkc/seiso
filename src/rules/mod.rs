@@ -2,6 +2,7 @@
 
 pub mod cross_file;
 pub mod fixes;
+pub mod heuristic;
 mod links;
 pub mod normative;
 pub mod suppression;
@@ -143,6 +144,15 @@ pub fn check_raw_with_files(
         ));
     }
     let mut incomplete = BTreeSet::new();
+    if enabled
+        .iter()
+        .any(|code| rule(code).is_some_and(|rule| rule.phase == RulePhase::Heuristic))
+    {
+        let heuristic =
+            heuristic::check(context.document, context.filename, context.config, &enabled);
+        diagnostics.extend(heuristic.diagnostics);
+        incomplete.extend(heuristic.incomplete_rules);
+    }
     let mut errors = Vec::new();
     if enabled.contains("LNK001") {
         let links = links::check(context, files);
@@ -275,6 +285,8 @@ impl Rule {
             KindScope::LongLived => ["readme", "howto", "reference", "runbook"].contains(&kind),
             KindScope::ExceptChangelog => kind != "changelog",
             KindScope::HowtoOrReference => ["howto", "reference"].contains(&kind),
+            KindScope::HowtoOrRunbook => ["howto", "runbook"].contains(&kind),
+            KindScope::Procedural => ["howto", "reference", "runbook"].contains(&kind),
         }
     }
 }
@@ -286,6 +298,7 @@ enum RulePhase {
     Links,
     Suppression,
     CrossFile,
+    Heuristic,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -295,6 +308,8 @@ enum KindScope {
     LongLived,
     ExceptChangelog,
     HowtoOrReference,
+    HowtoOrRunbook,
+    Procedural,
 }
 
 macro_rules! rule {
@@ -316,6 +331,96 @@ macro_rules! rule {
 
 use FragmentKind::{InlineCode, LinkDestination, LinkText, Text};
 static RULES: &[Rule] = &[
+    rule!(
+        "STL002",
+        "deployment-state-assertion",
+        "heuristic",
+        &[Text, LinkText],
+        false,
+        Heuristic,
+        false,
+        LongLived
+    ),
+    rule!(
+        "STL004",
+        "unconstrained-version",
+        "heuristic",
+        &[Text, LinkText, InlineCode],
+        false,
+        Heuristic,
+        false,
+        LongLived
+    ),
+    rule!(
+        "RAT001",
+        "rationale-before-procedure",
+        "heuristic",
+        &[Text, LinkText],
+        false,
+        Heuristic,
+        false,
+        HowtoOrReference
+    ),
+    rule!(
+        "ORD001",
+        "long-preamble",
+        "heuristic",
+        &[Text, LinkText],
+        false,
+        Heuristic,
+        false,
+        HowtoOrRunbook
+    ),
+    rule!(
+        "ORD002",
+        "exceptions-before-procedure",
+        "heuristic",
+        &[Text, LinkText],
+        false,
+        Heuristic,
+        false,
+        HowtoOrRunbook
+    ),
+    rule!(
+        "MIX001",
+        "conflicting-section-role",
+        "heuristic",
+        &[Text, LinkText],
+        false,
+        Heuristic,
+        false,
+        Procedural
+    ),
+    rule!(
+        "VOX002",
+        "excluded-scope-heading",
+        "heuristic",
+        &[Text, LinkText],
+        false,
+        Heuristic,
+        false,
+        LongLived
+    ),
+    rule!(
+        "VOX003",
+        "production-narration",
+        "heuristic",
+        &[Text, LinkText],
+        false,
+        Heuristic,
+        false,
+        LongLived
+    ),
+    rule!(
+        "EVD001",
+        "unsupported-evaluation",
+        "heuristic",
+        &[Text, LinkText, InlineCode, LinkDestination],
+        false,
+        Heuristic,
+        false,
+        Declared
+    ),
     rule!(
         "KND001",
         "missing-document-kind",

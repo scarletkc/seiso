@@ -352,7 +352,7 @@ fn exact_selection_beats_family_ignore_and_ties_favor_ignore() {
     );
     assert_eq!(
         rules(&config, Some("howto"), &CliOverrides::default()),
-        ["KND001", "STL003"]
+        ["KND001", "STL002", "STL003", "STL004"]
     );
 }
 
@@ -450,7 +450,7 @@ fn dependency_selection_precedes_document_kind_applicability() {
         config
             .selected_rules(Path::new("docs/page.md"), &CliOverrides::default())
             .unwrap(),
-        ["STL001", "STL003"]
+        ["STL001", "STL002", "STL003", "STL004"]
     );
     assert!(rules(&config, None, &CliOverrides::default()).is_empty());
     assert!(rules(&config, Some("generated"), &CliOverrides::default()).is_empty());
@@ -460,9 +460,7 @@ fn dependency_selection_precedes_document_kind_applicability() {
 fn unimplemented_rules_are_rejected_in_every_selection_surface() {
     let dir = tempdir().unwrap();
     let config = Config::defaults(dir.path()).unwrap();
-    for code in [
-        "STL002", "STL004", "RAT001", "ORD001", "ORD002", "MIX001", "VOX002", "VOX003", "EVD001",
-    ] {
+    for code in ["STL999", "RAT999", "ORD999", "MIX999", "VOX999", "EVD999"] {
         for preview in [false, true] {
             let overrides = CliOverrides {
                 select: Some(vec![code.into()]),

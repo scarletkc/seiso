@@ -92,6 +92,6 @@ extend-stale-markers = ["截至目前"]
 ```
 
 Rule documentation identifies each rule's thresholds and word-list options.
-English, Chinese, and Japanese word lists can be extended independently;
+The listed lexicon fields can be extended independently for English, Chinese, and Japanese;
 Chinese and Japanese matching does not require word segmentation. Thresholds
 are calibrated on tuning data under the [evaluation policy](../evaluation/policy.md).

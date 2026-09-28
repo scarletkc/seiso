@@ -1,0 +1,20 @@
+{
+  "after_diagnostics": {
+    "EVD001": 12,
+    "STL004": 2,
+    "VOX002": 6,
+    "VOX003": 6
+  },
+  "annotation_status": "unlabeled; all post-change diagnoses count toward blocking, including persistent warnings; clean changes remain in the denominator",
+  "changes": 155,
+  "documents": 199,
+  "introduced": {
+    "EVD001": 2,
+    "STL004": 2,
+    "VOX002": 1,
+    "VOX003": 1
+  },
+  "report_sha256": "9bbd27c0f3653d661a118116c815545c0a5451efc74f95676d4e797287350f98",
+  "revision": "cc93e11fdd816b72ba7e83d1d12caac1d60eb9a9",
+  "schema_version": 1
+}

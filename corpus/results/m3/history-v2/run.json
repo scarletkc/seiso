@@ -1,0 +1,14 @@
+{
+  "annotation_status": "unlabeled; changes with no diagnosis remain in the denominator",
+  "changes": 155,
+  "documents": 199,
+  "introduced": {
+    "EVD001": 2,
+    "STL004": 2,
+    "VOX002": 1,
+    "VOX003": 1
+  },
+  "report_sha256": "879ff95bc9722331d9bd11c58c2f9ba46a08f3efe0a18e0fad45a8f2f76f8bbe",
+  "revision": "cc93e11fdd816b72ba7e83d1d12caac1d60eb9a9",
+  "schema_version": 1
+}

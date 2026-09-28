@@ -53,7 +53,7 @@ struct ParseArgs {
     /// Use this configuration for every selected file.
     #[arg(long, value_name = "PATH")]
     config: Option<PathBuf>,
-    /// Output format. JSON contains the full document model.
+    /// Output format. JSON contains the document model and heuristic section annotations.
     #[arg(long, value_enum, default_value_t = OutputFormat::Text)]
     output_format: OutputFormat,
     /// Read stdin in place of this workspace file; never writes to disk.
@@ -73,6 +73,7 @@ struct ParsedFile {
     configuration: Option<String>,
     kind: KindResolution,
     domain: Option<String>,
+    section_annotations: Vec<seiso::sections::SectionAnnotation>,
     document: Document,
 }
 
@@ -147,6 +148,7 @@ fn parse_workspace(args: ParseArgs) -> Result<u8, String> {
                     .map(|path| workspace::relative(&snapshot.index.root, path)),
                 kind: resolve_kind(&file.document, file.config.kind_for(&file.path)),
                 domain: file.config.domain_for(&file.path).map(str::to_owned),
+                section_annotations: seiso::sections::classify(&file.document),
                 document: Arc::unwrap_or_clone(file.document),
             })
             .collect(),

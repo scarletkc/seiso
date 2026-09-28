@@ -1,0 +1,14 @@
+{
+  "after_diagnostics": {
+    "VOX002": 6
+  },
+  "annotation_status": "unlabeled; all post-change diagnoses count toward blocking, including persistent warnings; clean changes remain in the denominator",
+  "changes": 155,
+  "documents": 199,
+  "introduced": {
+    "VOX002": 1
+  },
+  "report_sha256": "cb2d6d7498c7de29b9b01405ee756cdc66e54bf1b2fafb515827c9557ad59065",
+  "revision": "cc93e11fdd816b72ba7e83d1d12caac1d60eb9a9",
+  "schema_version": 1
+}

@@ -1,0 +1,189 @@
+{
+  "additional_previous_corpora": {
+    "corpus.lock.json": "f63be15887931cecc1654b16f06e60764dc6fca3f62a7e1e5d8287328f08016b"
+  },
+  "previous_corpus_sha256": "3904c6c396606d13a21de7296624bfff99054f60d872cb4da6a346ddb80487cb",
+  "schema_version": 1,
+  "selection": "All regular Markdown files matching the declared paths; repositories selected before reading their source text or diagnostic output.",
+  "sources": [
+    {
+      "category": "developer-documentation",
+      "commit": "8036ea330f59b83a8329bcc3002c6e1c3edc1af7",
+      "documents": [
+        {
+          "bytes": 3053,
+          "git_blob": "b24e04b3b3c701b6f61cad1ace5374aee36d1517",
+          "path": "docs/README.md"
+        }
+      ],
+      "id": "pipx",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "language_focus": "en",
+      "license_hint": "MIT",
+      "licenses": [
+        {
+          "bytes": 1084,
+          "git_blob": "e8c4fb1b09ca494ca81e00fa44d2c133e7a3973b",
+          "path": "LICENSE"
+        }
+      ],
+      "matched_patterns": {
+        "README.md": 0,
+        "docs/**": 1
+      },
+      "repository": "pypa/pipx",
+      "split": "holdout",
+      "tree": "73b68e3e3a549e628214eed8b191ac1f93f2a256"
+    },
+    {
+      "category": "developer-documentation",
+      "commit": "e8ced850bc1be15501dc1c4139e96c4605f85f2b",
+      "documents": [
+        {
+          "bytes": 7332,
+          "git_blob": "62d1db0d3bc7a9cd96941cf551bf9ee1c2679f0a",
+          "path": "README.md"
+        },
+        {
+          "bytes": 201,
+          "git_blob": "d854ef93f3fc23189f264c46dfcab62ad52d509f",
+          "path": "docs/dev/benchmark.md"
+        },
+        {
+          "bytes": 145,
+          "git_blob": "3591368b4f69a9171048a89b1f639f16d9e8a5f5",
+          "path": "docs/dev/changelog.md"
+        },
+        {
+          "bytes": 25,
+          "git_blob": "ea38c9bff4bfe38a798e001e890b9b8f6ac8a146",
+          "path": "docs/dev/contributing.md"
+        },
+        {
+          "bytes": 159,
+          "git_blob": "dc45bd60119b07ceccb356a728d2f855430924f4",
+          "path": "docs/dev/fixtures.md"
+        },
+        {
+          "bytes": 8186,
+          "git_blob": "a1af2e109975f602fc47221658756464f410a335",
+          "path": "docs/dev/write.md"
+        },
+        {
+          "bytes": 9400,
+          "git_blob": "f0dda71bb03ce2277e15b98d406799d63800a35b",
+          "path": "docs/index.md"
+        },
+        {
+          "bytes": 332,
+          "git_blob": "e266537f63cb16baace1840d8113b49f1ff063de",
+          "path": "docs/reference/api.md"
+        },
+        {
+          "bytes": 2113,
+          "git_blob": "05d18b0f7903251e4b87b9c7bbacab3189ae4fce",
+          "path": "docs/reference/build.md"
+        },
+        {
+          "bytes": 6533,
+          "git_blob": "064b8b6c317b7e09ae652c17f2086c4683498422",
+          "path": "docs/reference/pep621.md"
+        },
+        {
+          "bytes": 8987,
+          "git_blob": "7cb96c94d979cbfb436712b84a38ce959b74d75d",
+          "path": "docs/usage/advanced.md"
+        },
+        {
+          "bytes": 15724,
+          "git_blob": "ece1038da6f61262cf93c60c68ea5f3e4941a544",
+          "path": "docs/usage/config.md"
+        },
+        {
+          "bytes": 18057,
+          "git_blob": "df2ada85a35e92f0feab38a696a9229625134743",
+          "path": "docs/usage/dependency.md"
+        },
+        {
+          "bytes": 7736,
+          "git_blob": "37c36011e2e59e66eddc6a556413808a7ddb2e27",
+          "path": "docs/usage/hooks.md"
+        },
+        {
+          "bytes": 5772,
+          "git_blob": "5c08778cf6ac5f37d7112bcc179c4fee3034833c",
+          "path": "docs/usage/lock-targets.md"
+        },
+        {
+          "bytes": 22251,
+          "git_blob": "ce872671137979ade7a4360e98521b8da5bb4d5b",
+          "path": "docs/usage/lockfile.md"
+        },
+        {
+          "bytes": 9469,
+          "git_blob": "adacbd6ee3576c3c56b5ddd59da145a88c32c037",
+          "path": "docs/usage/pep582.md"
+        },
+        {
+          "bytes": 11710,
+          "git_blob": "0ab2d4368a1a4b869ec0825312f6ba4bce6a0dd3",
+          "path": "docs/usage/project.md"
+        },
+        {
+          "bytes": 2262,
+          "git_blob": "d1b8aac53d4e9408a54fa90169a3b543f54fe807",
+          "path": "docs/usage/publish.md"
+        },
+        {
+          "bytes": 17924,
+          "git_blob": "a77d7004d8ccde6c9ad00b032b51423cdf199cf8",
+          "path": "docs/usage/scripts.md"
+        },
+        {
+          "bytes": 3343,
+          "git_blob": "9e51a7321b6d8cedd6a7c0bb3ef88bdce8f57a87",
+          "path": "docs/usage/template.md"
+        },
+        {
+          "bytes": 1492,
+          "git_blob": "a74625bdbd07ed056cf23c3ef207b4184e7d5876",
+          "path": "docs/usage/uv.md"
+        },
+        {
+          "bytes": 9196,
+          "git_blob": "03ac3a3c9fa4775a43a962f846dfcbc26b6b379e",
+          "path": "docs/usage/venv.md"
+        },
+        {
+          "bytes": 3478,
+          "git_blob": "a51b1b89da6eb7b8150c183447bdee66d20f3cc5",
+          "path": "docs/usage/workspace.md"
+        }
+      ],
+      "id": "pdm",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "language_focus": "en",
+      "license_hint": "MIT",
+      "licenses": [
+        {
+          "bytes": 1075,
+          "git_blob": "e4e31fb36519cd56902b84d949345eed78b21935",
+          "path": "LICENSE"
+        }
+      ],
+      "matched_patterns": {
+        "README.md": 1,
+        "docs/**": 23
+      },
+      "repository": "pdm-project/pdm",
+      "split": "holdout",
+      "tree": "61903aff5095b476064f213b8c74cc6cdd30e0ed"
+    }
+  ]
+}

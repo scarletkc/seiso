@@ -1,0 +1,217 @@
+{
+  "additional_previous_corpora": {
+    "corpus.lock.json": "f63be15887931cecc1654b16f06e60764dc6fca3f62a7e1e5d8287328f08016b"
+  },
+  "pinned_selection_sha256": "27618fb3c56366a21719951b55b37cc689294531c878f686387034eaf8f1ae6e",
+  "previous_corpus_sha256": "3904c6c396606d13a21de7296624bfff99054f60d872cb4da6a346ddb80487cb",
+  "schema_version": 1,
+  "selection": "All regular Markdown files matching the declared paths; repositories selected before reading their source text or diagnostic output.",
+  "sources": [
+    {
+      "category": "developer-documentation",
+      "commit": "8036ea330f59b83a8329bcc3002c6e1c3edc1af7",
+      "documents": [
+        {
+          "bytes": 3053,
+          "git_blob": "b24e04b3b3c701b6f61cad1ace5374aee36d1517",
+          "path": "docs/README.md",
+          "sha256": "0a1a1328fd00df5386a59b9eccf595427d09303a59da4a8601806c6a112dc341"
+        }
+      ],
+      "id": "pipx",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "language_focus": "en",
+      "license_hint": "MIT",
+      "licenses": [
+        {
+          "bytes": 1084,
+          "git_blob": "e8c4fb1b09ca494ca81e00fa44d2c133e7a3973b",
+          "path": "LICENSE",
+          "sha256": "2e142cbef6acf436d47d8fe1412439c442eeb6c48d5ef73d6b91fffbbf1cdf89"
+        }
+      ],
+      "matched_patterns": {
+        "README.md": 0,
+        "docs/**": 1
+      },
+      "repository": "pypa/pipx",
+      "split": "holdout",
+      "tree": "73b68e3e3a549e628214eed8b191ac1f93f2a256"
+    },
+    {
+      "category": "developer-documentation",
+      "commit": "e8ced850bc1be15501dc1c4139e96c4605f85f2b",
+      "documents": [
+        {
+          "bytes": 7332,
+          "git_blob": "62d1db0d3bc7a9cd96941cf551bf9ee1c2679f0a",
+          "path": "README.md",
+          "sha256": "c1dba09fbd9ab8219e43374e72d2caa0d90a7316fd18127a98a7968c28b56a49"
+        },
+        {
+          "bytes": 201,
+          "git_blob": "d854ef93f3fc23189f264c46dfcab62ad52d509f",
+          "path": "docs/dev/benchmark.md",
+          "sha256": "316d670885e1884dd149ac303bfbcea40a9872173de222eb4e5d99b22c050004"
+        },
+        {
+          "bytes": 145,
+          "git_blob": "3591368b4f69a9171048a89b1f639f16d9e8a5f5",
+          "path": "docs/dev/changelog.md",
+          "sha256": "3b3e872bfda19919f3430f6124fe4ef1d1da90893d336d04f3e06a90477404d9"
+        },
+        {
+          "bytes": 25,
+          "git_blob": "ea38c9bff4bfe38a798e001e890b9b8f6ac8a146",
+          "path": "docs/dev/contributing.md",
+          "sha256": "e6872f1e4c41a31120d8fefbdaa4be9f6cef9ed0331bb45044a8fe0d4f131f82"
+        },
+        {
+          "bytes": 159,
+          "git_blob": "dc45bd60119b07ceccb356a728d2f855430924f4",
+          "path": "docs/dev/fixtures.md",
+          "sha256": "d97c103347276e7ee079f1b8179ef5f0006bae31d4d385ebf2a22a1095d34d3e"
+        },
+        {
+          "bytes": 8186,
+          "git_blob": "a1af2e109975f602fc47221658756464f410a335",
+          "path": "docs/dev/write.md",
+          "sha256": "89157e92f2e513d324e2939a4c32dd301d36ea1d3f2f2bb1fdcded6a4e4b32b6"
+        },
+        {
+          "bytes": 9400,
+          "git_blob": "f0dda71bb03ce2277e15b98d406799d63800a35b",
+          "path": "docs/index.md",
+          "sha256": "9a519b9c20dc11b1f224410d65acb29af4f4e9becd12b58c4de6f5e78d9e6ec6"
+        },
+        {
+          "bytes": 332,
+          "git_blob": "e266537f63cb16baace1840d8113b49f1ff063de",
+          "path": "docs/reference/api.md",
+          "sha256": "cdeea03ac512ebde67d3f27e707c621cad9828f3fceb56d4b78b2a7defe43c8e"
+        },
+        {
+          "bytes": 2113,
+          "git_blob": "05d18b0f7903251e4b87b9c7bbacab3189ae4fce",
+          "path": "docs/reference/build.md",
+          "sha256": "21661582bcbcdfc3f4e24fab5faa39ce40f0de8106562ec3f9a7540638cf188f"
+        },
+        {
+          "bytes": 6533,
+          "git_blob": "064b8b6c317b7e09ae652c17f2086c4683498422",
+          "path": "docs/reference/pep621.md",
+          "sha256": "5e0bfc228b30f4057fe5210605614630856b04b01def1852174f35274404706c"
+        },
+        {
+          "bytes": 8987,
+          "git_blob": "7cb96c94d979cbfb436712b84a38ce959b74d75d",
+          "path": "docs/usage/advanced.md",
+          "sha256": "e7fbf87c5afcbb8f08a00bb814055ecd2eafab5098ab6baad50bcffd607d411a"
+        },
+        {
+          "bytes": 15724,
+          "git_blob": "ece1038da6f61262cf93c60c68ea5f3e4941a544",
+          "path": "docs/usage/config.md",
+          "sha256": "65053d9ee3d5ad51093b817ec344e669092a5dc8767bc22f23c1b22a8b104f36"
+        },
+        {
+          "bytes": 18057,
+          "git_blob": "df2ada85a35e92f0feab38a696a9229625134743",
+          "path": "docs/usage/dependency.md",
+          "sha256": "50890fcb1d126b973d83db156c46472ac3848c1fff5221deae87e55a06dd1ccf"
+        },
+        {
+          "bytes": 7736,
+          "git_blob": "37c36011e2e59e66eddc6a556413808a7ddb2e27",
+          "path": "docs/usage/hooks.md",
+          "sha256": "be6480b9344700d5046326bf35f343e091e50dcef8ee1ffd4905697553f1eaff"
+        },
+        {
+          "bytes": 5772,
+          "git_blob": "5c08778cf6ac5f37d7112bcc179c4fee3034833c",
+          "path": "docs/usage/lock-targets.md",
+          "sha256": "12b68ba89049199983006aae94cef65659251ff7939583ffc4fd6fe9995ac46c"
+        },
+        {
+          "bytes": 22251,
+          "git_blob": "ce872671137979ade7a4360e98521b8da5bb4d5b",
+          "path": "docs/usage/lockfile.md",
+          "sha256": "e4a7d0eff5b3c18441456a9e590c356ecab921179fa4e40b7ef7b8aab7549fb5"
+        },
+        {
+          "bytes": 9469,
+          "git_blob": "adacbd6ee3576c3c56b5ddd59da145a88c32c037",
+          "path": "docs/usage/pep582.md",
+          "sha256": "80f9fe63520eae2be8c11bdb405d09f5eddcc1d5847ddb241f61572516151a7b"
+        },
+        {
+          "bytes": 11710,
+          "git_blob": "0ab2d4368a1a4b869ec0825312f6ba4bce6a0dd3",
+          "path": "docs/usage/project.md",
+          "sha256": "8b04d6871f4186530f5889c3713f751fb304aea490db9fdfa9a9047068c442b8"
+        },
+        {
+          "bytes": 2262,
+          "git_blob": "d1b8aac53d4e9408a54fa90169a3b543f54fe807",
+          "path": "docs/usage/publish.md",
+          "sha256": "9541991f76a4d6274f2989d5778dac42a4a517411671516747768a02deb008b5"
+        },
+        {
+          "bytes": 17924,
+          "git_blob": "a77d7004d8ccde6c9ad00b032b51423cdf199cf8",
+          "path": "docs/usage/scripts.md",
+          "sha256": "364868557a187b7a6b17ed509625216a515ceaaa9b39bbd89d3e389c6b2e0509"
+        },
+        {
+          "bytes": 3343,
+          "git_blob": "9e51a7321b6d8cedd6a7c0bb3ef88bdce8f57a87",
+          "path": "docs/usage/template.md",
+          "sha256": "5a5ebec604ea572ec4f827a2308e8e24519fbdd804d96d8e162d53efd6cba7a1"
+        },
+        {
+          "bytes": 1492,
+          "git_blob": "a74625bdbd07ed056cf23c3ef207b4184e7d5876",
+          "path": "docs/usage/uv.md",
+          "sha256": "c4cba8e8e31a42e4d6ef5a277be7a6d2ad8569365f6b17c07fabafa3d4c862f7"
+        },
+        {
+          "bytes": 9196,
+          "git_blob": "03ac3a3c9fa4775a43a962f846dfcbc26b6b379e",
+          "path": "docs/usage/venv.md",
+          "sha256": "0d9119c28155fd6c8b20eecc8030b8f77f98a79bbcc557d1a2f1ba53217a1684"
+        },
+        {
+          "bytes": 3478,
+          "git_blob": "a51b1b89da6eb7b8150c183447bdee66d20f3cc5",
+          "path": "docs/usage/workspace.md",
+          "sha256": "33fc9b62092aafa59b492dbbdecbfc7b6bc4d4de4b4736b8414683465b1957da"
+        }
+      ],
+      "id": "pdm",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "language_focus": "en",
+      "license_hint": "MIT",
+      "licenses": [
+        {
+          "bytes": 1075,
+          "git_blob": "e4e31fb36519cd56902b84d949345eed78b21935",
+          "path": "LICENSE",
+          "sha256": "9db7ebdae98d7719291030f5b26bed1e798cf9dcbd1850d498714d859908f220"
+        }
+      ],
+      "matched_patterns": {
+        "README.md": 1,
+        "docs/**": 23
+      },
+      "repository": "pdm-project/pdm",
+      "split": "holdout",
+      "tree": "61903aff5095b476064f213b8c74cc6cdd30e0ed"
+    }
+  ]
+}

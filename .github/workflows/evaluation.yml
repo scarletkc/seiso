@@ -33,6 +33,7 @@ jobs:
         with:
           path: current
           persist-credentials: false
+          fetch-depth: 0
       - if: inputs.baseline_ref != ''
         uses: actions/checkout@v4
         with:
@@ -61,7 +62,9 @@ jobs:
           python corpus/corpus.py verify
           python corpus/inventory.py verify
       - name: Evaluate corpus
-        run: python current/scripts/evaluate_m2.py --output "$RUNNER_TEMP/evaluation/current"
+        run: python current/scripts/evaluate_m3.py --split all --output "$RUNNER_TEMP/evaluation/current"
+      - name: Replay document changes
+        run: python current/scripts/replay_m3.py --revision "$GITHUB_SHA" --output "$RUNNER_TEMP/evaluation/history"
       - name: Compare diagnostics
         shell: bash
         run: |
@@ -73,6 +76,12 @@ jobs:
               baseline_report="$GITHUB_WORKSPACE/baseline/corpus/results/m1/promoted-v1/diagnostics.json.gz"
               printf '%s\n' 'Baseline uses the accepted M1 report; that revision has no cross-file evaluator.' >> "$GITHUB_STEP_SUMMARY"
             fi
+          elif test -f current/corpus/results/m3/optimization-v2/known-corpus/diagnostics.json.gz; then
+            baseline_report="$GITHUB_WORKSPACE/current/corpus/results/m3/optimization-v2/known-corpus/diagnostics.json.gz"
+            printf '%s\n' 'Diagnostic baseline: the recorded M3 optimization regression run.' >> "$GITHUB_STEP_SUMMARY"
+          elif test -f current/corpus/results/m3/natural-v1/diagnostics.json.gz; then
+            baseline_report="$GITHUB_WORKSPACE/current/corpus/results/m3/natural-v1/diagnostics.json.gz"
+            printf '%s\n' 'Diagnostic baseline: the recorded M3 corpus run.' >> "$GITHUB_STEP_SUMMARY"
           elif test -f current/corpus/results/m2/natural-v1/diagnostics.json.gz; then
             baseline_report="$GITHUB_WORKSPACE/current/corpus/results/m2/natural-v1/diagnostics.json.gz"
             printf '%s\n' 'Diagnostic baseline: the recorded M2 corpus run.' >> "$GITHUB_STEP_SUMMARY"

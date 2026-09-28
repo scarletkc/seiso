@@ -14,6 +14,8 @@ use sha2::{Digest, Sha256};
 #[derive(Deserialize)]
 struct Batch {
     sources: Vec<Source>,
+    #[serde(default)]
+    sections: bool,
 }
 #[derive(Deserialize)]
 struct Source {
@@ -42,6 +44,8 @@ struct Output {
     links: Vec<seiso::md::RawLink>,
     incomplete_rules: Vec<String>,
     result: seiso::rules::CheckResult,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    section_annotations: Option<Vec<seiso::sections::SectionAnnotation>>,
 }
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -143,6 +147,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 links: file.document.links.clone(),
                 incomplete_rules,
                 result,
+                section_annotations: input
+                    .sections
+                    .then(|| seiso::sections::classify(&file.document)),
             });
         }
         eprintln!("evaluated {}: {} documents", source.id, index.files.len());

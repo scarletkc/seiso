@@ -1,0 +1,48 @@
+---
+source: tests/engine.rs
+expression: result.diagnostics
+---
+[
+  {
+    "code": "VOX003",
+    "message": "This text narrates how the deliverable was produced.",
+    "filename": "docs/guide.md",
+    "location": {
+      "row": 4,
+      "column": 4
+    },
+    "end_location": {
+      "row": 4,
+      "column": 18
+    },
+    "byte_range": {
+      "start": 23,
+      "end": 37
+    },
+    "fix": null,
+    "url": null,
+    "related": [],
+    "suggestion": "Describe the resulting behavior or procedure; move implementation history to an ADR, plan, or change record."
+  },
+  {
+    "code": "VOX003",
+    "message": "This text narrates how the deliverable was produced.",
+    "filename": "docs/guide.md",
+    "location": {
+      "row": 6,
+      "column": 1
+    },
+    "end_location": {
+      "row": 6,
+      "column": 19
+    },
+    "byte_range": {
+      "start": 39,
+      "end": 57
+    },
+    "fix": null,
+    "url": null,
+    "related": [],
+    "suggestion": "Describe the resulting behavior or procedure; move implementation history to an ADR, plan, or change record."
+  }
+]

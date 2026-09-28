@@ -1,0 +1,233 @@
+{
+  "corpus_sha256": "e5f82a878e473750b3fa6d020c8fa24a4522de75e76c8083551fea25c865cbe8",
+  "method": "One nonempty headed section per split/language/predicted-type stratum, plus six per split by hash without type selection. All document kinds included. Root sections excluded.",
+  "population": 228,
+  "report_sha256": "410ba409113385ca6d969e0c4912c3a60f3852f5ac0ad76706863baf2a27ce5c",
+  "samples": [
+    {
+      "annotation": {
+        "content_span": {
+          "end": 4312,
+          "start": 2797
+        },
+        "evidence": [
+          {
+            "signal": "runnable_example",
+            "span": {
+              "end": 3194,
+              "start": 3017
+            }
+          }
+        ],
+        "section": 3,
+        "section_type": "steps"
+      },
+      "annotation_sha256": "51c5fb6d31431c3c778c3200f5cd639d345efa01aec60dac09bfba43ffceb5c2",
+      "git_blob": "5c08778cf6ac5f37d7112bcc179c4fee3034833c",
+      "id": "0238d1f261185f0c5dc6fa5850aeb10c031191d61ca66f1c8e0081aa5155710c",
+      "input_sha256": "12b68ba89049199983006aae94cef65659251ff7939583ffc4fd6fe9995ac46c",
+      "language": "en",
+      "path": "docs/usage/lock-targets.md",
+      "section": 3,
+      "selection": "first hash in split/language/predicted-type stratum",
+      "source": "pdm",
+      "split": "holdout"
+    },
+    {
+      "annotation": {
+        "content_span": {
+          "end": 8002,
+          "start": 7152
+        },
+        "evidence": [
+          {
+            "signal": "runnable_example",
+            "span": {
+              "end": 8000,
+              "start": 7953
+            }
+          }
+        ],
+        "section": 10,
+        "section_type": "steps"
+      },
+      "annotation_sha256": "b2356da333c752cea5283942919cfeb3d267bc633b542d042de42074445dc168",
+      "git_blob": "adacbd6ee3576c3c56b5ddd59da145a88c32c037",
+      "id": "02cea67200a5817bc972a324788d13a70eb47dc6ac6f2cc27756edf7d31a497f",
+      "input_sha256": "80f9fe63520eae2be8c11bdb405d09f5eddcc1d5847ddb241f61572516151a7b",
+      "language": "en",
+      "path": "docs/usage/pep582.md",
+      "section": 10,
+      "selection": "first six hashes in split independent of predicted type",
+      "source": "pdm",
+      "split": "holdout"
+    },
+    {
+      "annotation": {
+        "content_span": {
+          "end": 4910,
+          "start": 4381
+        },
+        "evidence": [
+          {
+            "signal": "explanatory_prose",
+            "span": {
+              "end": 4400,
+              "start": 4383
+            }
+          }
+        ],
+        "section": 9,
+        "section_type": "background"
+      },
+      "annotation_sha256": "c40d5707695d44d3583c8cca60aa4d2ff6dfe6f827ac7779bf310b55aa57b2b2",
+      "git_blob": "064b8b6c317b7e09ae652c17f2086c4683498422",
+      "id": "0377f4443de18189b810f3b3aa86581841c360a7ae5ce453f9d9fe1348c602c8",
+      "input_sha256": "5e0bfc228b30f4057fe5210605614630856b04b01def1852174f35274404706c",
+      "language": "en",
+      "path": "docs/reference/pep621.md",
+      "section": 9,
+      "selection": "first hash in split/language/predicted-type stratum",
+      "source": "pdm",
+      "split": "holdout"
+    },
+    {
+      "annotation": {
+        "content_span": {
+          "end": 1653,
+          "start": 570
+        },
+        "evidence": [
+          {
+            "signal": "explanatory_prose",
+            "span": {
+              "end": 837,
+              "start": 572
+            }
+          }
+        ],
+        "section": 3,
+        "section_type": "background"
+      },
+      "annotation_sha256": "d9c23885bb716564a093c90b1937eac3aba446685ce121f6143f89f97127bb5f",
+      "git_blob": "0ab2d4368a1a4b869ec0825312f6ba4bce6a0dd3",
+      "id": "03ae058525fc2375df509912fbfc7067bf5d5d6ca0c183fb04fc3e9dedf7e987",
+      "input_sha256": "8b04d6871f4186530f5889c3713f751fb304aea490db9fdfa9a9047068c442b8",
+      "language": "en",
+      "path": "docs/usage/project.md",
+      "section": 3,
+      "selection": "first six hashes in split independent of predicted type",
+      "source": "pdm",
+      "split": "holdout"
+    },
+    {
+      "annotation": {
+        "content_span": {
+          "end": 2854,
+          "start": 2209
+        },
+        "evidence": [
+          {
+            "signal": "instruction",
+            "span": {
+              "end": 2530,
+              "start": 2416
+            }
+          }
+        ],
+        "section": 3,
+        "section_type": "steps"
+      },
+      "annotation_sha256": "7acfeb42b72ba2246222e896bdc39d015fa04c44cae6c125577050be99dc0b69",
+      "git_blob": "62d1db0d3bc7a9cd96941cf551bf9ee1c2679f0a",
+      "id": "041c4e3a89ea918b5ee13fda3dadcb378f2f7ac1f81a057163aa9213555da7da",
+      "input_sha256": "c1dba09fbd9ab8219e43374e72d2caa0d90a7316fd18127a98a7968c28b56a49",
+      "language": "en",
+      "path": "README.md",
+      "section": 3,
+      "selection": "first six hashes in split independent of predicted type",
+      "source": "pdm",
+      "split": "holdout"
+    },
+    {
+      "annotation": {
+        "content_span": {
+          "end": 2266,
+          "start": 1025
+        },
+        "evidence": [
+          {
+            "signal": "explanatory_prose",
+            "span": {
+              "end": 1171,
+              "start": 1027
+            }
+          }
+        ],
+        "section": 3,
+        "section_type": "background"
+      },
+      "annotation_sha256": "af1a4f0997a0ee693954b58db4f2f6b6fd95db3310f3f9506a66918c7ceb967f",
+      "git_blob": "adacbd6ee3576c3c56b5ddd59da145a88c32c037",
+      "id": "05fe8bbf73642e4b229e1ee254a9daf8ca120bf93ff6f2acbffc59f99e9fd9bc",
+      "input_sha256": "80f9fe63520eae2be8c11bdb405d09f5eddcc1d5847ddb241f61572516151a7b",
+      "language": "en",
+      "path": "docs/usage/pep582.md",
+      "section": 3,
+      "selection": "first six hashes in split independent of predicted type",
+      "source": "pdm",
+      "split": "holdout"
+    },
+    {
+      "annotation": {
+        "content_span": {
+          "end": 1782,
+          "start": 1225
+        },
+        "evidence": [],
+        "section": 3,
+        "section_type": "other"
+      },
+      "annotation_sha256": "63e751a1a9d4d6468933cd3fe1a9e2d27d905bfd50d6e0b90d7070dbdd838499",
+      "git_blob": "064b8b6c317b7e09ae652c17f2086c4683498422",
+      "id": "085a589a5e596cca27a07b40744172fa6e4affc93622c2ebfd6676f9279346d8",
+      "input_sha256": "5e0bfc228b30f4057fe5210605614630856b04b01def1852174f35274404706c",
+      "language": "en",
+      "path": "docs/reference/pep621.md",
+      "section": 3,
+      "selection": "first hash in split/language/predicted-type stratum",
+      "source": "pdm",
+      "split": "holdout"
+    },
+    {
+      "annotation": {
+        "content_span": {
+          "end": 4750,
+          "start": 1397
+        },
+        "evidence": [
+          {
+            "signal": "reference_content",
+            "span": {
+              "end": 4195,
+              "start": 2349
+            }
+          }
+        ],
+        "section": 2,
+        "section_type": "reference"
+      },
+      "annotation_sha256": "7b0b172e8066c8fc20bf6f985089c449e305f04c0835623d36d16dc0efaf9664",
+      "git_blob": "ce872671137979ade7a4360e98521b8da5bb4d5b",
+      "id": "0d8298d017fc1d87c872446ca298406045ba592ee1caa4479343a593e5324c51",
+      "input_sha256": "e4a7d0eff5b3c18441456a9e590c356ecab921179fa4e40b7ef7b8aab7549fb5",
+      "language": "en",
+      "path": "docs/usage/lockfile.md",
+      "section": 2,
+      "selection": "first hash in split/language/predicted-type stratum",
+      "source": "pdm",
+      "split": "holdout"
+    }
+  ],
+  "schema_version": 1
+}

@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-09-28T04:29:41.460834+00:00",
+  "host": {
+    "system": "Windows",
+    "release": "11",
+    "machine": "AMD64",
+    "cpu": "AMD64 Family 26 Model 68 Stepping 0, AuthenticAMD",
+    "logical_cpus": 32,
+    "python": "3.13.14",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "runner": "local",
+    "standard_linux_ci": false,
+    "runner_os": null,
+    "runner_arch": null,
+    "runner_environment": null,
+    "image_os": null,
+    "image_version": null
+  },
+  "includes_process_startup": true,
+  "stdout_sink": "ordinary file",
+  "rule_selection": "default stable; preview measured separately",
+  "script_sha256": "593e8876a6835cf722f49311b448a19ddf506adcebb8f104131f7571f3c423d2",
+  "fixture": {
+    "version": 1,
+    "files": 1000,
+    "bytes": 10000000,
+    "sha256": "4c7dc11b4aab140ddd829fd67f3f79b21d3ad7feb6aab77be49ced6c83332253",
+    "distinct_contents": 600,
+    "files_in_exact_duplicate_groups": 500,
+    "construction": "100 groups of 10 documents; five exact template copies and five nearby variants per group; 15 similar procedure paragraphs per file; all padding is prose",
+    "intentionally_missing_links": 100
+  },
+  "input_filesystem_path": "C:\\Users\\kc\\AppData\\Local\\Temp\\seiso-m2-benchmark-mju4y0km",
+  "current": {
+    "binary": "C:\\Users\\kc\\Documents\\GitHub\\seiso\\target\\release\\seiso.exe",
+    "binary_sha256": "1fd16839a57c40f919a7fcf7e4301084a2cc7e93d22b81795556a932e8699b1b",
+    "version": "seiso 0.1.0",
+    "cache_supported": true,
+    "cache_mode_note": "cold clears only seiso's parse cache; filesystem page cache is uncontrolled",
+    "cold_warm_disabled_equal": true,
+    "hook_matches_selected_report": true,
+    "modes": {
+      "cold": {
+        "samples": [
+          {
+            "seconds": 1.5897193000000698,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.6888292000001002,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.5091176999999334,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.5028273000000354,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.5129277000000911,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          }
+        ],
+        "median_seconds": 0.5129277000000911,
+        "minimum_seconds": 0.5028273000000354,
+        "maximum_seconds": 1.5897193000000698,
+        "target_seconds": 1.0,
+        "target_met": true,
+        "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+        "output_bytes": 21700
+      },
+      "warm": {
+        "samples": [
+          {
+            "seconds": 0.09414450000008401,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.09217850000004546,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.08975359999999455,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.09156819999998334,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.0916944999999032,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          }
+        ],
+        "median_seconds": 0.0916944999999032,
+        "minimum_seconds": 0.08975359999999455,
+        "maximum_seconds": 0.09414450000008401,
+        "target_seconds": 0.5,
+        "target_met": true,
+        "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+        "output_bytes": 21700
+      },
+      "disabled": {
+        "samples": [
+          {
+            "seconds": 0.3007220999998026,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.3011762999999519,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.30162949999999,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.30399560000000747,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          },
+          {
+            "seconds": 0.3053322999999182,
+            "exit_code": 1,
+            "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+            "output_bytes": 21700
+          }
+        ],
+        "median_seconds": 0.30162949999999,
+        "minimum_seconds": 0.3007220999998026,
+        "maximum_seconds": 0.3053322999999182,
+        "target_seconds": null,
+        "target_met": null,
+        "output_sha256": "7a06679a25ad760ae4449c44101d7b3d1ec20194dd0af76f3b3a4de071ef972d",
+        "output_bytes": 21700
+      },
+      "hook_warm": {
+        "samples": [
+          {
+            "seconds": 0.058819699999958175,
+            "exit_code": 2,
+            "output_sha256": "984f4a6eb84376a414b636c1c68060aa3d57767bca0d75b4859d7ec6be615aac",
+            "output_bytes": 217
+          },
+          {
+            "seconds": 0.034229000000095766,
+            "exit_code": 2,
+            "output_sha256": "984f4a6eb84376a414b636c1c68060aa3d57767bca0d75b4859d7ec6be615aac",
+            "output_bytes": 217
+          },
+          {
+            "seconds": 0.03280049999989387,
+            "exit_code": 2,
+            "output_sha256": "984f4a6eb84376a414b636c1c68060aa3d57767bca0d75b4859d7ec6be615aac",
+            "output_bytes": 217
+          },
+          {
+            "seconds": 0.03363089999993463,
+            "exit_code": 2,
+            "output_sha256": "984f4a6eb84376a414b636c1c68060aa3d57767bca0d75b4859d7ec6be615aac",
+            "output_bytes": 217
+          },
+          {
+            "seconds": 0.03331860000002962,
+            "exit_code": 2,
+            "output_sha256": "984f4a6eb84376a414b636c1c68060aa3d57767bca0d75b4859d7ec6be615aac",
+            "output_bytes": 217
+          }
+        ],
+        "median_seconds": 0.03363089999993463,
+        "minimum_seconds": 0.03280049999989387,
+        "maximum_seconds": 0.058819699999958175,
+        "target_seconds": 0.15,
+        "target_met": true,
+        "output_sha256": "984f4a6eb84376a414b636c1c68060aa3d57767bca0d75b4859d7ec6be615aac",
+        "output_bytes": 217
+      }
+    }
+  },
+  "latency_targets_met_locally": true,
+  "standard_linux_ci_acceptance": false
+}

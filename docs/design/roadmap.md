@@ -14,40 +14,28 @@ version or require a particular Cargo package layout.
 ## Milestone evidence
 
 The [M0 record](../evaluation/m0-2026-09-27.md),
-[M1 record](../evaluation/m1-2026-09-28.md), and
-[M2 record](../evaluation/m2-2026-09-28.md) retain their measured outcomes,
+[M1 record](../evaluation/m1-2026-09-28.md),
+[M2 record](../evaluation/m2-2026-09-28.md), and
+[M3 record](../evaluation/m3-2026-09-28.md) retain their measured outcomes,
 limitations, and decisions. Stage completion and stable-rule promotion remain
 separate. The [evaluation policy](../evaluation/policy.md) owns acceptance criteria.
 
 ## M3: Heuristic rules and section classification
 
-M3 delivers a heuristic section classifier and section-type annotations, the
-preview rules below, edit-history replay, and repair tests. It also recalibrates
-existing rule thresholds on tuning data. These identifiers are reserved in this
-proposal only; configuration and suppression accept implemented rules from the registry.
+The [M3 record](../evaluation/m3-2026-09-28.md) records the implemented
+classifier, nine preview rules, threshold calibration, edit-history replay,
+repair regressions, and per-rule precision and usage-noise reports.
+The [optimization record](../evaluation/m3-optimization-2026-09-28.md) records
+subsequent context handling, abstention, and fresh-cohort limitations.
+[Section annotations](../reference/sections.md) describe the inspection API;
+`seiso rule --all` owns the available rules and their explanations.
 
-| Proposed code | Candidate behavior |
-| --- | --- |
-| STL002 | Detect deployment-state assertions in long-lived pages, excluding conditional instructions |
-| STL004 | Detect unconstrained bare versions in long-lived pages |
-| RAT001 | Detect argument-heavy prose before the first procedure step in how-to/reference content |
-| ORD001 | Detect a long preamble before a runnable example or ordered procedure; the original candidate thresholds were 30 lines or a table of more than 10 lines |
-| ORD002 | Detect troubleshooting, FAQ, or exceptions placed before the main flow in how-to/runbook content |
-| MIX001 | Detect section responsibilities that conflict with the document kind |
-| VOX002 | Detect headings framed around an excluded scope |
-| VOX003 | Detect production-process headings and self-narration outside plans and ADRs |
-| EVD001 | Detect evaluative claims without nearby evidence or a source |
-
-Thresholds and phrase lists are hypotheses to calibrate on tuning data. Section
-annotations should cover steps, references, rationale, background, and other
-content, including false negatives. Every heuristic starts in preview and needs
-holdout precision and usage-noise evidence before promotion. Recalibration of
-existing rule defaults requires the same separation of tuning and holdout.
-
-M3 is complete when every proposed heuristic has a holdout precision report and
-usage-noise report. Each rule's results determine whether it can leave preview
-under the [evaluation policy](../evaluation/policy.md); completing the stage does
-not promote all rules together.
+M3's reporting criterion is a holdout precision report and a usage-noise
+report for every proposed heuristic. Stage completion does not promote rules
+together: each rule must independently satisfy the
+[evaluation policy](../evaluation/policy.md). Missing natural samples and
+reported false positives remain limits on promotion. Subsequent rule tuning
+needs fresh holdout evidence before claiming validation.
 
 ## M4: Ecosystem
 

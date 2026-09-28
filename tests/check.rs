@@ -644,18 +644,19 @@ fn rule_documents_are_available_and_future_features_are_rejected() {
     assert_eq!(all.status.code(), Some(0));
     let all_text = String::from_utf8_lossy(&all.stdout);
     assert_eq!(all_text.matches("Status: stable.").count(), 5);
-    assert_eq!(all_text.matches("Status: preview.").count(), 13);
+    assert_eq!(all_text.matches("Status: preview.").count(), 22);
     for code in [
         "KND001", "KND002", "STL001", "STL003", "PTR001", "PTR003", "LNK001", "RAT002", "VOX001",
         "SUP001", "SUP002", "LNK002", "PTR002", "DUP001", "DUP002", "DUP003", "OWN001", "OWN002",
+        "STL002", "STL004", "RAT001", "ORD001", "ORD002", "MIX001", "VOX002", "VOX003", "EVD001",
     ] {
         assert!(String::from_utf8_lossy(&all.stdout).contains(code));
     }
     for arguments in [
         vec!["rule", "LNK999"],
-        vec!["rule", "STL002"],
-        vec!["check", "--select", "STL002"],
-        vec!["check", "--preview", "--select", "STL002"],
+        vec!["rule", "STL999"],
+        vec!["check", "--select", "STL999"],
+        vec!["check", "--preview", "--select", "STL999"],
         vec!["check", "--judge"],
         vec!["check", "--output-format", "yaml"],
     ] {

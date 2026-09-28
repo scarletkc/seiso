@@ -123,3 +123,120 @@ The JSON retains every added, removed, and changed diagnosis, including
 related locations. The Markdown view limits individual entries for workflow
 summaries; the artifact contains the full result. Changing corpus locks or
 kind profiles requires a separate review before comparing rule behavior.
+
+## Heuristic evaluation
+
+Freeze tuning output before reviewing the holdout. The M3 evaluator includes
+section predictions for every document, including documents without a kind:
+
+```sh
+python scripts/evaluate_m3.py --split tuning --output corpus/reports/m3-tuning
+python scripts/calibrate_m3.py --output corpus/reports/m3-calibration
+```
+
+The calibration script compares existing duplicate-rule thresholds on tuning
+repositories only. Inspect candidate diagnoses before changing defaults;
+zero samples cannot establish a preferred threshold. Preserve each tuning
+iteration and its labels.
+
+After fixing the implementation, freeze the full run and collect real Git
+document changes through an explicit commit:
+
+```sh
+python scripts/evaluate_m3.py --split all --output corpus/reports/m3-natural
+python scripts/replay_m3.py --revision HEAD --output corpus/reports/m3-history
+```
+
+The replay stores original before/after source, commit identities, a fixed
+kind profile, complete diagnoses, and introduced diagnoses. It ignores
+position-only movement of unchanged warnings. The fixed profile applies to
+both revisions; it does not reconstruct historical project configuration.
+Only repository Markdown is read, and no historical code is executed.
+
+Label all new heuristic diagnostics and every post-change replay diagnostic. M3
+labels require `id`, `code`, `input_sha256`, `diagnostic_sha256`, `label`, and
+`reason`; the bundle records `schema_version`, `report_sha256`, and
+`reviewer_kind`. Hashes use SHA-256; diagnostic hashes use `encode` from
+[`evaluate_m2.py`](../../scripts/evaluate_m2.py). Then summarize:
+
+```sh
+python scripts/summarize_m3.py --report corpus/reports/m3-natural/diagnostics.json.gz --labels corpus/reports/m3-natural/labels.json --replay corpus/reports/m3-history/replay.json.gz --replay-labels corpus/reports/m3-history/labels.json --output corpus/reports/m3-summary.json
+```
+
+An incorrect block is one document change with a false positive after checking,
+including a warning that persists from the previous revision. Several false positives on one change count once. The denominator
+includes clean changes. Uncertain changes are also counted in a separate
+conservative rate. These are simulated blocks with preview rules enabled,
+not observed user interruptions.
+
+Sample section predictions independently of whether a rule reported them:
+
+```sh
+python scripts/sections_m3.py sample --report corpus/reports/m3-natural/diagnostics.json.gz --output corpus/reports/m3-sections/sample.json
+python scripts/sections_m3.py summarize --report corpus/reports/m3-natural/diagnostics.json.gz --sample corpus/reports/m3-sections/sample.json --labels corpus/reports/m3-sections/labels.json --output corpus/reports/m3-sections/summary.json
+```
+
+Between those commands, label every sample with `expected_type` and `reason`,
+preserving its `id`, `input_sha256`, and `annotation_sha256`. The label bundle
+records `sample_sha256` and `reviewer_kind`. The sampler includes unclassified
+content and a type-independent sample so missed responsibilities stay visible.
+Its stratified confusion table is not a population accuracy or rule-recall
+estimate.
+
+[`tests/repairs.rs`](../../tests/repairs.rs) checks authored repairs and protects
+unaffected facts. The independent concise-output agent trial and sampled
+human meaning review required for promotion remain separate evaluations.
+
+Replay the frozen M3 outcomes against a changed implementation without
+relabeling or replacing the original reports:
+
+```sh
+python scripts/verify_m3.py --natural corpus/results/m3/natural-v1/diagnostics.json.gz --history corpus/results/m3/history-v3/replay.json.gz --output target/m3-revalidation.json
+```
+
+This command requires exact natural diagnostics, section predictions, history
+results, and introduced-warning matching, including reversed-input equality.
+A mismatch requires fresh evaluation; it is not automatically accepted.
+
+## Fresh cohorts for heuristic optimization
+
+Once a holdout finding guides an implementation change, treat that cohort as
+development data. Preserve its original report and labels. Choose new public
+repositories and fixed path scopes before reviewing their content:
+
+```sh
+python scripts/fresh_m3.py pin --source OWNER/REPO --output corpus/reports/new-cohort/selection.json
+python scripts/fresh_m3.py fetch --input corpus/reports/new-cohort/selection.json --output corpus/reports/new-cohort/corpus.lock.json
+```
+
+Pinning rejects repositories from the original corpus and retained M3 cohort
+locks. Supply `--previous-corpus PATH` for other prior cohorts. Freeze the
+implementation before inspecting new source text. Review kinds before
+producing diagnoses; the profile schema is illustrated by the
+[final optimization profile](../results/m3/optimization-v2/fresh-inputs/kinds.json).
+It binds each decision to its original input hash and records review coverage.
+
+```sh
+python scripts/fresh_m3.py evaluate --input corpus/reports/new-cohort/corpus.lock.json --profile corpus/reports/new-cohort/kinds.json --output corpus/reports/new-cohort/run
+```
+
+The evaluator verifies original bytes, implementation bindings, and reversed
+input order, and retains per-file incomplete rule states. A revised profile
+that reuses an earlier cohort requires `--development-replay`; its output is
+explicitly marked as development evidence. No external repository code runs.
+
+For section sampling on a separate cohort, pass `--corpus-lock PATH` to
+`sections_m3.py sample` and `sections_m3.py summarize`. Original blobs remain
+in the shared verified corpus cache. Label bundles retain the same source and
+prediction bindings as the original section audit.
+
+Reproduce the retained optimization summary with the current implementation:
+
+```sh
+python scripts/summarize_m3_optimization.py --output target/m3-optimization-summary.json
+```
+
+This summary checks unchanged comparison inputs and existing-rule diagnoses,
+keeps the two optimization cohorts separate, and never turns an empty sample
+into validated precision. Its source and classification reviews are agent
+judgments, not human review.

@@ -1,0 +1,728 @@
+{
+  "previous_corpus_sha256": "3904c6c396606d13a21de7296624bfff99054f60d872cb4da6a346ddb80487cb",
+  "schema_version": 1,
+  "selection": "All regular Markdown files matching the declared paths; repositories selected before reading their source text or diagnostic output.",
+  "sources": [
+    {
+      "category": "developer-documentation",
+      "commit": "b5addb64f0161ff6bfe94c124ef76f6a1fba5254",
+      "documents": [
+        {
+          "bytes": 4944,
+          "git_blob": "2ccecd578c3dfdd4fa1f7fc493309cfc944f7cb3",
+          "path": "README.md"
+        },
+        {
+          "bytes": 8554,
+          "git_blob": "63d26e5f46f87f01c4e01d9416268a4177a3d60b",
+          "path": "docs/advanced/authentication.md"
+        },
+        {
+          "bytes": 11456,
+          "git_blob": "90969cefda100f94460f9eef3610b780c68eefdd",
+          "path": "docs/advanced/clients.md"
+        },
+        {
+          "bytes": 2419,
+          "git_blob": "28cf353d967a225e155f2488ab7821cf16d53163",
+          "path": "docs/advanced/event-hooks.md"
+        },
+        {
+          "bytes": 9447,
+          "git_blob": "d9208ccdb38853134b28bcb0047c8d172a80673f",
+          "path": "docs/advanced/extensions.md"
+        },
+        {
+          "bytes": 3563,
+          "git_blob": "2a6b7d5f3695cd296ce6d283ffe07af600b0aceb",
+          "path": "docs/advanced/proxies.md"
+        },
+        {
+          "bytes": 596,
+          "git_blob": "2002428326930f083872da778394df54e445edb4",
+          "path": "docs/advanced/resource-limits.md"
+        },
+        {
+          "bytes": 3623,
+          "git_blob": "3813293f788ea9691bba272824831dadeed0dcaa",
+          "path": "docs/advanced/ssl.md"
+        },
+        {
+          "bytes": 3655,
+          "git_blob": "5565f026956c097233f91527449a28caa9542c0d",
+          "path": "docs/advanced/text-encodings.md"
+        },
+        {
+          "bytes": 2763,
+          "git_blob": "aedcfb627f5139901638ebf8de30216c2640591e",
+          "path": "docs/advanced/timeouts.md"
+        },
+        {
+          "bytes": 14201,
+          "git_blob": "d4e7615d380b94a269babb492ac2dbfe2e39d57e",
+          "path": "docs/advanced/transports.md"
+        },
+        {
+          "bytes": 4484,
+          "git_blob": "f1bd50c993f417119bb9ae14fe60e6856a1a7f2a",
+          "path": "docs/api.md"
+        },
+        {
+          "bytes": 6416,
+          "git_blob": "f01715d84f6a0c4b8d74bde21b07001cf90d674c",
+          "path": "docs/async.md"
+        },
+        {
+          "bytes": 4635,
+          "git_blob": "1647289871edf21168b10c6ba6fd45b012b0ce12",
+          "path": "docs/code_of_conduct.md"
+        },
+        {
+          "bytes": 9891,
+          "git_blob": "9686167574a73033888e528fe1f012475841b5d1",
+          "path": "docs/compatibility.md"
+        },
+        {
+          "bytes": 8362,
+          "git_blob": "2759019b2fe89794b5123334fe3dbe929ad33179",
+          "path": "docs/contributing.md"
+        },
+        {
+          "bytes": 2844,
+          "git_blob": "0364deb0613477a82f40055244f307fbd5b24e76",
+          "path": "docs/environment_variables.md"
+        },
+        {
+          "bytes": 2112,
+          "git_blob": "151c6e46f1b98c02d04716208437028ec5c053e9",
+          "path": "docs/exceptions.md"
+        },
+        {
+          "bytes": 2570,
+          "git_blob": "3cab09d912093cb1c5ffdd3fdcb4a553aaa7890b",
+          "path": "docs/http2.md"
+        },
+        {
+          "bytes": 4160,
+          "git_blob": "90a4f6b6f76ac4756da1676e9208ecdeed73a2be",
+          "path": "docs/index.md"
+        },
+        {
+          "bytes": 3962,
+          "git_blob": "b3c5781727e12152bc8b7ee1a85e4f7a5822dedd",
+          "path": "docs/logging.md"
+        },
+        {
+          "bytes": 14706,
+          "git_blob": "e140b53cd79583afd9425d8ace936b56a68c1fc4",
+          "path": "docs/quickstart.md"
+        },
+        {
+          "bytes": 3332,
+          "git_blob": "253c312f584c1c2ef9283fae70ed988d03375630",
+          "path": "docs/third_party_packages.md"
+        },
+        {
+          "bytes": 2150,
+          "git_blob": "a2ca15f5640e496fc9a5f2652037e1845ce13231",
+          "path": "docs/troubleshooting.md"
+        }
+      ],
+      "id": "httpx",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "language_focus": "en",
+      "license_hint": "BSD-3-Clause",
+      "licenses": [
+        {
+          "bytes": 1508,
+          "git_blob": "ab79d16a3f4c6c894c028d1f7431811e8711b42b",
+          "path": "LICENSE.md"
+        }
+      ],
+      "matched_patterns": {
+        "README.md": 1,
+        "docs/**": 23
+      },
+      "repository": "encode/httpx",
+      "split": "holdout",
+      "tree": "31ba94512339180efacceacc0646b56ee15eba63"
+    },
+    {
+      "category": "developer-documentation",
+      "commit": "2862536793b3c67d9d83c33e0dd6d50a791928f8",
+      "documents": [
+        {
+          "bytes": 3117,
+          "git_blob": "7b665a23ab7eb6ab295fdbc4dfadf295ea8eb880",
+          "path": "README.md"
+        },
+        {
+          "bytes": 25,
+          "git_blob": "ea38c9bff4bfe38a798e001e890b9b8f6ac8a146",
+          "path": "docs/about/contributing.md"
+        },
+        {
+          "bytes": 1599,
+          "git_blob": "44546d3c08e4c34a41a1217716921ce0c8dcdd46",
+          "path": "docs/about/license.md"
+        },
+        {
+          "bytes": 110725,
+          "git_blob": "4fd81c15cd57e2fd1a985561826f4705d044e6ba",
+          "path": "docs/about/release-notes.md"
+        },
+        {
+          "bytes": 559,
+          "git_blob": "183365e09a6fbb03776fd54169ab88f4082ca1ec",
+          "path": "docs/dev-guide/README.md"
+        },
+        {
+          "bytes": 605,
+          "git_blob": "b09174020288469fe58fb5f34f71e8cbc946dc0e",
+          "path": "docs/dev-guide/api.md"
+        },
+        {
+          "bytes": 18169,
+          "git_blob": "e0305c3c2526808633a54fa881ac9028c94134f6",
+          "path": "docs/dev-guide/plugins.md"
+        },
+        {
+          "bytes": 37761,
+          "git_blob": "ea4b99111beb59911886686d97c0a4382287b9e2",
+          "path": "docs/dev-guide/themes.md"
+        },
+        {
+          "bytes": 9650,
+          "git_blob": "4c408b29d1f28e5c4a4cb72475315e17a8b1575e",
+          "path": "docs/dev-guide/translations.md"
+        },
+        {
+          "bytes": 6529,
+          "git_blob": "490b95d9cc2bf7bd00c4d6ac10861234b7874021",
+          "path": "docs/getting-started.md"
+        },
+        {
+          "bytes": 3281,
+          "git_blob": "f796a05457415d650af52c2b6baf57eb0191036a",
+          "path": "docs/index.md"
+        },
+        {
+          "bytes": 743,
+          "git_blob": "aea3ba83fd21a72afe530d73d39b321a9b53a849",
+          "path": "docs/user-guide/README.md"
+        },
+        {
+          "bytes": 8680,
+          "git_blob": "92d0eb653ee75fc95273175cad1c098e00b042f8",
+          "path": "docs/user-guide/choosing-your-theme.md"
+        },
+        {
+          "bytes": 159,
+          "git_blob": "987c13822c7bd4934428b20096e9f12e768b8c16",
+          "path": "docs/user-guide/cli.md"
+        },
+        {
+          "bytes": 43563,
+          "git_blob": "5f925a9e3fe17c961fa647f9212fb1730edaa5ee",
+          "path": "docs/user-guide/configuration.md"
+        },
+        {
+          "bytes": 8308,
+          "git_blob": "0b3357f0f5bb7dd7133fa935b86befc8ef2c31de",
+          "path": "docs/user-guide/customizing-your-theme.md"
+        },
+        {
+          "bytes": 9434,
+          "git_blob": "8224cb9ae007ba352435dc319f5a62579552a6f0",
+          "path": "docs/user-guide/deploying-your-docs.md"
+        },
+        {
+          "bytes": 3229,
+          "git_blob": "fbf0b91888997dd4350628d29efc18a78ff9cfe3",
+          "path": "docs/user-guide/installation.md"
+        },
+        {
+          "bytes": 1993,
+          "git_blob": "279f4a8edd1975558e496df8ae5a6f14c411b1f0",
+          "path": "docs/user-guide/localizing-your-theme.md"
+        },
+        {
+          "bytes": 19342,
+          "git_blob": "8327b10782d35206deb902ffd0f2be9848991e78",
+          "path": "docs/user-guide/writing-your-docs.md"
+        }
+      ],
+      "id": "mkdocs",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "language_focus": "en",
+      "license_hint": "BSD-2-Clause",
+      "licenses": [
+        {
+          "bytes": 1292,
+          "git_blob": "7bb507395f28850a9b99d7f50c0deb356111960a",
+          "path": "LICENSE"
+        },
+        {
+          "bytes": 1599,
+          "git_blob": "44546d3c08e4c34a41a1217716921ce0c8dcdd46",
+          "path": "docs/about/license.md"
+        }
+      ],
+      "matched_patterns": {
+        "README.md": 1,
+        "docs/**": 19
+      },
+      "repository": "mkdocs/mkdocs",
+      "split": "holdout",
+      "tree": "cb7bc316a04ef9835d07b7497517eed81914910a"
+    },
+    {
+      "category": "developer-documentation",
+      "commit": "7c26ebeaf8b83f5f0374a2545bb15e36c87db0d0",
+      "documents": [
+        {
+          "bytes": 3769,
+          "git_blob": "c7d536ddec91c8855f45c0298180de2e1aa62a9f",
+          "path": "README.md"
+        },
+        {
+          "bytes": 7,
+          "git_blob": "05761ac57f6bcedf28c34c3867849df97ef89a8b",
+          "path": "docs/blog/index.md"
+        },
+        {
+          "bytes": 6609,
+          "git_blob": "dc71793648b5d3499bf6e69fabf06c2deb3538b7",
+          "path": "docs/blog/posts/release-hatch-1100.md"
+        },
+        {
+          "bytes": 3694,
+          "git_blob": "1c320d18716ab43856a19ca83e088ed81b9c0207",
+          "path": "docs/blog/posts/release-hatch-1160.md"
+        },
+        {
+          "bytes": 4850,
+          "git_blob": "4a8d03db5e611841b913262c9473c1e63da3ac04",
+          "path": "docs/blog/posts/release-hatch-1170.md"
+        },
+        {
+          "bytes": 7499,
+          "git_blob": "fa8d2d60e936acacd3f39ff53e0da7d78ee85513",
+          "path": "docs/blog/posts/release-hatch-1180.md"
+        },
+        {
+          "bytes": 4774,
+          "git_blob": "ccc7a85eab33a1143059da77d0513c2ec2b8a9a6",
+          "path": "docs/blog/posts/release-hatch-160.md"
+        },
+        {
+          "bytes": 10285,
+          "git_blob": "b95c25c276b158832d9abad41fb57c016c7af7f5",
+          "path": "docs/blog/posts/release-hatch-180.md"
+        },
+        {
+          "bytes": 1539,
+          "git_blob": "513dfc7460d96c7211dd11b3222927eef94e85a3",
+          "path": "docs/blog/posts/release-hatch-190.md"
+        },
+        {
+          "bytes": 1675,
+          "git_blob": "00a33be4372a79b2455f210af0e6e277c34b0590",
+          "path": "docs/build.md"
+        },
+        {
+          "bytes": 1413,
+          "git_blob": "c2b7de13071ac3657f622df0d4c179866f08863d",
+          "path": "docs/cli/about.md"
+        },
+        {
+          "bytes": 120,
+          "git_blob": "7a39d2ca8c4068fdc973951bbb63a5d22c31c116",
+          "path": "docs/cli/reference.md"
+        },
+        {
+          "bytes": 1796,
+          "git_blob": "b994d3e34031264547cf6da737af50a8b3f9cf0d",
+          "path": "docs/community/contributing.md"
+        },
+        {
+          "bytes": 463,
+          "git_blob": "8920b379d414a4eec208b92f579641613e94a274",
+          "path": "docs/community/highlights.md"
+        },
+        {
+          "bytes": 40622,
+          "git_blob": "ca7eb62ab7fa81ecb29e71a8d193510b3083e756",
+          "path": "docs/community/users.md"
+        },
+        {
+          "bytes": 12614,
+          "git_blob": "1717c4a515305b8ac421746c3b89ef749cbcc994",
+          "path": "docs/config/build.md"
+        },
+        {
+          "bytes": 1918,
+          "git_blob": "46b4b041435b6cdcb0fb357877f9f63d7feb73d1",
+          "path": "docs/config/context.md"
+        },
+        {
+          "bytes": 11914,
+          "git_blob": "5baa15e708d355e94ccf31d2534dd50271d504fc",
+          "path": "docs/config/dependency.md"
+        },
+        {
+          "bytes": 11128,
+          "git_blob": "3b425d119ec0cb52c768a52b676c8bb5957f3cae",
+          "path": "docs/config/environment/advanced.md"
+        },
+        {
+          "bytes": 11141,
+          "git_blob": "8075dd0aeb0fc1858a3f8c34b635ad57f5b1295a",
+          "path": "docs/config/environment/overview.md"
+        },
+        {
+          "bytes": 6332,
+          "git_blob": "5bc72000feeeeca265141eebb4196bd146174366",
+          "path": "docs/config/environment/sources.md"
+        },
+        {
+          "bytes": 8647,
+          "git_blob": "7cc24365a5919332377247add5b945c3015fc12d",
+          "path": "docs/config/hatch.md"
+        },
+        {
+          "bytes": 1196,
+          "git_blob": "9b77c19ff11f672963e7e22eedd92a7036f7d6c6",
+          "path": "docs/config/internal/build.md"
+        },
+        {
+          "bytes": 5799,
+          "git_blob": "c8787966cd60b920f9bb6fd0b33c82f1152ca38f",
+          "path": "docs/config/internal/static-analysis.md"
+        },
+        {
+          "bytes": 3878,
+          "git_blob": "3fee5affc28a8c0481bc73da108553bf1b02100c",
+          "path": "docs/config/internal/testing.md"
+        },
+        {
+          "bytes": 2396,
+          "git_blob": "7ff3e1eaf9c1634b8d95109b7e7a788072de800b",
+          "path": "docs/config/internal/type-checking.md"
+        },
+        {
+          "bytes": 5897,
+          "git_blob": "c7b415792ceb40cbd42bfda2f29c87ae014e0e19",
+          "path": "docs/config/metadata.md"
+        },
+        {
+          "bytes": 1369,
+          "git_blob": "973fb6406d134d51fa1b5818ffd9df7950f1f62d",
+          "path": "docs/config/project-templates.md"
+        },
+        {
+          "bytes": 6205,
+          "git_blob": "01419284aefb1e54ca99d398a51093f6d765ae80",
+          "path": "docs/environment.md"
+        },
+        {
+          "bytes": 30225,
+          "git_blob": "608b84fa920effb334155e9d94d8e04fc69e51e0",
+          "path": "docs/history/hatch.md"
+        },
+        {
+          "bytes": 23478,
+          "git_blob": "6d3af09ea908c32646b59b8ce94bf19fbe0de36c",
+          "path": "docs/history/hatchling.md"
+        },
+        {
+          "bytes": 876,
+          "git_blob": "5b907234a5a2f383740ada8addb8c4cfdd57f2c9",
+          "path": "docs/how-to/config/constrain-hatch.md"
+        },
+        {
+          "bytes": 3627,
+          "git_blob": "bf26a22084eb835ff8c60183c43a9d0acc811b6a",
+          "path": "docs/how-to/config/dynamic-metadata.md"
+        },
+        {
+          "bytes": 1760,
+          "git_blob": "a93bd8966caf360a180c8b7442ba486cf15553a6",
+          "path": "docs/how-to/environment/dependency-resolution.md"
+        },
+        {
+          "bytes": 5350,
+          "git_blob": "e0bc0663bb54c23fd87dff0d6f27aeaec53a25e0",
+          "path": "docs/how-to/environment/lockfiles.md"
+        },
+        {
+          "bytes": 2761,
+          "git_blob": "e3d94b11ac08a572ca936d1c77b42c9ed21fe32a",
+          "path": "docs/how-to/environment/select-installer.md"
+        },
+        {
+          "bytes": 5023,
+          "git_blob": "8596320c2be76c29fa14e6648e83ccbef52ee56b",
+          "path": "docs/how-to/environment/workspace.md"
+        },
+        {
+          "bytes": 2114,
+          "git_blob": "a974852ffcc936c6d88cebddc1e5562b3557ab83",
+          "path": "docs/how-to/integrate/vscode.md"
+        },
+        {
+          "bytes": 1299,
+          "git_blob": "b65fb56fb2990c9907f28d0266d75a9ecda9d15c",
+          "path": "docs/how-to/meta/report-issues.md"
+        },
+        {
+          "bytes": 2049,
+          "git_blob": "fb3ed7f0d90a8661377940a55c9a6c6356bd642b",
+          "path": "docs/how-to/plugins/testing-builds.md"
+        },
+        {
+          "bytes": 1442,
+          "git_blob": "4fdff0f48a6439fdbfe8b8dc1fe5b1416ea1f932",
+          "path": "docs/how-to/publish/auth.md"
+        },
+        {
+          "bytes": 703,
+          "git_blob": "646a9acb1f04abdcd2d5d3123c2f6930da6e1f23",
+          "path": "docs/how-to/publish/repo.md"
+        },
+        {
+          "bytes": 2070,
+          "git_blob": "621eb1c9012e810a9f9be06bb17eaa44433c5a0d",
+          "path": "docs/how-to/python/custom.md"
+        },
+        {
+          "bytes": 2824,
+          "git_blob": "888e113da8db4e7889cc24c49eeaa2328776cf8e",
+          "path": "docs/how-to/run/python-scripts.md"
+        },
+        {
+          "bytes": 2216,
+          "git_blob": "6aef79149c147acc43b4fd37b54aeaf40fc1d2b2",
+          "path": "docs/how-to/static-analysis/behavior.md"
+        },
+        {
+          "bytes": 5372,
+          "git_blob": "73f3ef368e3a111a3a94ffe121aaed10361342b5",
+          "path": "docs/index.md"
+        },
+        {
+          "bytes": 6499,
+          "git_blob": "eb2eaeb6bfb38298c484895020526c4b48d74843",
+          "path": "docs/install.md"
+        },
+        {
+          "bytes": 2226,
+          "git_blob": "5b09fd4985a29a7161852b72bddf28a2f4456abf",
+          "path": "docs/intro.md"
+        },
+        {
+          "bytes": 1127,
+          "git_blob": "268a0b525fb0cc20302d2c54a30effca5f80e1f6",
+          "path": "docs/meta/authors.md"
+        },
+        {
+          "bytes": 5675,
+          "git_blob": "a85496aa0bcd8b4b43b36800b27b216270600913",
+          "path": "docs/meta/faq.md"
+        },
+        {
+          "bytes": 1332,
+          "git_blob": "e927a955a0fecb6b4472c288a567cec8369d2712",
+          "path": "docs/next-steps.md"
+        },
+        {
+          "bytes": 2501,
+          "git_blob": "223ef8a743ca5e918ccfd61c80bd982d39fdc849",
+          "path": "docs/plugins/about.md"
+        },
+        {
+          "bytes": 958,
+          "git_blob": "09432b82847d14ae43a75ddf386fc7b665c5c38c",
+          "path": "docs/plugins/build-hook/custom.md"
+        },
+        {
+          "bytes": 3862,
+          "git_blob": "9dca4cd47b8106ff43099ae4584ced7219e15b6c",
+          "path": "docs/plugins/build-hook/reference.md"
+        },
+        {
+          "bytes": 835,
+          "git_blob": "e49d6fc3c959263bada116f8eec84090a8b44df9",
+          "path": "docs/plugins/build-hook/version.md"
+        },
+        {
+          "bytes": 1764,
+          "git_blob": "0afa4b5bc1e0e64457d73a6f648747c7019a1317",
+          "path": "docs/plugins/builder/binary.md"
+        },
+        {
+          "bytes": 864,
+          "git_blob": "00382793c054c1d805f7642e393ef2a66a9ed96f",
+          "path": "docs/plugins/builder/custom.md"
+        },
+        {
+          "bytes": 748,
+          "git_blob": "acd8ffe06f86ee8a452801ac2067473e7aceaf9e",
+          "path": "docs/plugins/builder/reference.md"
+        },
+        {
+          "bytes": 1802,
+          "git_blob": "13db3f6579fa512ec622077c578047b93e69672e",
+          "path": "docs/plugins/builder/sdist.md"
+        },
+        {
+          "bytes": 4852,
+          "git_blob": "946df8f89fd3e43d0df8809727d3db30396d37d7",
+          "path": "docs/plugins/builder/wheel.md"
+        },
+        {
+          "bytes": 1021,
+          "git_blob": "fabd8923b65b132373a241323225f3a882bda0eb",
+          "path": "docs/plugins/environment-collector/custom.md"
+        },
+        {
+          "bytes": 393,
+          "git_blob": "921d3ee5281209177c6dafb0d9c02cd69e22a258",
+          "path": "docs/plugins/environment-collector/default.md"
+        },
+        {
+          "bytes": 890,
+          "git_blob": "989ff3af5e22a1463955e8925742accbc570945b",
+          "path": "docs/plugins/environment-collector/reference.md"
+        },
+        {
+          "bytes": 3957,
+          "git_blob": "667f92b5d5cbfc117e045ec953125bf3efc9ca2f",
+          "path": "docs/plugins/environment/reference.md"
+        },
+        {
+          "bytes": 7071,
+          "git_blob": "e0c59919b5467c87deb98e1bda9e6e95f6f689a0",
+          "path": "docs/plugins/environment/virtual.md"
+        },
+        {
+          "bytes": 1675,
+          "git_blob": "88b3ee8e7c14983e464622452e9c8f966a773769",
+          "path": "docs/plugins/locker.md"
+        },
+        {
+          "bytes": 916,
+          "git_blob": "ba9e38fe8266ba9d51813f25c76abc1bbe6084cc",
+          "path": "docs/plugins/metadata-hook/custom.md"
+        },
+        {
+          "bytes": 1136,
+          "git_blob": "2136d4723c09144f642d26401ed076affc061787",
+          "path": "docs/plugins/metadata-hook/reference.md"
+        },
+        {
+          "bytes": 1613,
+          "git_blob": "5071b81dd05f9e8b9eed5493422362084cd60f63",
+          "path": "docs/plugins/publisher/package-index.md"
+        },
+        {
+          "bytes": 389,
+          "git_blob": "2964b4cfa3d2cd668b3ed65399814331ff29c9d6",
+          "path": "docs/plugins/publisher/reference.md"
+        },
+        {
+          "bytes": 1853,
+          "git_blob": "491a57e9b72dfcbf91a0cb00b0ecc1fb5f660376",
+          "path": "docs/plugins/utilities.md"
+        },
+        {
+          "bytes": 448,
+          "git_blob": "2a073e3d14ad07d81be7daa18ec0cb52dc8def3f",
+          "path": "docs/plugins/version-scheme/reference.md"
+        },
+        {
+          "bytes": 448,
+          "git_blob": "ea78f2596456c4b89659341e195202b22d48168b",
+          "path": "docs/plugins/version-scheme/standard.md"
+        },
+        {
+          "bytes": 1255,
+          "git_blob": "528089fce490cb8803b5930493f4c83cf8a12f0d",
+          "path": "docs/plugins/version-source/code.md"
+        },
+        {
+          "bytes": 468,
+          "git_blob": "125b2310485716936e9a99a865f90fd0e9d94d0a",
+          "path": "docs/plugins/version-source/env.md"
+        },
+        {
+          "bytes": 768,
+          "git_blob": "3b50034a9e385f6727196c76cdb89e50e07d182d",
+          "path": "docs/plugins/version-source/reference.md"
+        },
+        {
+          "bytes": 678,
+          "git_blob": "84d9e62c638d08d48814c5cea0499df659c6f2c2",
+          "path": "docs/plugins/version-source/regex.md"
+        },
+        {
+          "bytes": 1172,
+          "git_blob": "bb84b4562f0a15e7ccadd57ccb24bacf166bf787",
+          "path": "docs/publish.md"
+        },
+        {
+          "bytes": 6158,
+          "git_blob": "8372ce407b747dfaeead11e4923b4eb55bf201cb",
+          "path": "docs/tutorials/environment/basic-usage.md"
+        },
+        {
+          "bytes": 5018,
+          "git_blob": "1ba0f5b6fd3804dd921fc22a8a542ca476050dbe",
+          "path": "docs/tutorials/python/manage.md"
+        },
+        {
+          "bytes": 7447,
+          "git_blob": "2856a9411469e73c470e0ee7d96be89cfed25fde",
+          "path": "docs/tutorials/testing/overview.md"
+        },
+        {
+          "bytes": 2698,
+          "git_blob": "d24ee6aa6da3d27c5e1fcb8a43a293d8d8dd88d4",
+          "path": "docs/version.md"
+        },
+        {
+          "bytes": 10207,
+          "git_blob": "aec67e1bc038e103228459ba32717bf5be6f7fbc",
+          "path": "docs/why.md"
+        }
+      ],
+      "id": "hatch",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "language_focus": "en",
+      "license_hint": "MIT",
+      "licenses": [
+        {
+          "bytes": 1088,
+          "git_blob": "fb381c33537f3967279be2b19d3e243a67914418",
+          "path": "LICENSE.txt"
+        }
+      ],
+      "matched_patterns": {
+        "README.md": 1,
+        "docs/**": 82
+      },
+      "repository": "pypa/hatch",
+      "split": "holdout",
+      "tree": "da0c8f80608e7a039024def323a73ed185c5ebf9"
+    }
+  ]
+}

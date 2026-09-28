@@ -1,0 +1,27 @@
+---
+source: tests/engine.rs
+expression: result.diagnostics
+---
+[
+  {
+    "code": "STL004",
+    "message": "This version has no lasting constraint or historical context.",
+    "filename": "docs/guide.md",
+    "location": {
+      "row": 4,
+      "column": 25
+    },
+    "end_location": {
+      "row": 4,
+      "column": 30
+    },
+    "byte_range": {
+      "start": 44,
+      "end": 49
+    },
+    "fix": null,
+    "url": null,
+    "related": [],
+    "suggestion": "State the supported version range, or link to the manifest or release record that owns the version."
+  }
+]

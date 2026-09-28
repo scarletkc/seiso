@@ -1,0 +1,27 @@
+---
+source: tests/engine.rs
+expression: result.diagnostics
+---
+[
+  {
+    "code": "VOX002",
+    "message": "This heading frames the section around excluded scope.",
+    "filename": "docs/guide.md",
+    "location": {
+      "row": 4,
+      "column": 4
+    },
+    "end_location": {
+      "row": 4,
+      "column": 24
+    },
+    "byte_range": {
+      "start": 23,
+      "end": 43
+    },
+    "fix": null,
+    "url": null,
+    "related": [],
+    "suggestion": "Name the capability or boundary readers need; keep project non-goals in a plan or ADR."
+  }
+]

@@ -1,0 +1,101 @@
+{
+  "base_revision": "cc93e11fdd816b72ba7e83d1d12caac1d60eb9a9",
+  "calibration_decision_sha256": "e8e1c722b2db42fb0ec519562280698cc2e6cc797ed4a62c8080dba4924477e3",
+  "evaluation_tools": {
+    "scripts/calibrate_m3.py": "4dcc60c6acaec4d49e0fd597453ec7bba062b12473056a7c71c19b287c8d32e4",
+    "scripts/evaluate_m3.py": "17f13ebfd5f341850fa3144e5db12bf45c55d3605e65803f075828286390150a",
+    "scripts/replay_m3.py": "f3a503b56cd440a22cbc8d8e65ee639340e783a30f2726091cc42b1ce081d99a",
+    "scripts/sections_m3.py": "2a422945ccfe880d1b7a12658bd24cb7a8f784bc39d0b71b9d3733495ca1d4eb",
+    "scripts/summarize_m3.py": "30e9ecc6f5944757cbda253821e257d06f539059fadafb7476b753abb3656804",
+    "scripts/test_m3.py": "a1edae1c4aa9c47f4e78eee0ea84cd972e2efc5f2bde822ff1f46eb574628857",
+    "scripts/verify_m3.py": "860d0a58056c6f127d6df4860f5448a6bbfc70abe64db48d48354c4a644b9066"
+  },
+  "host": "Windows; local development checkout",
+  "logs": {
+    "clippy": {
+      "path": "corpus/results/m3/validation/clippy.txt.gz",
+      "sha256": "03c1ab1f472f2cad2414fb98f628d7efc81d5e0efe75c301a5a7d319d6ebc83f"
+    },
+    "corpus-tests": {
+      "path": "corpus/results/m3/validation/corpus-tests.txt.gz",
+      "sha256": "38a9be7da90c21a08322702cc768849a31e6adea7e44fb1c76ee260251d91bb1"
+    },
+    "evaluation-tests": {
+      "path": "corpus/results/m3/validation/evaluation-tests.txt.gz",
+      "sha256": "37b94323fbcabfcb28c3c81cfd04033ce468445768017947c4d2b272796a9524"
+    },
+    "preview-check": {
+      "path": "corpus/results/m3/validation/preview-check.txt.gz",
+      "sha256": "8cfdd84a3ff481b80f47c862b0dd6e3c3290b7eca51cba6fdfa432053c8a22ce"
+    },
+    "rust-tests": {
+      "path": "corpus/results/m3/validation/rust-tests.txt.gz",
+      "sha256": "72f59703a0e5037ad93f0f0a7fd5c902ea374c638fd636041d5313e57b603553"
+    },
+    "rustfmt": {
+      "path": "corpus/results/m3/validation/rustfmt.txt.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "scripts-tests": {
+      "path": "corpus/results/m3/validation/scripts-tests.txt.gz",
+      "sha256": "0412b22d74ab7882edfc92723ce290fd67230fce5d818652b23f99681f1007a8"
+    },
+    "stable-check": {
+      "path": "corpus/results/m3/validation/stable-check.txt.gz",
+      "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "workflow-yaml": {
+      "path": "corpus/results/m3/validation/workflow-yaml.txt.gz",
+      "sha256": "e2d74c0a5bae6ec3d4a246f9bc6b1d7ff9cc80c43538c9c69db1667e7bc44e85"
+    }
+  },
+  "performance_scope": "Measured before final rule-help-only edits; final natural and history behavior was revalidated. Windows measurements are not standard Linux CI acceptance.",
+  "performance_sha256": "3cb3860001704d6e00b6015dfb5ad05422e7d53ce84ea6ea58c86eb39f4e8ad5",
+  "results": {
+    "clippy": "passed with -D warnings",
+    "preview_repository_check": {
+      "diagnostics": 3,
+      "existing_rules": [
+        "STL003",
+        "PTR002"
+      ],
+      "exit_code": 1,
+      "new_m3_rule_diagnostics": 0,
+      "source_lines_unchanged_from_base": true
+    },
+    "python_passed": 137,
+    "rules_promoted": [],
+    "rust_ignored": 2,
+    "rust_passed": 212,
+    "rustfmt": "passed",
+    "stable_repository_check": "passed with exit 0",
+    "standard_linux_ci": "not run for this change",
+    "workflow_yaml": "parsed with PyYAML 6.0.2"
+  },
+  "revalidation_sha256": "45dd71f852fcf6b82347ffc1b63f8845a756ac6d1a79d63ccfa0f674495a59ae",
+  "schema_version": 1,
+  "section_summary_sha256": "c45b50c649cf51ab1aa7d612cfa2627306ed2c439901d801a5a8ecc89b841ec2",
+  "summary_sha256": "988a9551ca6a2fca89838049214fb2395d018674dad3a7f23eab7b503dfea682",
+  "test_sources": {
+    "tests/acceptance_contract.rs": "52e6310d4ba798307b9a180912eb5beac8e126986ec3846105ed43e448067719",
+    "tests/check.rs": "9a26860444ccfe133f741d20e5ebd61b0946069fdb8c5338283e1ecb7d707348",
+    "tests/configuration.rs": "31759fa5c663b96116caf4bd26fd44fb7e3f4716945455dfb16566c814f2446e",
+    "tests/corpus.rs": "3efeb0fe327ba20e59d63b73a34922f856e81e83d9a3bb1ba3cd9c508228dfbf",
+    "tests/cross_file.rs": "643e0075c581421ebbc3515aad67c4a6c4ef4ffe2a7ca0462be7e7bbdd0319a9",
+    "tests/document.rs": "20d7c42d23195c88500406e13169e0eeccaa5318601bb1a2ec98cd198700fcef",
+    "tests/engine.rs": "2f076ccf0e4c751414fb6ffee7c1978c1cc2c20a70f1de8fece1ade154f977c6",
+    "tests/fixes.rs": "2b71444f8ed50be35161e179968753033af0b9506188cdee56d117aecc4f0ec9",
+    "tests/heuristic.rs": "c5643fe2de4886c5c5bdc45509588662fdb591afb87125aff94b5d908b25835d",
+    "tests/inventory.rs": "fc6df3c0e0ed94c8efb1b532002ad6fcde0aab2759266919a9afbc2febe977e7",
+    "tests/lexicons.rs": "9e266c4b4979e6d751e9ebf42e95283f3cdfc21bc895c460807dfef2bfd11157",
+    "tests/m2.rs": "e976d86636fef2381b749134c7561ee415d38ee692332bb94c9120b936e9385b",
+    "tests/normative.rs": "ed62eee7e3e7e1530d3551f658879ddae497ad6d78bda0aaea6f6a27b519b732",
+    "tests/outputs.rs": "d07e1de96c8c11e45bf7d6b09ef6b831064e7eea44755fb9aa5c7414723a3ce8",
+    "tests/parse.rs": "e8739823f05f1f89a17a31107c5fde758094b18ff3bc950fd4eb14fc35341c4d",
+    "tests/repairs.rs": "afdbbe98595a3b2d3f547c7c5b3b5639ed0d7c108dde42eae2251c273458a878",
+    "tests/reports.rs": "327b8d9732d935ac3d3d40880cecc4c413d30d405a692934fad8559ec0e5017b",
+    "tests/suppression.rs": "2bf9bb7c0443ed6cd14c7017476f78fa2570eaccd2887b6eba2b7d85ef66ab3f"
+  },
+  "workflow_sha256": "1e279dbde0effea038990e24d3b8f2c59741275103d7169a8c080f3fc70fc238",
+  "working_branch": "scarletkc/m3-heuristics"
+}

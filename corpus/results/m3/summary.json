@@ -1,0 +1,2178 @@
+{
+  "gate": {
+    "all_proposed_rule_reports_present": true,
+    "human_meaning_review": "not performed",
+    "independent_agent_repair_trial": "not performed",
+    "recall": "section sample reports classification misses; rule recall is not estimated",
+    "rules_promoted": []
+  },
+  "labels_sha256": "98416a7673ef85e9d01b6dff53d9d15bebc385e46ad50cc2e742b7d6a87dd5c6",
+  "limitations": [
+    "Replay covers one repository under a fixed kind profile, not original historical configurations.",
+    "Agent judgments are not human labels.",
+    "Zero diagnostics imply unavailable precision, not perfect precision."
+  ],
+  "noise_definition": "A block is one real Markdown path change with at least one false-positive diagnostic after checking, whether newly introduced or persistent. Each change counts once per rule; all clean changes remain in the denominator. Newly introduced diagnostics are reported separately.",
+  "replay_labels_sha256": "9b76af995d413c71d5dcc44326daf42417d1715449dea57333423e81052b8c45",
+  "replay_reviewer_kind": "author_agent",
+  "replay_sha256": "9bbd27c0f3653d661a118116c815545c0a5451efc74f95676d4e797287350f98",
+  "report_sha256": "76584407f251f52640212df283510bbd186603eec4964e2af382f9fa9b44a0bb",
+  "reviewer_kind": "author_agent",
+  "rules": {
+    "EVD001": {
+      "promotion": false,
+      "splits": {
+        "holdout": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": 0.0,
+              "diagnostics": 1,
+              "fp": 1,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": 0.0,
+              "diagnostics": 1,
+              "fp": 1,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": 0.0,
+              "diagnostics": 1,
+              "fp": 1,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": 0.0,
+              "diagnostics": 1,
+              "fp": 1,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": 0.0,
+          "diagnostics": 2,
+          "fp": 2,
+          "precision": 0.0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "tuning": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": 0.0,
+              "diagnostics": 1,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 1
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": 0.0,
+              "diagnostics": 1,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 1
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": 0.0,
+          "diagnostics": 1,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 1
+        }
+      },
+      "status": "preview"
+    },
+    "MIX001": {
+      "promotion": false,
+      "splits": {
+        "holdout": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "tuning": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        }
+      },
+      "status": "preview"
+    },
+    "ORD001": {
+      "promotion": false,
+      "splits": {
+        "holdout": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": 0.0,
+              "diagnostics": 3,
+              "fp": 3,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": 0.0,
+              "diagnostics": 2,
+              "fp": 2,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": 0.0,
+              "diagnostics": 4,
+              "fp": 4,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": 0.0,
+              "diagnostics": 1,
+              "fp": 1,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": 0.0,
+          "diagnostics": 5,
+          "fp": 5,
+          "precision": 0.0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "tuning": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        }
+      },
+      "status": "preview"
+    },
+    "ORD002": {
+      "promotion": false,
+      "splits": {
+        "holdout": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "tuning": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        }
+      },
+      "status": "preview"
+    },
+    "RAT001": {
+      "promotion": false,
+      "splits": {
+        "holdout": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "tuning": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        }
+      },
+      "status": "preview"
+    },
+    "STL002": {
+      "promotion": false,
+      "splits": {
+        "holdout": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": 0.0,
+              "diagnostics": 1,
+              "fp": 1,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": 0.0,
+              "diagnostics": 1,
+              "fp": 1,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": 0.0,
+          "diagnostics": 1,
+          "fp": 1,
+          "precision": 0.0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "tuning": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        }
+      },
+      "status": "preview"
+    },
+    "STL004": {
+      "promotion": false,
+      "splits": {
+        "holdout": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": 0.0,
+              "diagnostics": 2,
+              "fp": 2,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": 0.0,
+              "diagnostics": 2,
+              "fp": 2,
+              "precision": 0.0,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": 0.0,
+          "diagnostics": 2,
+          "fp": 2,
+          "precision": 0.0,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "tuning": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        }
+      },
+      "status": "preview"
+    },
+    "VOX002": {
+      "promotion": false,
+      "splits": {
+        "holdout": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "tuning": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        }
+      },
+      "status": "preview"
+    },
+    "VOX003": {
+      "promotion": false,
+      "splits": {
+        "holdout": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        },
+        "tuning": {
+          "by_kind": {
+            "adr": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "changelog": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "generated": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "howto": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "plan": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "readme": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "reference": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "runbook": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "unknown": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "by_language": {
+            "en": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "ja": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            },
+            "zh": {
+              "conservative_precision": null,
+              "diagnostics": 0,
+              "fp": 0,
+              "precision": null,
+              "tp": 0,
+              "uncertain": 0
+            }
+          },
+          "conservative_precision": null,
+          "diagnostics": 0,
+          "fp": 0,
+          "precision": null,
+          "tp": 0,
+          "uncertain": 0
+        }
+      },
+      "status": "preview"
+    }
+  },
+  "schema_version": 1,
+  "script_sha256": "30e9ecc6f5944757cbda253821e257d06f539059fadafb7476b753abb3656804",
+  "usage_noise": {
+    "EVD001": {
+      "changes": 155,
+      "changes_with_diagnostics": 6,
+      "changes_with_new_diagnostics": 1,
+      "conservative_blocks_per_100_changes": 3.870967741935484,
+      "diagnostic_labels": {
+        "fp": 12,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "diagnostics": 12,
+      "incorrect_blocks": 6,
+      "incorrect_blocks_per_100_changes": 3.870967741935484,
+      "promotion": false,
+      "status": "preview",
+      "uncertain_blocks": 0
+    },
+    "MIX001": {
+      "changes": 155,
+      "changes_with_diagnostics": 0,
+      "changes_with_new_diagnostics": 0,
+      "conservative_blocks_per_100_changes": 0.0,
+      "diagnostic_labels": {
+        "fp": 0,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "diagnostics": 0,
+      "incorrect_blocks": 0,
+      "incorrect_blocks_per_100_changes": 0.0,
+      "promotion": false,
+      "status": "preview",
+      "uncertain_blocks": 0
+    },
+    "ORD001": {
+      "changes": 155,
+      "changes_with_diagnostics": 0,
+      "changes_with_new_diagnostics": 0,
+      "conservative_blocks_per_100_changes": 0.0,
+      "diagnostic_labels": {
+        "fp": 0,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "diagnostics": 0,
+      "incorrect_blocks": 0,
+      "incorrect_blocks_per_100_changes": 0.0,
+      "promotion": false,
+      "status": "preview",
+      "uncertain_blocks": 0
+    },
+    "ORD002": {
+      "changes": 155,
+      "changes_with_diagnostics": 0,
+      "changes_with_new_diagnostics": 0,
+      "conservative_blocks_per_100_changes": 0.0,
+      "diagnostic_labels": {
+        "fp": 0,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "diagnostics": 0,
+      "incorrect_blocks": 0,
+      "incorrect_blocks_per_100_changes": 0.0,
+      "promotion": false,
+      "status": "preview",
+      "uncertain_blocks": 0
+    },
+    "RAT001": {
+      "changes": 155,
+      "changes_with_diagnostics": 0,
+      "changes_with_new_diagnostics": 0,
+      "conservative_blocks_per_100_changes": 0.0,
+      "diagnostic_labels": {
+        "fp": 0,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "diagnostics": 0,
+      "incorrect_blocks": 0,
+      "incorrect_blocks_per_100_changes": 0.0,
+      "promotion": false,
+      "status": "preview",
+      "uncertain_blocks": 0
+    },
+    "STL002": {
+      "changes": 155,
+      "changes_with_diagnostics": 0,
+      "changes_with_new_diagnostics": 0,
+      "conservative_blocks_per_100_changes": 0.0,
+      "diagnostic_labels": {
+        "fp": 0,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "diagnostics": 0,
+      "incorrect_blocks": 0,
+      "incorrect_blocks_per_100_changes": 0.0,
+      "promotion": false,
+      "status": "preview",
+      "uncertain_blocks": 0
+    },
+    "STL004": {
+      "changes": 155,
+      "changes_with_diagnostics": 1,
+      "changes_with_new_diagnostics": 1,
+      "conservative_blocks_per_100_changes": 0.6451612903225806,
+      "diagnostic_labels": {
+        "fp": 2,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "diagnostics": 2,
+      "incorrect_blocks": 1,
+      "incorrect_blocks_per_100_changes": 0.6451612903225806,
+      "promotion": false,
+      "status": "preview",
+      "uncertain_blocks": 0
+    },
+    "VOX002": {
+      "changes": 155,
+      "changes_with_diagnostics": 6,
+      "changes_with_new_diagnostics": 1,
+      "conservative_blocks_per_100_changes": 3.870967741935484,
+      "diagnostic_labels": {
+        "fp": 6,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "diagnostics": 6,
+      "incorrect_blocks": 6,
+      "incorrect_blocks_per_100_changes": 3.870967741935484,
+      "promotion": false,
+      "status": "preview",
+      "uncertain_blocks": 0
+    },
+    "VOX003": {
+      "changes": 155,
+      "changes_with_diagnostics": 6,
+      "changes_with_new_diagnostics": 1,
+      "conservative_blocks_per_100_changes": 3.870967741935484,
+      "diagnostic_labels": {
+        "fp": 6,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "diagnostics": 6,
+      "incorrect_blocks": 6,
+      "incorrect_blocks_per_100_changes": 3.870967741935484,
+      "promotion": false,
+      "status": "preview",
+      "uncertain_blocks": 0
+    }
+  }
+}

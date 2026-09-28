@@ -1,0 +1,118 @@
+{
+  "confusion": [
+    {
+      "count": 4,
+      "predicted": "background",
+      "reviewed": "background"
+    },
+    {
+      "count": 1,
+      "predicted": "background",
+      "reviewed": "other"
+    },
+    {
+      "count": 1,
+      "predicted": "background",
+      "reviewed": "reference"
+    },
+    {
+      "count": 2,
+      "predicted": "other",
+      "reviewed": "background"
+    },
+    {
+      "count": 1,
+      "predicted": "other",
+      "reviewed": "other"
+    },
+    {
+      "count": 3,
+      "predicted": "other",
+      "reviewed": "reference"
+    },
+    {
+      "count": 3,
+      "predicted": "other",
+      "reviewed": "steps"
+    },
+    {
+      "count": 1,
+      "predicted": "other",
+      "reviewed": "troubleshooting"
+    },
+    {
+      "count": 2,
+      "predicted": "rationale",
+      "reviewed": "background"
+    },
+    {
+      "count": 1,
+      "predicted": "rationale",
+      "reviewed": "rationale"
+    },
+    {
+      "count": 1,
+      "predicted": "rationale",
+      "reviewed": "reference"
+    },
+    {
+      "count": 1,
+      "predicted": "rationale",
+      "reviewed": "steps"
+    },
+    {
+      "count": 1,
+      "predicted": "reference",
+      "reviewed": "background"
+    },
+    {
+      "count": 4,
+      "predicted": "reference",
+      "reviewed": "reference"
+    },
+    {
+      "count": 1,
+      "predicted": "reference",
+      "reviewed": "steps"
+    },
+    {
+      "count": 2,
+      "predicted": "steps",
+      "reviewed": "background"
+    },
+    {
+      "count": 4,
+      "predicted": "steps",
+      "reviewed": "steps"
+    },
+    {
+      "count": 1,
+      "predicted": "troubleshooting",
+      "reviewed": "background"
+    },
+    {
+      "count": 4,
+      "predicted": "troubleshooting",
+      "reviewed": "troubleshooting"
+    }
+  ],
+  "false_negative_ids": [
+    "000d8081bcd369286b3201b9bcb20fea0d7b4429a1ef98e49b62eaf191d6d9ad",
+    "0010c444bc555460d98863010bccbb7a9ce85931116c0e4b389ddfc826ef21ce",
+    "001492c3a25a1c17c4b659680cce95cb9fdc6f425c08fd5fd2e58b481bbfbfd0",
+    "00211bfee86ad5ab354e8a7233d799eab55d3dc29a99c0c91229b21c850d8b2f",
+    "0021f6fde92b1fe647bde98075e42cf5783981f116c9de57cc6dc8886e7056ff",
+    "0025a6ca26f5642403651bd17bf55725ba63b3a3d770cd5fe36131bea6a2aa59",
+    "0026188dc2c859eacc741b572af0ed6b7c03cdd5cbac4c626eb935d968a7c6d8",
+    "00328303be0ef2cbe4d0205a9de810250b7a8965eb079b265d1e710a8d24e2a9",
+    "00483530dadefdf0f6616d0b244510617568639507413b8107e57552d8dcfb54"
+  ],
+  "labels_sha256": "480c44887afce87a045ea713f6c5242b64926e1331c627162e3ec1d863481f9a",
+  "population": 15918,
+  "reviewer_kind": "author_agent",
+  "sample_count": 38,
+  "sample_sha256": "bceccb3a5359be5790839aab893757e94b8f994e9d2f354486ab11f3c5c32807",
+  "schema_version": 1,
+  "scope": "A stratified classification audit, not a representative accuracy or rule-recall estimate.",
+  "uncertain": 0
+}

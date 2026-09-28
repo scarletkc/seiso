@@ -1,0 +1,27 @@
+---
+source: tests/engine.rs
+expression: result.diagnostics
+---
+[
+  {
+    "code": "MIX001",
+    "message": "An extended rationale section conflicts with this procedure or reference page.",
+    "filename": "docs/guide.md",
+    "location": {
+      "row": 4,
+      "column": 1
+    },
+    "end_location": {
+      "row": 4,
+      "column": 20
+    },
+    "byte_range": {
+      "start": 20,
+      "end": 39
+    },
+    "fix": null,
+    "url": null,
+    "related": [],
+    "suggestion": "Move the decision rationale to an ADR and keep a link beside the procedure or contract it explains."
+  }
+]

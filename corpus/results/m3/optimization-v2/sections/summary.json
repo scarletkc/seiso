@@ -1,0 +1,45 @@
+{
+  "confusion": [
+    {
+      "count": 1,
+      "predicted": "background",
+      "reviewed": "reference"
+    },
+    {
+      "count": 2,
+      "predicted": "background",
+      "reviewed": "steps"
+    },
+    {
+      "count": 1,
+      "predicted": "other",
+      "reviewed": "reference"
+    },
+    {
+      "count": 1,
+      "predicted": "reference",
+      "reviewed": "reference"
+    },
+    {
+      "count": 1,
+      "predicted": "steps",
+      "reviewed": "background"
+    },
+    {
+      "count": 2,
+      "predicted": "steps",
+      "reviewed": "steps"
+    }
+  ],
+  "false_negative_ids": [
+    "085a589a5e596cca27a07b40744172fa6e4affc93622c2ebfd6676f9279346d8"
+  ],
+  "labels_sha256": "0613cd3de102e1ceee76f49f5620eac96ba7f1fffa8b634dc8b6934c2f6f5286",
+  "population": 228,
+  "reviewer_kind": "author_agent",
+  "sample_count": 8,
+  "sample_sha256": "04ce809fd0265f6d00717ab6eed2e74afa58053d809a6908f74965c0515d2578",
+  "schema_version": 1,
+  "scope": "A stratified classification audit, not a representative accuracy or rule-recall estimate.",
+  "uncertain": 0
+}

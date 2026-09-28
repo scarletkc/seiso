@@ -1,0 +1,109 @@
+{
+  "labels": [
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "3eda6fec1ecc6d6a17cd44642b42eb6a721e502a85560b582e206689f30ee211",
+      "id": "33428dd06ef86e75f3af076f5a0dd92833297f4a2ae7059fb2f58e64b19e9140",
+      "input_sha256": "9f55aa0c8f206fe18fb84dc73d7c7210318b50e4735952ca7cb467cc424f3d49",
+      "label": "fp",
+      "reason": "The sentence defines an explicit historical upper bound: sessions from versions prior to v1.14.0. It is not a live version snapshot."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "6d7368edf00cc0bf37cd73de14a4e815fc08e61626be1ffe929f9ffa75ca99c7",
+      "id": "e215c71488be28f063fbcdbb7d071ff9775f8800a96bda94d377674874d43cd8",
+      "input_sha256": "a4099d01bc71ac632adc0a580805d780ade052f716ac61ef6ef3076cb19de7e1",
+      "label": "fp",
+      "reason": "The prerequisite says v18.0.0 or higher, a durable minimum requirement omitted from the constraint phrase list."
+    },
+    {
+      "code": "STL002",
+      "diagnostic_sha256": "56f8d1ccff863dc27c430333fef6e7241dc04821ed4077656bd7d6b2eca16174",
+      "id": "18014511bc61944f483f399411465b891d2c7fe017f6582c9a67ce83d2e64e2c",
+      "input_sha256": "1be9c246af3a49e491c4f6664781e7c7b271aede386a1a3319a7dc50e9a73cc6",
+      "label": "fp",
+      "reason": "This assertion is sample assistant output under Example Usage and goose Output, not a claim about the reader's running deployment."
+    },
+    {
+      "code": "ORD001",
+      "diagnostic_sha256": "5136e2015ce5c8f9e4f9667b0098b94d4d9475a40fd14149fccabae83412e893",
+      "id": "da2ddfcb8fc2a51ed656823f3030530bfe61c599fa3d8facecefd543d6c78122",
+      "input_sha256": "78031d2a2fe2ae996a1fd8954bb382ef5b610d2db7e89a5f2ed6a90d5e729a8b",
+      "label": "fp",
+      "reason": "A quick-install shell command is already present inside MDX tabs near the top. Markdown-only parsing misses that flow and points to later testing steps in sample output."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "056d216bbe5381e190cd05efa6b3fd77d05004bfe7cb45123b2dac67647d0462",
+      "id": "b96848399b399809bbb3fea66e9728833bd42c84948083bb1db4dabc91ff3dc3",
+      "input_sha256": "945622d974f65e4e141ef9726c948c2640eebd222c5b101afb6445728283921e",
+      "label": "uncertain",
+      "reason": "The sentence explains choosing memory maps versus buffered search. The README contains benchmarks elsewhere, but the reviewed context does not establish whether those measurements support this specific comparison."
+    },
+    {
+      "code": "ORD001",
+      "diagnostic_sha256": "4672ec4bde5687c6b0b829cedb44684a1a0dfd0a967afac5474b7c86ee180e79",
+      "id": "4e4b3e7c3a455daa7d04289e2c22f2018ebb3544def0eb82b8e82d7b6ac22224",
+      "input_sha256": "3ab39955f91808de1016c59d0ce69787937adff2382378b4ee6cf9933001203e",
+      "label": "fp",
+      "reason": "This is a reference page whose opening section supplies a complete auth.json example. A later shell command does not make the preceding field reference an obstructive preamble."
+    },
+    {
+      "code": "ORD001",
+      "diagnostic_sha256": "40d58ab944a58f566f071e9a30b124df1a9d4ce5f1b56ef85c280e07fef77151",
+      "id": "d354fab9c0df3a2e24ac7c1209427d85b8fa56f3e3ff05b730c7bc0aa83194de",
+      "input_sha256": "eca0a91c41cca78f6b5439e336e8138a631643f09a3d65884b2fa17fd16f41ca",
+      "label": "fp",
+      "reason": "The guide starts with a complete GitHub Actions YAML workflow. Restricting runnable examples to shell fences misses the actual main procedure."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "7a430dc2d6be559513b46dedbd7ca44ad5fd22d23031486f61093549a4e8b9e6",
+      "id": "0d79302c6add33e3b9fe191fdf0726b3b89fe849d17d3470bd5e1605e4c50c12",
+      "input_sha256": "4b964789b9dd79a9bc0b5afb0e71d762731723f7b1e036df4eb8c91e53245824",
+      "label": "fp",
+      "reason": "Creating a project kernel is procedural guidance and is immediately followed by concrete commands; it is not an unsupported performance claim."
+    },
+    {
+      "code": "ORD001",
+      "diagnostic_sha256": "ed1191beae39f7ef0787d2c5cb55f6c5d651505f1c9f10b91bc0eaf6c14e3688",
+      "id": "ffe209f7cd03a93adc84fac7d5b41b8662a43043f0f02efd47ab2f338ccba61b",
+      "input_sha256": "6f602fcab3cac57f89976ad3f0167b4aaee3108bf0b5ad2b983f5391181c2ed7",
+      "label": "fp",
+      "reason": "The guide already supplies an installation command inline and a complete pyproject.toml configuration near the start. A later console fence is not the beginning of the main flow."
+    },
+    {
+      "code": "ORD001",
+      "diagnostic_sha256": "cd5145dcd3986454eb3dbc8b93fed27f15ec162feb17afa8d32663754d5efc0c",
+      "id": "ef6c7cb673b5c8e45b92fc9948614ee65f44c72e67a04ea78cf69499f5a7b745",
+      "input_sha256": "823fe806be3b999899838762e44c6b1ba4345cff778bacd38f8384a54ffbf159",
+      "label": "fp",
+      "reason": "The page is an API reference with JavaScript examples near the beginning. A later numbered list describes compiler behavior rather than reader steps."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "5106b526c9b4575db72c398a45965acb63ba580121cc65696b1ea197d9a54880",
+      "id": "35fa57591b4ca6219466f845915fc8dd1c9e48eb98c139cb5b5a5de8eff71437",
+      "input_sha256": "c925376d428fe95cde07c1885ed79207abb194d330baab33f002840ffbe5d80b",
+      "label": "fp",
+      "reason": "The recommendation is justified in the same paragraph by consistency and distinguishing native custom elements; the detector only recognizes numeric or linked evidence."
+    }
+  ],
+  "method": "Individual review of every new heuristic diagnosis against the original locked source and its nearby/main-flow context. No independent or human review claimed. Holdout findings were not used to modify rules.",
+  "report_sha256": "76584407f251f52640212df283510bbd186603eec4964e2af382f9fa9b44a0bb",
+  "reviewed_ids": [
+    "33428dd06ef86e75f3af076f5a0dd92833297f4a2ae7059fb2f58e64b19e9140",
+    "e215c71488be28f063fbcdbb7d071ff9775f8800a96bda94d377674874d43cd8",
+    "18014511bc61944f483f399411465b891d2c7fe017f6582c9a67ce83d2e64e2c",
+    "da2ddfcb8fc2a51ed656823f3030530bfe61c599fa3d8facecefd543d6c78122",
+    "b96848399b399809bbb3fea66e9728833bd42c84948083bb1db4dabc91ff3dc3",
+    "4e4b3e7c3a455daa7d04289e2c22f2018ebb3544def0eb82b8e82d7b6ac22224",
+    "d354fab9c0df3a2e24ac7c1209427d85b8fa56f3e3ff05b730c7bc0aa83194de",
+    "0d79302c6add33e3b9fe191fdf0726b3b89fe849d17d3470bd5e1605e4c50c12",
+    "ffe209f7cd03a93adc84fac7d5b41b8662a43043f0f02efd47ab2f338ccba61b",
+    "ef6c7cb673b5c8e45b92fc9948614ee65f44c72e67a04ea78cf69499f5a7b745",
+    "35fa57591b4ca6219466f845915fc8dd1c9e48eb98c139cb5b5a5de8eff71437"
+  ],
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}

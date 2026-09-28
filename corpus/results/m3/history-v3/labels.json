@@ -1,0 +1,216 @@
+{
+  "labels": [
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "203d32443170880cc151fd00489dc5333f1483768a489e2bf3803b1dfe65ea7f",
+      "input_sha256": "fc85f3430e7cd1cc9af09bde8e3b5ac7e1046b3895f5059f2b451e08a211a4d1",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "84bc2f7aef0714f8ff66a7be62f3efda4f928405aedb58f46f43478f5f2b5796",
+      "id": "1482ae98e028cab36898a05bfdbd8cfa341206fa24ced43f4ae58433600300d1",
+      "input_sha256": "fc85f3430e7cd1cc9af09bde8e3b5ac7e1046b3895f5059f2b451e08a211a4d1",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX003",
+      "diagnostic_sha256": "64ef0b60e312960878bc4d7e7ea97ad2c6234554b08292cc996cda3e44790d14",
+      "id": "99f4eb3eb3779ec9c31c88bcfc2d117893dde5e8b7017b3188b3133f392fdb86",
+      "input_sha256": "fc85f3430e7cd1cc9af09bde8e3b5ac7e1046b3895f5059f2b451e08a211a4d1",
+      "label": "fp",
+      "reason": "This unchanged rule-catalog row quotes production-narration examples; it is not the document author narrating production."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "ec442432b17377081995eb848ce9b8dba7d1a98fd70b906358df5037539778d4",
+      "id": "4b7d2eaea80a97064fd586efc56360917275ca574675e57dbb4434a47e911ae4",
+      "input_sha256": "fc85f3430e7cd1cc9af09bde8e3b5ac7e1046b3895f5059f2b451e08a211a4d1",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "4a235ca71104daed2e74d9f784079945de7f42d3e44bd4a2e19d176adf01029a",
+      "input_sha256": "451c2b8c2f0c0fa4cdecbab44e01e703d22b612675223332f75b93d0500134e7",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "84bc2f7aef0714f8ff66a7be62f3efda4f928405aedb58f46f43478f5f2b5796",
+      "id": "4dd8e9bcd0bf66b920d75e567866be0f8af9885c41f2d8cb585d2ee3dec7ee46",
+      "input_sha256": "451c2b8c2f0c0fa4cdecbab44e01e703d22b612675223332f75b93d0500134e7",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX003",
+      "diagnostic_sha256": "64ef0b60e312960878bc4d7e7ea97ad2c6234554b08292cc996cda3e44790d14",
+      "id": "1d5d05eb0dba98cb4b10233002dd3cb01dfafb6049d99f6f8f41566a6959fdc7",
+      "input_sha256": "451c2b8c2f0c0fa4cdecbab44e01e703d22b612675223332f75b93d0500134e7",
+      "label": "fp",
+      "reason": "This unchanged rule-catalog row quotes production-narration examples; it is not the document author narrating production."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "ec442432b17377081995eb848ce9b8dba7d1a98fd70b906358df5037539778d4",
+      "id": "01eba346a38b60dece4583a3bd3a4bf7656bb63aae2485ed2456ebb481c51317",
+      "input_sha256": "451c2b8c2f0c0fa4cdecbab44e01e703d22b612675223332f75b93d0500134e7",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "c0289bb9c03f48799e8e13344d35a131093df8936f9cbcdf90b92b0d337cd215",
+      "input_sha256": "2e61e6c237b8f3bd32df024cebd18ca8b9651ec093eafc0fd533f53ab9a64e5b",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "3fa8758170a434824b4fc6edd8e7c5d836f1d9f08ac4c0e8775a8f1cf4cf5a77",
+      "id": "168a9187a0d12d2072106bba4e47d04b0b8db834d29089507baf1589796e6838",
+      "input_sha256": "2e61e6c237b8f3bd32df024cebd18ca8b9651ec093eafc0fd533f53ab9a64e5b",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX003",
+      "diagnostic_sha256": "d4ede1d50b2e431ccbd6196f4c195d9f7b3d39ea07f959b8fe120ea0dbec2d1a",
+      "id": "3e4a2dceb98de22ea4abff1dcc576180359c4bc007f9771304a6a2b05cc99147",
+      "input_sha256": "2e61e6c237b8f3bd32df024cebd18ca8b9651ec093eafc0fd533f53ab9a64e5b",
+      "label": "fp",
+      "reason": "This unchanged rule-catalog row quotes production-narration examples; it is not the document author narrating production."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "25b1f182541beb6ace15f2e3c615dcb6d44e8054ff9d217f1a7bf26189477d7e",
+      "id": "7b3ad5d100573be51dcf8d3714e2f586b9244365916634f1f838dc9d6a2abf9d",
+      "input_sha256": "2e61e6c237b8f3bd32df024cebd18ca8b9651ec093eafc0fd533f53ab9a64e5b",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "6f50e73a204951ebf7b4bcbc340e22a7ededbc43b2d8fd00e189cc13b5280768",
+      "input_sha256": "aae3ddeaa951540d1a0f1a75508eb6d1ef7add56d59fb9f5e3a4e70ea39e90ab",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "3fa8758170a434824b4fc6edd8e7c5d836f1d9f08ac4c0e8775a8f1cf4cf5a77",
+      "id": "b19526d9b6fd1b3bf0090cf0ef853929412627f2666047e28cd25f3ca58417f4",
+      "input_sha256": "aae3ddeaa951540d1a0f1a75508eb6d1ef7add56d59fb9f5e3a4e70ea39e90ab",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX003",
+      "diagnostic_sha256": "d4ede1d50b2e431ccbd6196f4c195d9f7b3d39ea07f959b8fe120ea0dbec2d1a",
+      "id": "5fa6d3807a89b6c3d648eb2e4788323779569cd0995af251bb87deb7aef3b144",
+      "input_sha256": "aae3ddeaa951540d1a0f1a75508eb6d1ef7add56d59fb9f5e3a4e70ea39e90ab",
+      "label": "fp",
+      "reason": "This unchanged rule-catalog row quotes production-narration examples; it is not the document author narrating production."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "25b1f182541beb6ace15f2e3c615dcb6d44e8054ff9d217f1a7bf26189477d7e",
+      "id": "11ed77cc905bc07176c71f0dfd05e01466ea06d69e27211262be14fd20fdf9f4",
+      "input_sha256": "aae3ddeaa951540d1a0f1a75508eb6d1ef7add56d59fb9f5e3a4e70ea39e90ab",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "1a7e0116d6d194fd5aef90f10052eab2e6fc6f640ff801e5ebf5168f85556c18",
+      "input_sha256": "e99d718e54ce761d7771cffd1b6b2380fa3d54d9da5245e33690218d511f93c8",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "f146f8ee610a21b1957f8aa4b3fdee848d6898204201fc69d1fbbce91a873a9b",
+      "id": "bd14facb36f3f16f07ce4cfc2cc69b0685f8f7d9ef52afea2fa0e295a90c6211",
+      "input_sha256": "e99d718e54ce761d7771cffd1b6b2380fa3d54d9da5245e33690218d511f93c8",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX003",
+      "diagnostic_sha256": "783df5d96f26fd9cb79d16bed04aaa6d2a60bc280c8c88ebf2d6d834d45ca9e4",
+      "id": "82618cc740a40c9ab3f5969029f263730d381c1d4a842f49186227572ee8f667",
+      "input_sha256": "e99d718e54ce761d7771cffd1b6b2380fa3d54d9da5245e33690218d511f93c8",
+      "label": "fp",
+      "reason": "This unchanged rule-catalog row quotes production-narration examples; it is not the document author narrating production."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "c475e909022db640c86c691c80910f79867766de18820da233be0b5877630d78",
+      "id": "f332e0c7d0480d30263587cb8aa4ee0c61a172f982fa3f3b194dc5a8263586ca",
+      "input_sha256": "e99d718e54ce761d7771cffd1b6b2380fa3d54d9da5245e33690218d511f93c8",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "db2b5f9a37f8a289e1a6c290e9fc537d8664c7c6dfcf8391779052a3b5046296",
+      "id": "0bfa1d9dad27070eb369325a80fab4ecfe5a15db33d2047f879f0b9b1e14d9fa",
+      "input_sha256": "0ab33100f479b4f8438fe68984bd97e034e27f5471439292b722cbd5c220210e",
+      "label": "fp",
+      "reason": "The version is a syntax example introduced by such as, not a current package-state snapshot."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "9398b4ce861e4a1804ad68cc22c86984b559f64dccbf6acca057368d302b51f6",
+      "id": "ff666ba8ebaa6f1d40a367209161c22697eff98a50adc6caa133eb44c511df83",
+      "input_sha256": "0ab33100f479b4f8438fe68984bd97e034e27f5471439292b722cbd5c220210e",
+      "label": "fp",
+      "reason": "The version is a syntax example introduced by such as, not a current package-state snapshot."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "324dff2e83c7f1dddc392a9a5026ef3b3d491869d22b7841b6e750e3f7630753",
+      "input_sha256": "00ea47807af4b5c5c24e258a4637db7f2c5a89c0f236fe8650c4de72b426a53e",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "f146f8ee610a21b1957f8aa4b3fdee848d6898204201fc69d1fbbce91a873a9b",
+      "id": "058c72dfe859938c1b6b01c1d1689038647d84fc65b5ae98273c2b8b0f441876",
+      "input_sha256": "00ea47807af4b5c5c24e258a4637db7f2c5a89c0f236fe8650c4de72b426a53e",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    },
+    {
+      "code": "VOX003",
+      "diagnostic_sha256": "783df5d96f26fd9cb79d16bed04aaa6d2a60bc280c8c88ebf2d6d834d45ca9e4",
+      "id": "5e61e93a83e5621e78c1e1ce06cc9b20443d8388e04c44c7cef12fa73b054ecb",
+      "input_sha256": "00ea47807af4b5c5c24e258a4637db7f2c5a89c0f236fe8650c4de72b426a53e",
+      "label": "fp",
+      "reason": "This unchanged rule-catalog row quotes production-narration examples; it is not the document author narrating production."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "c475e909022db640c86c691c80910f79867766de18820da233be0b5877630d78",
+      "id": "667f1aedd7f55df7ea40c0df567c73d56be86f2c1e5002544097b413339b489b",
+      "input_sha256": "00ea47807af4b5c5c24e258a4637db7f2c5a89c0f236fe8650c4de72b426a53e",
+      "label": "fp",
+      "reason": "This unchanged table text quotes candidate adjectives to explain the detector; it does not make an evaluative claim."
+    }
+  ],
+  "method": "All 26 post-change diagnostics reviewed. Five distinct diagnostic-bearing source lines were inspected across all revisions; unchanged source contexts retain the earlier source-context judgments. Persistent warnings count on every checked change. No independent or human labeling claimed.",
+  "report_sha256": "9bbd27c0f3653d661a118116c815545c0a5451efc74f95676d4e797287350f98",
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}

@@ -8,4 +8,5 @@ pub mod index;
 pub mod md;
 pub mod paths;
 pub mod rules;
+pub mod sections;
 pub mod workspace;

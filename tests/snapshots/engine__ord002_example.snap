@@ -1,0 +1,44 @@
+---
+source: tests/engine.rs
+expression: result.diagnostics
+---
+[
+  {
+    "code": "ORD002",
+    "message": "Troubleshooting or exceptions appear before the main flow.",
+    "filename": "docs/guide.md",
+    "location": {
+      "row": 4,
+      "column": 1
+    },
+    "end_location": {
+      "row": 4,
+      "column": 19
+    },
+    "byte_range": {
+      "start": 20,
+      "end": 38
+    },
+    "fix": null,
+    "url": null,
+    "related": [
+      {
+        "filename": "docs/guide.md",
+        "location": {
+          "row": 10,
+          "column": 1
+        },
+        "end_location": {
+          "row": 10,
+          "column": 22
+        },
+        "byte_range": {
+          "start": 93,
+          "end": 114
+        },
+        "message": "The main flow starts here."
+      }
+    ],
+    "suggestion": "Move this section after the main procedure so readers can reach the common path first."
+  }
+]

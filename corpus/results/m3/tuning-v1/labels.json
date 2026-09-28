@@ -1,0 +1,48 @@
+{
+  "labels": [
+    {
+      "code": "VOX003",
+      "diagnostic_sha256": "efbda80a53a02b76745404e72f94a188b25f116c57963e30371eaa0f4f256ce7",
+      "id": "d592b85fa12e4723b6eaf785f2ada7e131896d650a6a9f6ce8c00f535ef005ea",
+      "input_sha256": "aa0d8b80ac083e1591be0789273f447058cc9187b4331634a5614155da27778d",
+      "label": "fp",
+      "reason": "This is the project's statement of privacy safeguards, not an assistant narrating document production."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "2566988995585788c0ed361849a14ea7195f3b53f78e23399210946654c9e50b",
+      "id": "90aa0fd10aee7c09f3eb4e597d716393a90ceb03064d2f27134a4a4e5ff7b07d",
+      "input_sha256": "25d6f218da18298d5b9d61c6a50d5bd3ea83237b30ff47ddfd52138dbc855ef8",
+      "label": "fp",
+      "reason": "Mozilla Public License v2.0 names a durable license, not a mutable package version."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "056d216bbe5381e190cd05efa6b3fd77d05004bfe7cb45123b2dac67647d0462",
+      "id": "b96848399b399809bbb3fea66e9728833bd42c84948083bb1db4dabc91ff3dc3",
+      "input_sha256": "945622d974f65e4e141ef9726c948c2640eebd222c5b101afb6445728283921e",
+      "label": "uncertain",
+      "reason": "The sentence explains choosing memory maps versus buffered search. The README contains benchmarks elsewhere, but the reviewed context does not establish whether those measurements support this specific comparison."
+    },
+    {
+      "code": "ORD001",
+      "diagnostic_sha256": "fa097ff02a5cb0c1488ba196bcc67107b0fde2dd7dd92db5d2bbfb5445542b18",
+      "id": "e968e375b87d0114db9b239169d65f5fd681c99fafb3f5f087145d44f705f39a",
+      "input_sha256": "9bff622b3b3707cd4f2c8c6004c43f8918782a474b307960ea9c069cb099d3fe",
+      "label": "fp",
+      "reason": "The API reference includes executable JavaScript examples before the numbered behavioral enumeration."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "e466b5002f2c49d96b1d0fad7ff7110d647c8b52605892b2099f32829f9a368d",
+      "id": "3c75c04abae61253ea9b1cba02d88023380e8bc347efef8e852099f146e6ca38",
+      "input_sha256": "1bf2a41f4d67b9cc4449192c5d105bd01ef1fff28551ddc52fa7c84e5a8e01fb",
+      "label": "fp",
+      "reason": "The sentence records when a limitation was resolved; the version is historical context."
+    }
+  ],
+  "method": "Tuning review before code freeze. All five new diagnoses inspected individually.",
+  "report_sha256": "6df07656ee62df18ba63cb0ba9213f0fee8792a75970baa9c73fa0c8430196dd",
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}

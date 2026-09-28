@@ -1,0 +1,56 @@
+{
+  "labels": [
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "203d32443170880cc151fd00489dc5333f1483768a489e2bf3803b1dfe65ea7f",
+      "input_sha256": "fc85f3430e7cd1cc9af09bde8e3b5ac7e1046b3895f5059f2b451e08a211a4d1",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "4a235ca71104daed2e74d9f784079945de7f42d3e44bd4a2e19d176adf01029a",
+      "input_sha256": "451c2b8c2f0c0fa4cdecbab44e01e703d22b612675223332f75b93d0500134e7",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "c0289bb9c03f48799e8e13344d35a131093df8936f9cbcdf90b92b0d337cd215",
+      "input_sha256": "2e61e6c237b8f3bd32df024cebd18ca8b9651ec093eafc0fd533f53ab9a64e5b",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "6f50e73a204951ebf7b4bcbc340e22a7ededbc43b2d8fd00e189cc13b5280768",
+      "input_sha256": "aae3ddeaa951540d1a0f1a75508eb6d1ef7add56d59fb9f5e3a4e70ea39e90ab",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "1a7e0116d6d194fd5aef90f10052eab2e6fc6f640ff801e5ebf5168f85556c18",
+      "input_sha256": "e99d718e54ce761d7771cffd1b6b2380fa3d54d9da5245e33690218d511f93c8",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    },
+    {
+      "code": "VOX002",
+      "diagnostic_sha256": "d62a9ef8bda305461a8a094cc80b88fea303196d5a68c1ab4e44e0f21d5ffc62",
+      "id": "324dff2e83c7f1dddc392a9a5026ef3b3d491869d22b7841b6e750e3f7630753",
+      "input_sha256": "00ea47807af4b5c5c24e258a4637db7f2c5a89c0f236fe8650c4de72b426a53e",
+      "label": "fp",
+      "reason": "The original source is a design proposal with legitimate non-goals. The fixed docs/reference fallback applies before its plan frontmatter was introduced."
+    }
+  ],
+  "method": "Known edit-history regression. All remaining diagnoses are identical non-goals headings in the early design proposal under the fixed reference fallback. Prior source judgments retained with exact bindings.",
+  "report_sha256": "cb2d6d7498c7de29b9b01405ee756cdc66e54bf1b2fafb515827c9557ad59065",
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}

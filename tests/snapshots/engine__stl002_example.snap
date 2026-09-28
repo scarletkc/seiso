@@ -1,0 +1,27 @@
+---
+source: tests/engine.rs
+expression: result.diagnostics
+---
+[
+  {
+    "code": "STL002",
+    "message": "This sentence asserts a deployment state in a long-lived page.",
+    "filename": "docs/guide.md",
+    "location": {
+      "row": 4,
+      "column": 13
+    },
+    "end_location": {
+      "row": 4,
+      "column": 24
+    },
+    "byte_range": {
+      "start": 32,
+      "end": 43
+    },
+    "fix": null,
+    "url": null,
+    "related": [],
+    "suggestion": "Replace the state with the command or dashboard that checks it; keep dated results in a release record."
+  }
+]

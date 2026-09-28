@@ -1,0 +1,168 @@
+{
+  "labels": [
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "a2204e9764c6d10207df0e953d4e555b2eedec1e03af107cc937d91b3f1387fa",
+      "id": "90eb9161beee4d95d1958ead45050d6af15134cd6ca271c39122477e688817e3",
+      "input_sha256": "1c6dab8031ea3e4c214d4ed9304d3d73503fd9e5ad265bce60678c14c29d26b2",
+      "label": "fp",
+      "reason": "The sentence records when VS Code announced a feature and links its dated release; it is historical compatibility context."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "efa4847ecf6748e30cc862a2e8aaca3c652b4eb5068f4f7d2fca8c80a482e8cd",
+      "id": "8fb3c6350c30e8d54872a96d9771b046528a633fba711e415d972000993949ee",
+      "input_sha256": "0d2fd1ff005309281d662e20aa9369ffae646b3ef805c849cbcf3c795b4d9766",
+      "label": "fp",
+      "reason": "This is the plugin naming convention. The following TOML demonstrates that convention; it is not an unsubstantiated quality comparison."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "2cb1707f06a7d7aec8f340b9e6348f7882e692e77eec1b7e2a6df31adf15fb26",
+      "id": "c44cb41da8f46da3f065261b9500e5df4464fb00c2b55550931a3fb178219a08",
+      "input_sha256": "88182650dd83fc38ac39de2fa8cadbee937ff72afdbdd7d4721f4e84aef2f520",
+      "label": "fp",
+      "reason": "The release procedure explicitly says a tag version like this value; this is a syntax example."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "a4aaebd74b9da19ed3a40f5a600c8eb09d343687b8e9433c110233248f488aea",
+      "id": "1cc05f0636df1d3f1e0cdf1217a9aa83e2e17802dc1d49e427cef67074dc2b53",
+      "input_sha256": "88182650dd83fc38ac39de2fa8cadbee937ff72afdbdd7d4721f4e84aef2f520",
+      "label": "fp",
+      "reason": "The release title is an example in the same release-creation instruction, not the currently shipped version."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "88d6eeb927e6f3e9e335f1c3249b78afa895ec24dfc93efffc8f1e7e6a107224",
+      "id": "aefb00c93bf7e0f491893fe95ff0339b69964e7079bd007cfbb6c51fdefdabde",
+      "input_sha256": "bef5bffed63dfea1be5e6f086864166a84fb0e3f33eeb80b0bc28533e3c75d81",
+      "label": "fp",
+      "reason": "The release note gives a configuration recommendation followed by its exact YAML. It does not claim comparative quality."
+    },
+    {
+      "code": "ORD001",
+      "diagnostic_sha256": "bcf097b720f87c106954d2fc30b3c63e80ed9f8eba74acc0214dbbb8aed29385",
+      "id": "a50e7eab7b47b32c7fe99557db0570eb84fe552b91c5bb915d0946acf55c5b2e",
+      "input_sha256": "d5699d1699fad81cfbf918c90da24c22292bfa3b47bdbdd0a7e0d84e3ebd0674",
+      "label": "fp",
+      "reason": "The main task already begins with the main.html and theme.custom_dir setup and YAML/template examples near the start. A packaging command much later is not the start of the main flow."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "9c881d0ecd156956589eeb9b66a5d519de3296515fb6f1b531c2c8892b50cac1",
+      "id": "ab4a190ca7003b95104b6c8587a287519c6495b03fc07b78722da1e278a51d2a",
+      "input_sha256": "d5699d1699fad81cfbf918c90da24c22292bfa3b47bdbdd0a7e0d84e3ebd0674",
+      "label": "fp",
+      "reason": "This is a New in version compatibility marker describing feature introduction."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "1b474d09de366abb05f9631809ed3043e3ad6c67268f641e956777d754c9eed9",
+      "id": "32fe9ad3194314e21a8632206e93d13ac98299e749966e49bcfd9d11d5ad44be",
+      "input_sha256": "d5699d1699fad81cfbf918c90da24c22292bfa3b47bdbdd0a7e0d84e3ebd0674",
+      "label": "fp",
+      "reason": "The sentence records the version at which client-side search support was added."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "7e1914d9b73e92b27955fe7226ff2a17f0eae11b9b7a20cc889ffbcd8d9e11a8",
+      "id": "4ad7f0b372ee908bcd05c6fedee8699d82b72fef690e6d48db2251244e5b700c",
+      "input_sha256": "d5699d1699fad81cfbf918c90da24c22292bfa3b47bdbdd0a7e0d84e3ebd0674",
+      "label": "fp",
+      "reason": "The config object was new in this historical version; this is API availability information."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "1ebed630b806cba642f438628221091167404d8e7f90de3d1796696aa8eea856",
+      "id": "189b6e9d8e07861464cd3435aed99baf945137983f6b945e64acf36e837e2040",
+      "input_sha256": "d5699d1699fad81cfbf918c90da24c22292bfa3b47bdbdd0a7e0d84e3ebd0674",
+      "label": "fp",
+      "reason": "The index object was new in this historical version; this is API availability information."
+    },
+    {
+      "code": "EVD001",
+      "diagnostic_sha256": "63a5190170a75602c5a1dd1b47b7415cd33f5d6b5412b534bf59cb33aee39e6d",
+      "id": "290ba4f560d2e04bb21f68fae28968340ffcfaf548228a1d1c278a7c1be0d72f",
+      "input_sha256": "d5699d1699fad81cfbf918c90da24c22292bfa3b47bdbdd0a7e0d84e3ebd0674",
+      "label": "fp",
+      "reason": "The paragraph defines a theme package layout and explains its files, not a comparative quality claim."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "f13ffe3884ee2ed826c2acb1cfbe6e5bad0729b557fcf9c850260205c8607132",
+      "id": "9ca99b8aeda8a7d1c605bfd5bdc0f37df1c7461416e5169930151265d5242005",
+      "input_sha256": "18ef4f7e72a22b07130a8daa42be00fec836b748419b83d3bd035266e0e6e4fb",
+      "label": "fp",
+      "reason": "This is a New in version marker for exclude_docs availability."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "25718cf9887f7eabf68d52c97b8717e26100af84e5a235eb284cdc351c4ae21d",
+      "id": "4add65b7784ce3dd404d07ec7764537709542e7d2c5bb1f1eb95ee6ad0dbc9f8",
+      "input_sha256": "18ef4f7e72a22b07130a8daa42be00fec836b748419b83d3bd035266e0e6e4fb",
+      "label": "fp",
+      "reason": "This is a New in version marker for draft_docs availability."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "c18e333c24374d78cbd0b075eaafe61b25939fc016bf2ab76470aaddb7fdb707",
+      "id": "1aeee411caea39abdd7d25bb6aed4503eb2adaeffa565fc71b6b479385d46692",
+      "input_sha256": "18ef4f7e72a22b07130a8daa42be00fec836b748419b83d3bd035266e0e6e4fb",
+      "label": "fp",
+      "reason": "This is a New in version marker for not_in_nav availability."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "2bda0d9ae7177644ef08cb89446d7339cc40ab099b7d8f4c5506a524a05140d6",
+      "id": "ba2923db1aff3d804aa1d830e2b6bf36f38600b7028340bc6b85b262b09e27a3",
+      "input_sha256": "18ef4f7e72a22b07130a8daa42be00fec836b748419b83d3bd035266e0e6e4fb",
+      "label": "fp",
+      "reason": "This is a New in version marker for validation availability."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "5e87cc820ccb77b88030c803558859c5603bd042cd7031cb6fb0580054726294",
+      "id": "5dec819d11664187eb65ec25af38ba07907afcf7dcda4307240b432571bcab4b",
+      "input_sha256": "18ef4f7e72a22b07130a8daa42be00fec836b748419b83d3bd035266e0e6e4fb",
+      "label": "fp",
+      "reason": "This is a New in version marker for absolute-link validation availability."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "0c7826c9086221bbd8e9e9a6b6df2397917d2e157f7f04f8aca705ed7b00902d",
+      "id": "c0979dd37d5bf2bb8afe794599b13eb0c1e3919d9a32e36ee7426771fe16416e",
+      "input_sha256": "18ef4f7e72a22b07130a8daa42be00fec836b748419b83d3bd035266e0e6e4fb",
+      "label": "fp",
+      "reason": "This is a New in version marker for hooks availability."
+    },
+    {
+      "code": "STL004",
+      "diagnostic_sha256": "38aa93dab63c7745cc7bca80cea6862bb518e525e6cb401a0e87418591811b66",
+      "id": "eabf1e0afd101069582789edad185480577206ca6e511023600e10432d5cd3d7",
+      "input_sha256": "18ef4f7e72a22b07130a8daa42be00fec836b748419b83d3bd035266e0e6e4fb",
+      "label": "fp",
+      "reason": "This is a New in version marker for relative-path support."
+    },
+    {
+      "code": "ORD001",
+      "diagnostic_sha256": "2cce6aad7909f71445ff1460833d7b1efb68db6382f8ee35e6423f63c9fde473",
+      "id": "f8a2a304dc46b36292d52ac57e39ed25067349a6ece076d3bccdc1db15ba8ac4",
+      "input_sha256": "df97ab2b1bc3b515818a1d1af8bb39d73625cc7af58aba2ab31848c619d2593c",
+      "label": "fp",
+      "reason": "The earlier section already gives the CSS file and extra_css YAML needed to customize the theme. The later mkdir command starts a second technique."
+    },
+    {
+      "code": "STL002",
+      "diagnostic_sha256": "e372ef6b4de9a290073c01cf362d9c4cef73bb6bf04282d6d13d5c9eeaae705c",
+      "id": "6b52a24026f28abf87c4f503a2a729c3cbc20878c25d89401ceab4fb43761b9f",
+      "input_sha256": "f18c58d56a1e4b0cf5ebf5b6d55f4985af544b63803deae305a5f8ba1fffb390",
+      "label": "fp",
+      "reason": "This describes the destination branch used by GitHub Pages, a deployment procedure contract rather than an observation that a particular site is live."
+    }
+  ],
+  "method": "Individual source-context review of all 20 first-cohort diagnostics, including the actual early examples for order warnings. This failed holdout became development data for iteration two; it is not independent validation of that later implementation.",
+  "report_sha256": "dfccd907633139a5c659d1f1d7217b57bb98a4ec0160a8f0337ee7cfaa4ae808",
+  "reviewer_kind": "author_agent",
+  "schema_version": 1
+}
