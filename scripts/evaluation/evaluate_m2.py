@@ -54,7 +54,16 @@ def verify_blob(path, record):
         raise ValueError(f"Corpus Git blob changed: {path.name}")
 
 
-def prepare_inputs(corpus, lock, profiles, inventory):
+def site_config(sites):
+    """Render reviewed [[sites]] entries; their review fields stay out of the configuration."""
+    config = ""
+    for site in sites:
+        config += "\n[[sites]]\n" + "".join(f"{key}={json.dumps(site[key], ensure_ascii=False)}\n"
+                                          for key in ("path", "root", "public", "base") if key in site)
+    return config
+
+
+def prepare_inputs(corpus, lock, profiles, inventory, sites=None):
     records = {item["id"]: item for item in inventory["sources"]}
     sources = []
     for source in lock["sources"]:
@@ -66,6 +75,8 @@ def prepare_inputs(corpus, lock, profiles, inventory):
         config = "preview=true\n"
         for mapping in profiles["profiles"][source["id"]]["mappings"]:
             config += f'\n[[kinds]]\npath={json.dumps(mapping["path"], ensure_ascii=False)}\nkind={json.dumps(mapping["kind"])}\n'
+        if sites is not None:
+            config += site_config(sites["profiles"].get(source["id"], {}).get("sites", []))
         documents = []
         for document in source["documents"]:
             blob = corpus / "data/blobs" / document["git_blob"]
@@ -103,7 +114,7 @@ def counts(diagnostics):
     return all_counts, m2_counts
 
 
-def run(output, corpus=ROOT / "corpus", split=None, sections=False):
+def run(output, corpus=ROOT / "corpus", split=None, sections=False, sites=None):
     if output.exists():
         raise ValueError(f"Preserve the existing run before creating another: {output}")
     corpus = corpus.resolve()
@@ -120,8 +131,13 @@ def run(output, corpus=ROOT / "corpus", split=None, sections=False):
     inventory = read(inventory_path)
     if profiles["corpus_sha256"] != lock_hash or inventory["corpus_lock_sha256"] != lock_hash:
         raise ValueError("Kind profile and inventory must describe this corpus lock")
+    site_profile = None
+    if sites is not None:
+        site_profile = read(sites)
+        if site_profile["corpus_sha256"] != lock_hash:
+            raise ValueError("Site profile must describe this corpus lock")
     subprocess.run([sys.executable, str(corpus / "inventory.py"), "verify"], check=True)
-    inputs = prepare_inputs(corpus, lock, profiles, inventory)
+    inputs = prepare_inputs(corpus, lock, profiles, inventory, site_profile)
     if sections:
         inputs["sections"] = True
     work = ROOT / "target" / ("m3-evaluation" if sections else "m2-evaluation")
@@ -146,6 +162,8 @@ def run(output, corpus=ROOT / "corpus", split=None, sections=False):
         "inventory_sha256": digest(inventory_path.read_bytes()), "implementation": before, "implementation_hash_format": "sha256-lf", "probe_sha256": digest(binary.read_bytes()),
         "link_backend": "case-sensitive pinned Git trees; symlinks and submodules undetermined; anchors only in pinned corpus documents",
         "reverse_byte_identical": True, "reverse_dimensions": ["sources", "documents", "tree_entries"], "raw_result_sha256": digest(raw)}
+    if sites is not None:
+        metadata["site_profile_sha256"] = digest(sites.read_bytes())
     if sections:
         metadata.update(evaluation_split=split or "all", section_classifier="deterministic heuristic; annotations are predictions, not review labels")
     packed = gzip.compress(encode(metadata | {"files": files, "diagnostics": diagnostics}), mtime=0)

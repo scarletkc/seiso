@@ -32,6 +32,15 @@ class M2EvaluationTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 evaluate_m2.verify_blob(path, record)
 
+    def test_site_entries_keep_configuration_fields_and_drop_review_fields(self):
+        config = evaluate_m2.site_config([
+            {"path": "src/**", "root": "src", "public": "src/public", "generator": "VitePress", "evidence": "srcDir"},
+            {"path": "docs/**", "root": "docs", "base": "/docs/"},
+        ])
+        self.assertEqual(config, '\n[[sites]]\npath="src/**"\nroot="src"\npublic="src/public"\n'
+                                 '\n[[sites]]\npath="docs/**"\nroot="docs"\nbase="/docs/"\n')
+        self.assertEqual(evaluate_m2.site_config([]), "")
+
     def test_every_m2_rule_has_a_count_even_when_no_diagnostics_exist(self):
         all_counts, m2_counts = evaluate_m2.counts([{"split": "tuning", "code": "LNK001"}, {"split": "holdout", "code": "OWN002"}])
         self.assertEqual(all_counts["tuning"], {"LNK001": 1})

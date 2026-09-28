@@ -124,6 +124,22 @@ related locations. The Markdown view limits individual entries for workflow
 summaries; the artifact contains the full result. Changing corpus locks or
 kind profiles requires a separate review before comparing rule behavior.
 
+## Documentation site routes
+
+[`evaluation/sites.json`](../evaluation/sites.json) gives a `[[sites]]` entry
+to each source whose pinned tree has a site generator configuration or
+navigation file covering its corpus documents. Each entry cites that file as
+its evidence. Pass the profile to resolve links as site routes:
+
+```sh
+python -m scripts.evaluation.evaluate_m3 --split all --sites corpus/evaluation/sites.json --output corpus/reports/sites
+```
+
+The run records the profile's SHA-256. Without `--sites`, the evaluator's
+inputs and report are unchanged, so `ecosystem_diff` between runs with and
+without the profile isolates route resolution. Review the entries like kind
+profiles before comparing rule behavior.
+
 ## Heuristic evaluation
 
 Freeze tuning output before reviewing the holdout. The M3 evaluator includes

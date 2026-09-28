@@ -54,11 +54,16 @@ def compare(before, after):
     removed = [old[key] for key in sorted(old.keys() - new.keys())]
     changed = [{"before": old[key], "after": new[key]} for key in sorted(shared)
                if old[key]["diagnostic"] != new[key]["diagnostic"]]
-    return {"schema_version": 1, "corpus_sha256": after["corpus_sha256"],
-            "added": added, "removed": removed, "changed": changed,
-            "counts": {"added": dict(sorted(Counter(item["code"] for item in added).items())),
-                       "removed": dict(sorted(Counter(item["code"] for item in removed).items())),
-                       "changed": dict(sorted(Counter(item["after"]["code"] for item in changed).items()))}}
+    result = {"schema_version": 1, "corpus_sha256": after["corpus_sha256"],
+              "added": added, "removed": removed, "changed": changed,
+              "counts": {"added": dict(sorted(Counter(item["code"] for item in added).items())),
+                         "removed": dict(sorted(Counter(item["code"] for item in removed).items())),
+                         "changed": dict(sorted(Counter(item["after"]["code"] for item in changed).items()))}}
+    # A site profile is the variable under test when comparing route resolution.
+    sites = [report.get("site_profile_sha256") for report in (before, after)]
+    if sites[0] != sites[1]:
+        result["site_profile_sha256"] = {"before": sites[0], "after": sites[1]}
+    return result
 
 
 def literal(value):
@@ -66,9 +71,12 @@ def literal(value):
 
 
 def markdown(report, limit=80):
+    snapshot = "Both runs use the same document, kind-profile, and Git-tree snapshot."
+    if "site_profile_sha256" in report:
+        snapshot += " Their site profiles differ, so links resolve as site routes differently."
     lines = ["<!-- seiso-ecosystem -->", "## Corpus diagnostic changes", "",
              f"Added: {len(report['added'])}; removed: {len(report['removed'])}; changed: {len(report['changed'])}.",
-             "", "Both runs use the same document, kind-profile, and Git-tree snapshot.", "",
+             "", snapshot, "",
              "| Rule | Added | Removed | Changed |", "| --- | ---: | ---: | ---: |"]
     counts = report["counts"]
     for rule in sorted(set().union(*(value.keys() for value in counts.values()))):

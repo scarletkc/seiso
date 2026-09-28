@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "corpus_sha256": "3904c6c396606d13a21de7296624bfff99054f60d872cb4da6a346ddb80487cb",
+  "reviewer_kind": "agent",
+  "review_basis": "Each entry follows a site generator configuration or navigation file read at the source's pinned commit. Sources without one, or whose corpus documents lie outside the site, have no entry. Generator configuration is read, never executed.",
+  "profiles": {
+    "advanced-java": {
+      "sites": [
+        {
+          "path": "docs/**",
+          "root": "docs",
+          "public": "docs/public",
+          "generator": "VitePress",
+          "evidence": "docs/.vitepress/config.mts sets no srcDir, so docs is the source; docs/public holds files served from /."
+        }
+      ]
+    },
+    "aider": {
+      "sites": [
+        {
+          "path": "aider/website/**",
+          "root": "aider/website",
+          "generator": "Jekyll",
+          "evidence": "aider/website/_config.yml configures a Jekyll site whose source is aider/website; Jekyll serves other files in the source unchanged."
+        }
+      ]
+    },
+    "gemini-cli": {
+      "sites": [
+        {
+          "path": "docs/**",
+          "root": "docs",
+          "base": "/docs/",
+          "generator": "Site navigation",
+          "evidence": "docs/sidebar.json and docs/redirects.json address pages as docs/<path> routes, such as docs/get-started for docs/get-started/index.md."
+        }
+      ]
+    },
+    "goose": {
+      "sites": [
+        {
+          "path": "documentation/**",
+          "root": "documentation",
+          "public": "documentation/static",
+          "generator": "Docusaurus",
+          "evidence": "documentation/docusaurus.config.ts serves the site from / by default; its docs and blog routes mirror documentation/, and documentation/static holds files served from /."
+        }
+      ]
+    },
+    "mdbook": {
+      "sites": [
+        {
+          "path": "guide/src/**",
+          "root": "guide/src",
+          "generator": "mdBook",
+          "evidence": "guide/book.toml sets no src, so the book source is guide/src."
+        }
+      ]
+    },
+    "oi-wiki": {
+      "sites": [
+        {
+          "path": "docs/**",
+          "root": "docs",
+          "generator": "MkDocs",
+          "evidence": "mkdocs.yml sets no docs_dir, so the source is docs."
+        }
+      ]
+    },
+    "ruff": {
+      "sites": [
+        {
+          "path": "docs/**",
+          "root": "docs",
+          "generator": "MkDocs",
+          "evidence": "mkdocs.yml inherits the generated configuration from mkdocs.template.yml, which sets no docs_dir, so the source is docs."
+        }
+      ]
+    },
+    "rust-book-ja": {
+      "sites": [
+        {
+          "path": "src/**",
+          "root": "src",
+          "generator": "mdBook",
+          "evidence": "book.toml sets no src, so the book source is src."
+        }
+      ]
+    },
+    "rust-book-zh": {
+      "sites": [
+        {
+          "path": "src/**",
+          "root": "src",
+          "generator": "mdBook",
+          "evidence": "book.toml sets no src, so the book source is src."
+        }
+      ]
+    },
+    "rust-examples-ja": {
+      "sites": [
+        {
+          "path": "src/**",
+          "root": "src",
+          "generator": "mdBook",
+          "evidence": "book.toml sets no src, so the book source is src."
+        }
+      ]
+    },
+    "uv": {
+      "sites": [
+        {
+          "path": "docs/**",
+          "root": "docs",
+          "generator": "MkDocs",
+          "evidence": "mkdocs.yml sets no docs_dir, so the source is docs."
+        }
+      ]
+    },
+    "vue-ja": {
+      "sites": [
+        {
+          "path": "src/**",
+          "root": "src",
+          "public": "src/public",
+          "generator": "VitePress",
+          "evidence": ".vitepress/config.ts sets srcDir to src; src/public holds files served from /."
+        }
+      ]
+    },
+    "vue-zh": {
+      "sites": [
+        {
+          "path": "src/**",
+          "root": "src",
+          "public": "src/public",
+          "generator": "VitePress",
+          "evidence": ".vitepress/config.ts sets srcDir to src; src/public holds files served from /."
+        }
+      ]
+    }
+  }
+}

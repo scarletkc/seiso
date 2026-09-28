@@ -45,6 +45,14 @@ class ComparisonTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             compare(old, new)
 
+    def test_different_site_profiles_are_named(self):
+        same = compare(report([item()]), report([item()]))
+        self.assertNotIn("site_profile_sha256", same)
+        self.assertNotIn("site profiles", markdown(same))
+        diff = compare(report([item()]), report([item()]) | {"site_profile_sha256": "sites"})
+        self.assertEqual(diff["site_profile_sha256"], {"before": None, "after": "sites"})
+        self.assertIn("Their site profiles differ", markdown(diff))
+
     def test_moved_diagnostic_cannot_hide_changed_source_bytes(self):
         old = report([item()])
         moved = item(code="OWN002", start=20)

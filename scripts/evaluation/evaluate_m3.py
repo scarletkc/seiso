@@ -13,8 +13,9 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--corpus-dir", type=Path, default=ROOT / "corpus")
     parser.add_argument("--split", choices=["tuning", "holdout", "all"], required=True)
+    parser.add_argument("--sites", type=Path, help="Reviewed [[sites]] entries per source, such as corpus/evaluation/sites.json")
     args = parser.parse_args()
-    run(args.output, args.corpus_dir, None if args.split == "all" else args.split, sections=True)
+    run(args.output, args.corpus_dir, None if args.split == "all" else args.split, sections=True, sites=args.sites)
 
 
 if __name__ == "__main__":

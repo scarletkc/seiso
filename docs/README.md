@@ -45,6 +45,7 @@ fresh evidence and historical replay. Dated records preserve their results:
 - [M2 baseline decision](evaluation/m2-baseline-decision.md)
 - [M3 heuristic evaluation](evaluation/m3-2026-09-28.md)
 - [M3 context and abstention evaluation](evaluation/m3-optimization-2026-09-28.md)
+- [Documentation site routes](evaluation/sites-2026-09-28.md)
 
 ## Design
 
