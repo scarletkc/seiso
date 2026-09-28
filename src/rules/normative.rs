@@ -129,17 +129,43 @@ fn defaults(words: Words, language: Language) -> &'static [&'static str] {
 }
 
 /// Product documentation describes its own end users with the same words as a
-/// report about the requester: "未经用户授权", "once the user approved",
-/// "用户已授权的应用", "经用户确认后". A condition, negation, or requirement
-/// before the phrase, or an attributive or temporal clause after it, marks
-/// that use.
-const END_USER_BEFORE: &[&str] = &[
-    "未", "需", "须", "应", "不", "待", "等", "请", "若", "如果", "当", "一旦", "只有", "除非",
+/// report about the requester: "未经用户授权", "Verify that the user has
+/// authorized the app", "用户已授权的应用", "经用户确认后". A condition,
+/// negation, requirement, or check earlier in the same clause, or an
+/// attributive or temporal clause after the phrase, marks that use. Earlier
+/// clauses do not count, so "After the review, the user confirmed" remains a
+/// report.
+const END_USER_ADJACENT: &[&str] = &["未", "需", "须", "应", "不", "待", "等", "请", "若", "当"];
+const END_USER_CLAUSE_PHRASES: &[&str] = &[
+    "如果", "一旦", "只有", "除非", "确认", "确保", "检查", "验证", "核实", "必须", "需要", "要求",
+    "是否", "判断",
 ];
-const END_USER_BEFORE_WORDS: &[&str] = &[
-    "if", "once", "when", "after", "until", "unless", "before", "whether",
+const END_USER_CLAUSE_WORDS: &[&str] = &[
+    "if", "once", "when", "whenever", "after", "until", "unless", "before", "whether", "verify",
+    "ensure", "check", "confirm", "sure", "require", "requires", "required", "must", "should",
+    "need", "needs", "only", "wait",
 ];
 const END_USER_AFTER: &[&str] = &["的", "后", "之后", "以后", "时"];
+const CLAUSE_BOUNDARIES: &[char] = &[
+    ',', ';', ':', '.', '!', '?', '，', '；', '：', '。', '！', '？', '、',
+];
+
+fn end_user_behavior(before: &str, after: &str) -> bool {
+    let before = before.trim_end();
+    let clause = before
+        .rfind(CLAUSE_BOUNDARIES)
+        .map_or(before, |index| &before[index..]);
+    END_USER_ADJACENT.iter().any(|word| before.ends_with(word))
+        || END_USER_CLAUSE_PHRASES
+            .iter()
+            .any(|phrase| clause.contains(phrase))
+        || clause
+            .split(|ch: char| !ch.is_alphanumeric())
+            .any(|word| END_USER_CLAUSE_WORDS.contains(&word.to_ascii_lowercase().as_str()))
+        || END_USER_AFTER
+            .iter()
+            .any(|word| after.trim_start().starts_with(word))
+}
 
 fn conversation_marker(runs: &[Run<'_>], phrases: &[&str]) -> Option<Span> {
     runs.iter()
@@ -148,16 +174,7 @@ fn conversation_marker(runs: &[Run<'_>], phrases: &[&str]) -> Option<Span> {
                 occurrences(&run.text, phrase)
                     .into_iter()
                     .filter(|range| {
-                        let before = run.text[..range.start].trim_end();
-                        let before_word = before
-                            .rsplit(|ch: char| !ch.is_alphanumeric())
-                            .next()
-                            .unwrap_or_default()
-                            .to_ascii_lowercase();
-                        let after = run.text[range.end..].trim_start();
-                        !END_USER_BEFORE.iter().any(|word| before.ends_with(word))
-                            && !END_USER_BEFORE_WORDS.contains(&before_word.as_str())
-                            && !END_USER_AFTER.iter().any(|word| after.starts_with(word))
+                        !end_user_behavior(&run.text[..range.start], &run.text[range.end..])
                     })
                     .filter_map(|range| run.span(range))
             })

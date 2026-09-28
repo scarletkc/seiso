@@ -308,6 +308,16 @@ fn reports_about_the_requester_are_remnants_but_end_user_behavior_is_not() {
             "As the user requested, the guide skips Docker.",
             "As the user requested",
         ),
+        (
+            "en",
+            "After the review, the user confirmed that the old flag can go.",
+            "the user confirmed",
+        ),
+        (
+            "zh",
+            "为了兼容旧客户端，经用户确认，保留旧接口。",
+            "经用户确认",
+        ),
     ] {
         assert_one("VOX001", &language(lang, text), expected);
     }
@@ -326,6 +336,17 @@ fn reports_about_the_requester_are_remnants_but_end_user_behavior_is_not() {
             "en",
             "If the user has authorized the app, skip the consent screen.",
         ),
+        (
+            "en",
+            "Verify that the user has authorized the app before requesting a token.",
+        ),
+        (
+            "en",
+            "Ensure that the user confirmed the deletion before removing the account.",
+        ),
+        ("en", "Make sure the user approved the request."),
+        ("zh", "请确认用户已授权该应用。"),
+        ("zh", "检查请求前必须确保用户已同意条款。"),
     ] {
         assert!(
             check("VOX001", &language(lang, text), "").is_empty(),
