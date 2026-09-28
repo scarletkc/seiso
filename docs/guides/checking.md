@@ -12,8 +12,9 @@ seiso check
 ```
 
 `seiso init` writes `seiso.toml` at the repository root. Review its suggested
-exclusions and kind mappings. Add `kind` frontmatter to
-documents that need a different role. Use `seiso rule KND001` for an example.
+exclusions, kind mappings, and documentation site entries. Add `kind`
+frontmatter to documents that need a different role. Use `seiso rule KND001`
+for an example.
 
 Stable rules are enabled by default. Add `--preview` or `preview = true` in the
 configuration to opt into selected preview rules. Preview rules are
@@ -56,7 +57,7 @@ implemented rules, their examples, and exceptions. `--select` replaces the
 configured selection; `--extend-select` adds to it.
 Only implemented families and rule codes are accepted. The
 [configuration reference](../reference/configuration.md) defines inheritance, precedence,
-kind mappings, domains, and rule selection.
+kind mappings, domains, documentation sites, and rule selection.
 
 ## Check unsaved content
 

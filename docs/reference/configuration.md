@@ -68,6 +68,33 @@ path = "docs/server/**"
 name = "server"
 ```
 
+## Documentation sites
+
+Site generators such as VitePress, Docusaurus, mdBook, and MkDocs publish
+pages at routes, so their sources often link to `/guide/setup` for
+`src/guide/setup.md`, or to `setup.html` for `setup.md`. A `[[sites]]` entry
+lets LNK001 and LNK002 resolve those links as routes for the documents it
+matches. Without one, links resolve only as repository paths, the way GitHub
+renders them.
+
+```toml
+[[sites]]
+path = "src/**"        # documents the site renders
+root = "src"           # directory that a leading / resolves from
+public = "src/public"  # optional: files served unchanged from /
+base = "/"             # optional: URL prefix that links include before the route
+```
+
+`path` is a glob; `root` and `public` are directories. All three are relative
+to the configuration's directory. When several entries match, the last wins.
+Set `base` only when links include a prefix before the route, such as
+`/docs/` in `/docs/guide/setup`. [LNK001](../rules/LNK001.md#inputs) lists
+the route candidates in the order they are tried.
+
+`seiso init` suggests an entry for each VitePress, Docusaurus, mdBook, or
+MkDocs project it finds at the repository root or one directory below it.
+`seiso policy` and `seiso index --dump` show the site that applies to each file.
+
 ## Document language
 
 Language-specific rules match each sentence with the English, Chinese, or

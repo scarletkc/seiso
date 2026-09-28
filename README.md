@@ -76,7 +76,8 @@ seiso check
 ```
 
 `seiso init` writes a `seiso.toml` at the repository root with suggested
-exclusions and kind mappings; review them before relying on the results.
+exclusions, kind mappings, and documentation site entries; review them before
+relying on the results.
 
 `seiso check` runs only stable rules, which have met the
 [promotion criteria](https://github.com/scarletkc/seiso/blob/main/docs/evaluation/policy.md).

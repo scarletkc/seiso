@@ -667,6 +667,56 @@ fn init_writes_at_the_repository_root_with_exclusions_and_community_kinds() {
 }
 
 #[test]
+fn init_suggests_sites_for_detected_documentation_generators() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    std::fs::create_dir(root.join(".git")).unwrap();
+    write(
+        root,
+        ".vitepress/config.ts",
+        "export default defineConfig({\n  srcDir: './src',\n})\n",
+    );
+    write(root, "src/index.md", "# Home\n");
+    write(root, "src/public/logo.png", "image");
+    write(
+        root,
+        "website/docusaurus.config.js",
+        "module.exports = {};\n",
+    );
+    write(root, "website/static/img/logo.png", "image");
+    write(root, "book/book.toml", "[book]\nsrc = \"text\"\n");
+    write(root, "book/text/SUMMARY.md", "# Summary\n");
+    write(root, "manual/mkdocs.yml", "site_name: Manual\n");
+    write(root, "manual/docs/index.md", "# Manual\n");
+    write(
+        root,
+        "empty/mkdocs.yml",
+        "docs_dir: 'absent'  # not created\n",
+    );
+    let output = run(root, &["init"], None);
+    assert_eq!(output.status.code(), Some(0));
+    assert!(String::from_utf8_lossy(&output.stdout).contains("site entries"));
+    let config = std::fs::read_to_string(root.join("seiso.toml")).unwrap();
+    for expected in [
+        "[[sites]] # VitePress: .vitepress/config.ts\npath = \"src/**\"\nroot = \"src\"\npublic = \"src/public\"\n",
+        "[[sites]] # mdBook: book/book.toml\npath = \"book/text/**\"\nroot = \"book/text\"\n",
+        "[[sites]] # MkDocs: manual/mkdocs.yml\npath = \"manual/docs/**\"\nroot = \"manual/docs\"\n",
+        "[[sites]] # Docusaurus: website/docusaurus.config.js\npath = \"website/**\"\nroot = \"website\"\npublic = \"website/static\"\n",
+    ] {
+        assert!(config.contains(expected), "{config}");
+    }
+    assert!(!config.contains("absent"), "{config}");
+    let policy = run(root, &["policy"], None);
+    assert_eq!(policy.status.code(), Some(0));
+    let workspace = TempDir::new().unwrap();
+    write(workspace.path(), "README.md", "# Intro\n");
+    let output = run(workspace.path(), &["init"], None);
+    assert!(!String::from_utf8_lossy(&output.stdout).contains("site entries"));
+    let config = std::fs::read_to_string(workspace.path().join("seiso.toml")).unwrap();
+    assert!(!config.contains("[[sites]]"), "{config}");
+}
+
+#[test]
 fn explicit_configuration_keeps_the_repository_root_and_applies_patterns_from_it() {
     let workspace = TempDir::new().unwrap();
     let root = workspace.path();

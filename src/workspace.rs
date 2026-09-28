@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use crate::cache::ParseCache;
-use crate::config::{CliOverrides, Config, Settings, Workspace};
+use crate::config::{CliOverrides, Config, Settings, SiteMapping, Workspace};
 use crate::index::{IndexedFile, WorkspaceIndex};
 use crate::md::Document;
 use crate::paths::normalize;
@@ -44,6 +44,7 @@ pub struct FilePolicy {
     pub configuration: String,
     pub kind: Option<KindResolution>,
     pub domain: Option<String>,
+    pub site: Option<SiteMapping>,
     pub enabled_rules: Vec<String>,
     pub excluded: Option<&'static str>,
     pub suppressions: Vec<SuppressionRecord>,
@@ -283,6 +284,7 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
                         configuration,
                         kind: None,
                         domain: config.domain_for(&path).map(str::to_owned),
+                        site: config.site_for(&path).cloned(),
                         enabled_rules: Vec::new(),
                         excluded,
                         suppressions: Vec::new(),
@@ -362,6 +364,7 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
                 configuration,
                 kind: Some(kind.clone()),
                 domain: config.domain_for(&path).map(str::to_owned),
+                site: config.site_for(&path).cloned(),
                 enabled_rules: enabled_rules.clone(),
                 excluded: None,
                 suppressions: Vec::new(),

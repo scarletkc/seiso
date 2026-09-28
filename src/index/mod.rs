@@ -7,7 +7,7 @@ use std::sync::{Arc, OnceLock};
 use crate::config::Config;
 use crate::diagnostics::Span;
 use crate::md::{BlockKind, Document, FragmentKind};
-use crate::paths::{LinkPathError, TargetStatus, local_link, local_target_status};
+use crate::paths::{LinkPathError, TargetStatus, local_link, local_target_status, select_target};
 use crate::rules::{PathStatus, WorkspaceFiles};
 use regex::Regex;
 use serde::Serialize;
@@ -116,7 +116,10 @@ impl WorkspaceIndex {
             status: LinkStatus::AnchorUnknown,
             error: None,
         };
-        let link = match local_link(&self.root, Path::new(source), destination) {
+        let site = self
+            .file(source)
+            .and_then(|file| file.config.site_routes(&file.path));
+        let link = match local_link(&self.root, Path::new(source), destination, site.as_ref()) {
             Ok(link) => link,
             Err(error) => {
                 result.status = match error {
@@ -128,17 +131,19 @@ impl WorkspaceIndex {
                 return result;
             }
         };
-        let mut target = link.location.target;
+        let (selected, status) = select_target(&link.locations, |location| {
+            self.target_status(&location.path, &location.target)
+        });
+        let location = &link.locations[selected];
+        let mut target = location.target.clone();
         result.target = Some(target.clone());
         result.anchor = link.anchor;
-        let status = self.target_status(&link.location.path, &target);
         // Resolve native aliases only through filesystem identity. Lowercasing names
         // would incorrectly merge distinct files on case-sensitive filesystems.
         if self.inventory.is_none()
             && matches!(status, TargetStatus::File)
             && self.file(&target).is_none()
-            && let (Ok(actual), Ok(root)) =
-                (link.location.path.canonicalize(), self.root.canonicalize())
+            && let (Ok(actual), Ok(root)) = (location.path.canonicalize(), self.root.canonicalize())
             && let Ok(relative) = actual.strip_prefix(root)
         {
             let canonical = relative.to_string_lossy().replace('\\', "/");
@@ -213,6 +218,7 @@ impl WorkspaceIndex {
                 "filename": file.filename,
                 "kind": file.kind,
                 "domain": file.domain,
+                "site": file.config.site_for(&file.path),
                 "language": file.document.language,
                 "canonical": file.document.frontmatter.as_ref().filter(|value| value.errors.is_empty()).and_then(|value| value.canonical).unwrap_or(false),
                 "anchors": self.anchor_spans[&file.filename],
@@ -756,6 +762,64 @@ mod tests {
             virtual_index.resolve_link("from.md", "missing.md").status,
             LinkStatus::Missing
         );
+    }
+
+    #[test]
+    fn inventory_matches_disk_resolution_for_site_routes() {
+        let root = tempfile::tempdir().unwrap();
+        for directory in ["site/guide", "site/public"] {
+            std::fs::create_dir_all(root.path().join(directory)).unwrap();
+        }
+        std::fs::write(root.path().join("site/public/logo.png"), "image").unwrap();
+        let config = Config::parse(
+            "[[sites]]\npath = 'site/**'\nroot = 'site'\npublic = 'site/public'\n",
+            root.path(),
+        )
+        .unwrap();
+        let mut from = file(root.path(), "site/guide/from.md", "# From");
+        from.config = config;
+        let files = vec![
+            from,
+            file(root.path(), "site/guide/index.md", "# Guide"),
+            file(root.path(), "site/guide/setup.md", "# Setup"),
+        ];
+        let disk = WorkspaceIndex::new(root.path().to_path_buf(), files.clone(), true);
+        let inventory = WorkspaceIndex::new(root.path().to_path_buf(), files, true).with_inventory(
+            BTreeMap::from([
+                ("site".into(), InventoryEntryKind::Directory),
+                ("site/guide".into(), InventoryEntryKind::Directory),
+                ("site/public".into(), InventoryEntryKind::Directory),
+                ("site/public/logo.png".into(), InventoryEntryKind::File),
+            ]),
+        );
+        for (destination, target, status) in [
+            (
+                "/guide/setup#setup",
+                "site/guide/setup.md",
+                LinkStatus::AnchorFound,
+            ),
+            (
+                "setup.html#absent",
+                "site/guide/setup.md",
+                LinkStatus::AnchorMissing,
+            ),
+            (
+                "/guide/#guide",
+                "site/guide/index.md",
+                LinkStatus::AnchorFound,
+            ),
+            ("/logo.png", "site/public/logo.png", LinkStatus::File),
+            ("/missing", "missing", LinkStatus::Missing),
+        ] {
+            let resolution = disk.resolve_link("site/guide/from.md", destination);
+            assert_eq!(resolution.target.as_deref(), Some(target), "{destination}");
+            assert_eq!(resolution.status, status, "{destination}");
+            assert_eq!(
+                resolution,
+                inventory.resolve_link("site/guide/from.md", destination),
+                "{destination}"
+            );
+        }
     }
 
     #[test]

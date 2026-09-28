@@ -582,6 +582,28 @@ pub fn init() -> Result<u8, String> {
             quote(&path)
         ));
     }
+    let sites = site_suggestions(&root);
+    if !sites.is_empty() {
+        contents.push_str(
+            "\n# Links in documents that a site generator renders resolve as site routes; review these entries.\n",
+        );
+    }
+    for site in &sites {
+        let path = if site.root == "." {
+            "**".to_owned()
+        } else {
+            format!("{}/**", site.root)
+        };
+        contents.push_str(&format!(
+            "\n[[sites]] # {}\npath = {}\nroot = {}\n",
+            site.found,
+            quote(&path),
+            quote(&site.root)
+        ));
+        if let Some(public) = &site.public {
+            contents.push_str(&format!("public = {}\n", quote(public)));
+        }
+    }
     let path = root.join("seiso.toml");
     let mut file = OpenOptions::new()
         .write(true)
@@ -600,10 +622,116 @@ pub fn init() -> Result<u8, String> {
     } else {
         path.display().to_string()
     };
+    let suggestions = if sites.is_empty() {
+        "exclusions and kind mappings"
+    } else {
+        "exclusions, kind mappings, and site entries"
+    };
     write_stdout(&format!(
-        "Created {created}. Review the suggested exclusions and kind mappings, then run `seiso check`.\n"
+        "Created {created}. Review the suggested {suggestions}, then run `seiso check`.\n"
     ))?;
     Ok(0)
+}
+
+struct SiteSuggestion {
+    /// Generator and configuration file that suggested this site.
+    found: String,
+    root: String,
+    public: Option<String>,
+}
+
+/// Find VitePress, Docusaurus, mdBook, and MkDocs projects at the repository
+/// root or one directory below it, and the directories their pages come from.
+fn site_suggestions(root: &Path) -> Vec<SiteSuggestion> {
+    let mut projects = vec![String::new()];
+    if let Ok(entries) = fs::read_dir(root) {
+        let mut directories: Vec<_> = entries
+            .flatten()
+            .filter(|entry| entry.file_type().is_ok_and(|kind| kind.is_dir()))
+            .filter_map(|entry| entry.file_name().into_string().ok())
+            .filter(|name| {
+                !name.starts_with('.')
+                    && !["node_modules", "vendor", "third_party", "target"].contains(&name.as_str())
+            })
+            .collect();
+        directories.sort();
+        projects.extend(directories);
+    }
+    let join = |base: &str, path: &str| {
+        let path = seiso::paths::normalize(Path::new(base).join(path))
+            .to_string_lossy()
+            .replace('\\', "/");
+        if path.is_empty() {
+            ".".to_owned()
+        } else {
+            path
+        }
+    };
+    let setting = |source: &str, pattern: &str| {
+        regex::Regex::new(pattern)
+            .expect("valid generator setting pattern")
+            .captures(source)
+            .map(|capture| capture[1].trim().to_owned())
+    };
+    let mut sites = Vec::new();
+    for project in projects {
+        let directory = root.join(&project);
+        let file = |name: &str| {
+            let path = directory.join(name);
+            path.is_file().then(|| {
+                (
+                    join(&project, name),
+                    fs::read_to_string(&path).unwrap_or_default(),
+                )
+            })
+        };
+        let vitepress = ["js", "ts", "mjs", "mts", "cjs", "cts"]
+            .into_iter()
+            .find_map(|extension| file(&format!(".vitepress/config.{extension}")));
+        let docusaurus = ["js", "ts", "mjs", "cjs"]
+            .into_iter()
+            .find_map(|extension| file(&format!("docusaurus.config.{extension}")));
+        let found = if let Some((path, source)) = vitepress {
+            let source_directory = setting(&source, r#"\bsrcDir\s*:\s*['"`]([^'"`]+)['"`]"#);
+            let pages = join(&project, source_directory.as_deref().unwrap_or("."));
+            Some((
+                format!("VitePress: {path}"),
+                pages.clone(),
+                join(&pages, "public"),
+            ))
+        } else if let Some((path, _)) = docusaurus {
+            Some((
+                format!("Docusaurus: {path}"),
+                join(&project, "."),
+                join(&project, "static"),
+            ))
+        } else if let Some((path, source)) = file("book.toml") {
+            let source_directory = toml::from_str::<toml::Value>(&source)
+                .ok()
+                .and_then(|book| book.get("book")?.get("src")?.as_str().map(str::to_owned));
+            let pages = join(&project, source_directory.as_deref().unwrap_or("src"));
+            Some((format!("mdBook: {path}"), pages, String::new()))
+        } else if let Some((path, source)) = file("mkdocs.yml").or_else(|| file("mkdocs.yaml")) {
+            let source_directory = setting(
+                &source,
+                r##"(?m)^docs_dir\s*:\s*['"]?([^'"#\r\n]+?)['"]?\s*(?:#.*)?$"##,
+            );
+            let pages = join(&project, source_directory.as_deref().unwrap_or("docs"));
+            Some((format!("MkDocs: {path}"), pages, String::new()))
+        } else {
+            None
+        };
+        if let Some((found, pages, public)) = found
+            && root.join(&pages).is_dir()
+        {
+            sites.push(SiteSuggestion {
+                found,
+                root: pages,
+                public: (!public.is_empty() && root.join(&public).is_dir()).then_some(public),
+            });
+        }
+    }
+    sites
 }
 
 /// Files GitHub reads from the repository root, `.github/`, or `docs/`, matched case-insensitively.

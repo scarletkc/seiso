@@ -30,13 +30,35 @@ pub(crate) enum LinkPathError {
     Unknown,
 }
 
+/// Where a documentation site serves the pages that a document's links route to.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct SiteRoutes {
+    pub root: PathBuf,
+    pub public: Option<PathBuf>,
+    /// URL prefix, ending with `/`, that root-relative links include.
+    pub base: String,
+}
+
+impl SiteRoutes {
+    /// The site path of a root-relative link, or `None` for a link outside the base.
+    fn route<'a>(&self, path: &'a str) -> Option<&'a str> {
+        if path == self.base.trim_end_matches('/') {
+            Some("")
+        } else {
+            path.strip_prefix(self.base.as_str())
+        }
+    }
+}
+
 pub(crate) struct LocalTarget {
     pub path: PathBuf,
     pub target: String,
+    /// Reached as a site route rather than as the written repository path.
+    pub route: bool,
 }
 
 pub(crate) struct LocalLink {
-    pub location: LocalTarget,
+    pub locations: Vec<LocalTarget>,
     pub anchor: Option<String>,
 }
 
@@ -45,8 +67,9 @@ pub(crate) fn local_link(
     root: &Path,
     source: &Path,
     destination: &str,
+    site: Option<&SiteRoutes>,
 ) -> Result<LocalLink, LinkPathError> {
-    let location = local_link_target(root, source, destination)?;
+    let locations = local_link_targets(root, source, destination, site)?;
     if percent_decode(destination).is_some_and(|value| is_template(&value)) {
         return Err(LinkPathError::Template);
     }
@@ -57,15 +80,26 @@ pub(crate) fn local_link(
     if anchor.as_deref().is_some_and(is_template) {
         return Err(LinkPathError::Template);
     }
-    Ok(LocalLink { location, anchor })
+    Ok(LocalLink { locations, anchor })
 }
 
-/// Resolve only the target path. Anchor uncertainty does not make a known file absent.
+/// Resolve only the written repository path. Anchor uncertainty does not make a known file absent.
 pub(crate) fn local_link_target(
     root: &Path,
     source: &Path,
     destination: &str,
 ) -> Result<LocalTarget, LinkPathError> {
+    local_link_targets(root, source, destination, None).map(|mut targets| targets.swap_remove(0))
+}
+
+/// List the paths a destination can name, in resolution order: the written
+/// repository path first, then, for a site document, the page sources of its route.
+pub(crate) fn local_link_targets(
+    root: &Path,
+    source: &Path,
+    destination: &str,
+    site: Option<&SiteRoutes>,
+) -> Result<Vec<LocalTarget>, LinkPathError> {
     if destination.starts_with("//") || has_scheme(destination) {
         return Err(LinkPathError::External);
     }
@@ -83,20 +117,107 @@ pub(crate) fn local_link_target(
     } else {
         root.join(source)
     };
-    let path = normalize(if path.is_empty() {
+    let physical = normalize(if path.is_empty() {
         source
     } else if path.starts_with('/') {
         root.join(path.trim_start_matches('/'))
     } else {
-        source.parent().unwrap_or(root).join(path)
+        source.parent().unwrap_or(root).join(&path)
     });
     let root = normalize(root);
-    let relative = path
-        .strip_prefix(&root)
-        .map_err(|_| LinkPathError::OutsideWorkspace)?;
-    Ok(LocalTarget {
-        target: relative.to_string_lossy().replace('\\', "/"),
-        path,
+    let relative = |candidate: &Path| {
+        candidate
+            .strip_prefix(&root)
+            .ok()
+            .map(|relative| relative.to_string_lossy().replace('\\', "/"))
+    };
+    let mut targets = vec![LocalTarget {
+        target: relative(&physical).ok_or(LinkPathError::OutsideWorkspace)?,
+        path: physical.clone(),
+        route: false,
+    }];
+    let Some(site) = site.filter(|_| !path.is_empty()) else {
+        return Ok(targets);
+    };
+    let rest = path.starts_with('/').then(|| site.route(&path));
+    let mut routes = Vec::new();
+    match rest {
+        None => routes.extend(page_sources(&physical)),
+        Some(Some(rest)) => {
+            let page = normalize(site.root.join(rest));
+            routes.push(page.clone());
+            routes.extend(page_sources(&page));
+        }
+        Some(None) => {}
+    }
+    routes.retain(|route| route.starts_with(&site.root));
+    if let (Some(public), Some(Some(rest))) = (&site.public, rest)
+        && !rest.is_empty()
+    {
+        let file = normalize(public.join(rest));
+        if file.starts_with(public) {
+            routes.push(file);
+        }
+    }
+    for path in routes {
+        if let Some(target) = relative(&path)
+            && targets.iter().all(|existing| existing.path != path)
+        {
+            targets.push(LocalTarget {
+                path,
+                target,
+                route: true,
+            });
+        }
+    }
+    Ok(targets)
+}
+
+/// Markdown files a site generator renders at a route: `.html` names its
+/// source page, and an extensionless route names a page or a directory index.
+fn page_sources(route: &Path) -> Vec<PathBuf> {
+    if route
+        .extension()
+        .is_some_and(|extension| extension == "html")
+    {
+        let mut sources = vec![route.with_extension("md")];
+        // mdBook renders a directory's README.md as its index.html.
+        if route.file_stem().is_some_and(|stem| stem == "index") {
+            sources.push(route.with_file_name("README.md"));
+        }
+        return sources;
+    }
+    let suffixed = |suffix: &str| {
+        let mut path = route.as_os_str().to_owned();
+        path.push(suffix);
+        PathBuf::from(path)
+    };
+    vec![
+        suffixed(".md"),
+        suffixed(".mdx"),
+        route.join("index.md"),
+        route.join("README.md"),
+    ]
+}
+
+/// Choose the first candidate that exists. A directory reached only as a route
+/// serves no page itself, so a later page source takes precedence over it.
+pub(crate) fn select_target(
+    targets: &[LocalTarget],
+    mut status: impl FnMut(&LocalTarget) -> TargetStatus,
+) -> (usize, TargetStatus) {
+    let mut directory = None;
+    for (index, target) in targets.iter().enumerate() {
+        match status(target) {
+            TargetStatus::Missing => {}
+            TargetStatus::Directory if target.route => {
+                directory.get_or_insert(index);
+            }
+            status => return (index, status),
+        }
+    }
+    directory.map_or((0, TargetStatus::Missing), |index| {
+        (index, TargetStatus::Directory)
     })
 }
 
@@ -192,6 +313,89 @@ mod tests {
         assert_eq!(normalize("../../a/../b"), PathBuf::from("../../b"));
         assert_eq!(normalize("a/../../b"), PathBuf::from("../b"));
         assert_eq!(normalize("a/./b/../c"), PathBuf::from("a/c"));
+    }
+
+    #[test]
+    fn site_documents_list_route_candidates_after_the_written_path() {
+        let root = std::env::current_dir().unwrap();
+        let site = SiteRoutes {
+            root: root.join("site"),
+            public: Some(root.join("site/public")),
+            base: "/docs/".into(),
+        };
+        let targets = |destination: &str| {
+            local_link_targets(
+                &root,
+                Path::new("site/guide/a.md"),
+                destination,
+                Some(&site),
+            )
+            .unwrap()
+            .into_iter()
+            .map(|target| (target.target, target.route))
+            .collect::<Vec<_>>()
+        };
+        let route = |target: &str| (target.to_owned(), true);
+        assert_eq!(
+            targets("/docs/intro#x"),
+            [
+                ("docs/intro".to_owned(), false),
+                route("site/intro"),
+                route("site/intro.md"),
+                route("site/intro.mdx"),
+                route("site/intro/index.md"),
+                route("site/intro/README.md"),
+                route("site/public/intro"),
+            ]
+        );
+        assert_eq!(
+            targets("../cli/index.html"),
+            [
+                ("site/cli/index.html".to_owned(), false),
+                route("site/cli/index.md"),
+                route("site/cli/README.md"),
+            ]
+        );
+        assert_eq!(targets("/intro"), [("intro".to_owned(), false)]);
+        assert_eq!(targets("../../outside"), [("outside".to_owned(), false)]);
+        assert_eq!(targets("/docs/../x"), [("x".to_owned(), false)]);
+        assert_eq!(targets("#anchor"), [("site/guide/a.md".to_owned(), false)]);
+    }
+
+    #[test]
+    fn route_directories_yield_to_later_page_sources() {
+        let target = |target: &str, route| LocalTarget {
+            path: PathBuf::from(target),
+            target: target.into(),
+            route,
+        };
+        let status = |target: &LocalTarget| match target.target.as_str() {
+            "guide" | "physical" => TargetStatus::Directory,
+            "guide/index.md" => TargetStatus::File,
+            _ => TargetStatus::Missing,
+        };
+        let candidates = [
+            target("missing", false),
+            target("guide", true),
+            target("guide.md", true),
+            target("guide/index.md", true),
+        ];
+        assert_eq!(select_target(&candidates, status), (3, TargetStatus::File));
+        assert_eq!(
+            select_target(&candidates[..3], status),
+            (1, TargetStatus::Directory)
+        );
+        assert_eq!(
+            select_target(
+                &[target("physical", false), target("guide/index.md", true)],
+                status
+            ),
+            (0, TargetStatus::Directory)
+        );
+        assert_eq!(
+            select_target(&candidates[..1], status),
+            (0, TargetStatus::Missing)
+        );
     }
 
     #[test]

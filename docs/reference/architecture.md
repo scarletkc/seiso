@@ -77,11 +77,13 @@ its roles, evidence, and boundaries.
 
 ## Links
 
-`paths::local_link_target` supplies the common file-target interpretation;
+`paths::local_link_targets` lists a destination's candidate targets: the
+written path, then, for a document a `[[sites]]` entry matches, the page
+sources of its route. `paths::select_target` picks the first that exists, and
 `paths::local_link` also parses the anchor. Percent decoding, scheme detection,
-workspace containment, and normalization are shared by file-existence and
-index rules. A relative path starts at the source directory; a leading slash
-starts at the workspace root. Local filesystem inspection and frozen Git
+workspace containment, normalization, and route candidates are shared by
+file-existence and index rules. A relative path starts at the source directory;
+a leading slash starts at the workspace root. Local filesystem inspection and frozen Git
 inventories supply physical existence through their respective adapters.
 
 Existence and anchor knowledge are distinct. A file outside the parsed sample
