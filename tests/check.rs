@@ -828,6 +828,13 @@ fn rule_documents_are_available_and_future_features_are_rejected() {
     ] {
         assert!(String::from_utf8_lossy(&all.stdout).contains(code));
     }
+    let version = format!("seiso {}", env!("CARGO_PKG_VERSION"));
+    for arguments in [vec!["rule", "STL999"], vec!["check", "--select", "STL999"]] {
+        let stderr = String::from_utf8_lossy(&run(root, &arguments, None).stderr).into_owned();
+        assert!(stderr.contains(&version), "{stderr}");
+        assert!(stderr.contains("seiso rule --all"), "{stderr}");
+        assert!(stderr.contains("newer release"), "{stderr}");
+    }
     for arguments in [
         vec!["rule", "LNK999"],
         vec!["rule", "STL999"],

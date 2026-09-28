@@ -34,7 +34,8 @@ pub enum ConfigError {
     #[error("configuration inheritance cycle: {0}")]
     Cycle(String),
     #[error(
-        "invalid rule selector {0:?}; use ALL, a rule family such as KND, or a full code such as KND001"
+        "invalid rule selector {0:?} for seiso {version}; use ALL, a rule family such as KND, or a code listed by `seiso rule --all`; rules added in a newer release need an upgrade",
+        version = env!("CARGO_PKG_VERSION")
     )]
     Selector(String),
     #[error("file {path} is outside workspace {root}")]

@@ -471,7 +471,8 @@ pub fn rule(args: RuleArgs) -> Result<u8, String> {
         let code = args.code.as_deref().unwrap_or_default();
         let rule = seiso::rules::rule(&code.to_ascii_uppercase()).ok_or_else(|| {
             format!(
-                "Rule {code:?} is not implemented; run `seiso rule --all` to list available rules."
+                "Rule {code:?} is not in seiso {}; run `seiso rule --all` to list this version's rules. Rules added in a newer release need an upgrade.",
+                env!("CARGO_PKG_VERSION")
             )
         })?;
         render_rule(rule)
