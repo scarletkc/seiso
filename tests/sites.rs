@@ -284,6 +284,32 @@ fn inspection_output_has_no_site_fields_without_site_entries() {
 }
 
 #[test]
+fn a_nested_configuration_can_name_a_site_root_above_it() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    std::fs::create_dir(root.join(".git")).unwrap();
+    write(root, "seiso.toml", LINKS);
+    write(
+        root,
+        "docs/seiso.toml",
+        &format!("{LINKS}\n[[sites]]\npath = '**'\nroot = '../site'\n"),
+    );
+    write(root, "site/guide.md", "# Guide\n");
+    write(
+        root,
+        "docs/start.md",
+        "---\nkind: howto\n---\n# Start\n\n[Guide](/guide)\n",
+    );
+    let output = run(root, &["check", "docs"]);
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}
+
+#[test]
 fn invalid_site_entries_are_configuration_errors() {
     for (entry, expected) in [
         (
@@ -297,6 +323,14 @@ fn invalid_site_entries_are_configuration_errors() {
         (
             "path = 'site/**'\nroot = 'site'\nbase = 'guide/'",
             "sites.base \"guide/\" must be a URL path that starts with /",
+        ),
+        (
+            "path = 'site/**'\nroot = '../outside'",
+            "sites.root \"../outside\" is outside workspace",
+        ),
+        (
+            "path = 'site/**'\nroot = 'site'\npublic = 'site/../../public'",
+            "sites.public \"site/../../public\" is outside workspace",
         ),
         ("path = 'site/**'", "missing field `root`"),
         (

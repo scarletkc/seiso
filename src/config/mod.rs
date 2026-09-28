@@ -338,6 +338,33 @@ impl Config {
             .map(|(_, entry)| entry)
     }
 
+    /// Site directories must stay inside the workspace, where their pages can be checked.
+    fn with_sites_inside(self, root: &Path) -> Result<Self, ConfigError> {
+        let label = self
+            .source
+            .clone()
+            .unwrap_or_else(|| self.directory.join("seiso.toml"));
+        for site in &self.settings.sites {
+            for (field, value) in [
+                ("sites.root", Some(&site.root)),
+                ("sites.public", site.public.as_ref()),
+            ] {
+                if let Some(value) = value
+                    && !normalize(self.directory.join(value)).starts_with(root)
+                {
+                    return Err(invalid(
+                        &label,
+                        format!(
+                            "{field} {value:?} is outside workspace {}; choose a directory inside the workspace",
+                            root.display()
+                        ),
+                    ));
+                }
+            }
+        }
+        Ok(self)
+    }
+
     /// Resolve the matching site's directories from this configuration's directory.
     pub(crate) fn site_routes(&self, path: &Path) -> Option<SiteRoutes> {
         let site = self.site_for(path)?;
@@ -427,7 +454,7 @@ impl Workspace {
             // An explicit configuration selects policy, not the workspace: its
             // patterns apply from the repository root around the caller.
             let root = repository_root(&cwd);
-            let config = Config::load_from(&path, &root)?;
+            let config = Config::load_from(&path, &root)?.with_sites_inside(&root)?;
             return Ok(Self {
                 root,
                 config,
@@ -436,7 +463,7 @@ impl Workspace {
         }
         for directory in cwd.ancestors() {
             if let Some(path) = config_in(directory)? {
-                let config = Config::load(&path)?;
+                let config = Config::load(&path)?.with_sites_inside(directory)?;
                 return Ok(Self {
                     root: directory.to_path_buf(),
                     config,
@@ -476,7 +503,7 @@ impl Workspace {
                 return Ok(self.config.clone());
             }
             if let Some(path) = config_in(directory)? {
-                return Config::load(&path);
+                return Config::load(&path)?.with_sites_inside(&self.root);
             }
         }
         Ok(self.config.clone())

@@ -85,8 +85,9 @@ public = "src/public"  # optional: files served unchanged from /
 base = "/"             # optional: URL prefix that links include before the route
 ```
 
-`path` is a glob; `root` and `public` are directories. All three are relative
-to the configuration's directory. When several entries match, the last wins.
+`path` is a glob; `root` and `public` are directories inside the workspace.
+All three are relative to the configuration's directory. When several entries
+match, the last wins.
 Set `base` only when links include a prefix before the route, such as
 `/docs/` in `/docs/guide/setup`. [LNK001](../rules/LNK001.md#inputs) lists
 the route candidates in the order they are tried.

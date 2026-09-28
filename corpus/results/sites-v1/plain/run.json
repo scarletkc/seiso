@@ -59,7 +59,7 @@
     "src/analysis.rs": "efa00268fb46fb7bf007c41d48cbae85ca3d1323a956dd921db51e73d00bcab5",
     "src/cache/mod.rs": "e3e3800ea77a4ce023be4ce09fa618c72cdefbaa6a920d55ce9e34f23d37ee6a",
     "src/commands.rs": "0e4cb6b98132111375a6ea9ca60375cae1b858b11b8ad93adc8c0d9bc5a798ee",
-    "src/config/mod.rs": "7cab9a682ccb2a0e221213dcf7eb2639ee069b2b8635ea94310d661c142f7260",
+    "src/config/mod.rs": "1b12fef2c1e2011cb39c508ace3e5d2c6d8620a4ffba82a82d576f7b0d794fd1",
     "src/diagnostics/mod.rs": "a8b97764981145302a4ef3ccfb99eb0f7e30474f7a1e8227f92d2c914413be09",
     "src/diagnostics/outputs.rs": "d28aa632d9fcf583e01f0ca31e5d4cc6f10c44683d092661444fcab51a41bbae",
     "src/diagnostics/render.rs": "8f57d8f8063eb928969bbf44ba17bcbdb26e20e9bb474107645130538e0ee25b",
@@ -114,9 +114,9 @@
       "PTR002": 7
     }
   },
-  "probe_sha256": "806e5f913906caa77ab07720e2d2e0fe7fa9ab3e4a2a5539a93d78a877b6471c",
+  "probe_sha256": "90cb06598b395f0b5590f33640a651d3f810a283590758f5dc105fdab78923de",
   "raw_result_sha256": "fe16ad9bfb484033e718aaddab94eba34b79d91caa06f63215543a111fe25aaf",
-  "report_sha256": "299a599a6b947c279a945d8f6399d7b9345b5eda630a96648338c1f0f8d7b651",
+  "report_sha256": "1998057edfbf8a3ddd0686906f7365f17a2435af78ac8f4689536a24e5a7234e",
   "reverse_byte_identical": true,
   "reverse_dimensions": [
     "sources",

@@ -2,8 +2,8 @@
   "schema_version": 1,
   "corpus_sha256": "3904c6c396606d13a21de7296624bfff99054f60d872cb4da6a346ddb80487cb",
   "site_profile_sha256": "5aaabd8e8abf47ea08a00acecd9db6b05cb7780d32d30b9bbdfcd49db548d6b9",
-  "before_report_sha256": "299a599a6b947c279a945d8f6399d7b9345b5eda630a96648338c1f0f8d7b651",
-  "after_report_sha256": "175dc5528dc9bd2a08290364e0691662d02e52a8541857a061d164318b06b51a",
+  "before_report_sha256": "1998057edfbf8a3ddd0686906f7365f17a2435af78ac8f4689536a24e5a7234e",
+  "after_report_sha256": "a45525ef3565e4ac2b7ca263a180695debb41067ecdb475a58048d2b4a1edd09",
   "reviewer_kind": "agent",
   "review_method": "Every removed LNK001 diagnosis was re-resolved against the pinned Git tree with the documented route candidates; the reproduction matches the removed set exactly. Every remaining LNK001 diagnosis in a site document and every added LNK002 diagnosis was inspected with its original source, the pinned tree, and the generator configuration at the pinned commit. A label states whether the link is broken for readers of the published site.",
   "removed": {
