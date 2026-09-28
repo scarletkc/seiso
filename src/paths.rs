@@ -196,7 +196,9 @@ fn page_sources(route: &Path) -> Vec<PathBuf> {
         suffixed(".md"),
         suffixed(".mdx"),
         route.join("index.md"),
+        route.join("index.mdx"),
         route.join("README.md"),
+        route.join("README.mdx"),
     ]
 }
 
@@ -344,7 +346,9 @@ mod tests {
                 route("site/intro.md"),
                 route("site/intro.mdx"),
                 route("site/intro/index.md"),
+                route("site/intro/index.mdx"),
                 route("site/intro/README.md"),
+                route("site/intro/README.mdx"),
                 route("site/public/intro"),
             ]
         );

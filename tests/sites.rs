@@ -33,6 +33,7 @@ const LINKS: &str = "preview = true\n\n[lint]\nselect = ['LNK001', 'LNK002']\n";
 const PAGE: &str = "---\nkind: howto\n---\n# Start\n\n\
 [md](/guide/setup) [mdx](/guide/tools) [index](/guide/) [readme](/reference)\n\n\
 [html](setup.html) [mdbook index](../reference/index.html) [public](/logo.png)\n\n\
+[mdx index](/components/)\n\n\
 [anchor](/guide/#install) [page anchor](/guide/setup#steps)\n\n\
 [missing anchor](/guide/setup#removed)\n\n\
 [missing route](/missing)\n\n\
@@ -48,6 +49,7 @@ fn site_workspace(sites: &str) -> TempDir {
     write(root, "site/guide/setup.md", "# Setup\n\n## Steps\n");
     write(root, "site/guide/tools.mdx", "# Tools\n");
     write(root, "site/reference/README.md", "# Reference\n");
+    write(root, "site/components/index.mdx", "# Components\n");
     write(root, "site/public/logo.png", "image");
     write(root, "docs/outside.md", "# Outside\n");
     workspace
@@ -114,7 +116,7 @@ fn without_a_site_entry_route_links_stay_missing_repository_paths() {
     let found = diagnostics(workspace.path());
     assert_eq!(
         found.iter().filter(|(code, ..)| code == "LNK001").count(),
-        12
+        13
     );
     assert!(found.iter().all(|(code, ..)| code == "LNK001"));
     assert!(found.iter().all(|(.., suggestion)| suggestion == "Update the path or restore the target; paths resolve from this document's directory, or from the workspace root when they start with /, and seiso does not add .md or index.md."));
