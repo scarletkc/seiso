@@ -238,6 +238,32 @@ pub fn github_slug(heading: &str) -> String {
         .replace(' ', "-")
 }
 
+/// A heading's source ends with a literal attribute list: not inside a code
+/// span, and not opened by an escaped brace, which attribute-list syntax keeps
+/// as text.
+fn source_ends_with_attribute_list(source: &str) -> bool {
+    static ATX_CLOSING: OnceLock<Regex> = OnceLock::new();
+    static SETEXT_UNDERLINE: OnceLock<Regex> = OnceLock::new();
+    static LIST: OnceLock<Regex> = OnceLock::new();
+    let mut lines: Vec<&str> = source
+        .lines()
+        .map(str::trim_end)
+        .filter(|line| !line.is_empty())
+        .collect();
+    let underline = SETEXT_UNDERLINE.get_or_init(|| Regex::new(r"^[ \t]*(?:=+|-+)$").unwrap());
+    if lines.len() > 1 && lines.last().is_some_and(|line| underline.is_match(line)) {
+        lines.pop();
+    }
+    let Some(line) = lines.last() else {
+        return false;
+    };
+    let line = ATX_CLOSING
+        .get_or_init(|| Regex::new(r"[ \t]+#+$").unwrap())
+        .replace(line, "");
+    LIST.get_or_init(|| Regex::new(r"(?:^|[^\\])\{:?[^{}]*\}$").unwrap())
+        .is_match(&line)
+}
+
 fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
     let mut anchors = BTreeMap::new();
     let mut seen = BTreeSet::new();
@@ -263,7 +289,11 @@ fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
             slug = format!("{base}-{suffix}");
         }
         anchors.entry(slug).or_insert(block.span);
-        if let Some(attributes) = heading_attributes.captures(text) {
+        // The flattened text has lost code delimiters and escapes, so confirm
+        // the list in the heading's source before trusting it.
+        if let Some(attributes) = heading_attributes.captures(text)
+            && source_ends_with_attribute_list(&document.source[block.span.start..block.span.end])
+        {
             let visible = &text[..attributes.get(0).unwrap().start()];
             anchors.entry(github_slug(visible)).or_insert(block.span);
             for id in attributes[1]
@@ -512,6 +542,30 @@ mod tests {
             index.anchor_span("a.md", "install"),
             index.anchor_span("a.md", "安装")
         );
+    }
+
+    #[test]
+    fn heading_attribute_lists_in_code_or_after_an_escape_are_text() {
+        let root = tempfile::tempdir().unwrap();
+        let source = "# Example `{#ghost}`\n\n# Escaped \\{#escaped}\n\n# Closed {#closed} ##\n\nSetext {#setext}\n===\n";
+        let index = WorkspaceIndex::new(
+            root.path().to_path_buf(),
+            vec![file(root.path(), "a.md", source)],
+            true,
+        );
+        let anchors = index.anchors("a.md").unwrap();
+        for expected in ["example-ghost", "escaped-escaped", "closed", "setext"] {
+            assert!(
+                anchors.contains(expected),
+                "missing {expected:?} from {anchors:?}"
+            );
+        }
+        for absent in ["ghost", "escaped"] {
+            assert!(
+                !anchors.contains(absent),
+                "unexpected {absent:?} in {anchors:?}"
+            );
+        }
     }
 
     #[test]
