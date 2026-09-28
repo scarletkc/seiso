@@ -51,6 +51,3 @@ fresh evidence and historical replay. Dated records preserve their results:
 The [design history](design/history.md) records the original motivation and
 links to the original proposal. The [roadmap](design/roadmap.md) links milestone results and describes planned
 integrations, classification experiments, and their acceptance criteria.
-The [usage audit](design/usage-audit-2026-09-28.md) lists open findings from a
-review of real-world use; remove each item as it is fixed, and remove the page
-when none remain.
