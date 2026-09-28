@@ -19,7 +19,7 @@ Do not assign a genre merely to enable a rule.
 ## Freeze a run
 
 ```sh
-python scripts/evaluate_m1.py --output corpus/reports/m1-candidate
+python -m scripts.evaluation.evaluate_m1 --output corpus/reports/m1-candidate
 ```
 
 The evaluator refuses to overwrite a run. It verifies the inventories,
@@ -45,7 +45,7 @@ evaluation before claiming independent validation.
 ## Summarize the gates
 
 ```sh
-python scripts/summarize_m1.py corpus/reports/m1-candidate
+python -m scripts.evaluation.summarize_m1 corpus/reports/m1-candidate
 ```
 
 The summarizer rejects missing, duplicate, and unbound annotations. It
@@ -73,7 +73,7 @@ The checked-in M1 receipt predates `source_revision`. Its accepted test hashes
 match commit `b5651d290a261d603479d4b75538277a49dd0725`:
 
 ```sh
-python scripts/summarize_m1.py corpus/results/m1/natural-v1 --protocol corpus/results/m1/protocol-acceptance.json --protocol-source-ref b5651d290a261d603479d4b75538277a49dd0725 --output target/m1-replay.json
+python -m scripts.evaluation.summarize_m1 corpus/results/m1/natural-v1 --protocol corpus/results/m1/protocol-acceptance.json --protocol-source-ref b5651d290a261d603479d4b75538277a49dd0725 --output target/m1-replay.json
 ```
 
 Fetch that revision if a shallow checkout does not contain it. To check current
@@ -89,7 +89,7 @@ current implementation. A historical summary is not a replacement for them.
 ## Cross-file evaluation
 
 ```sh
-python scripts/evaluate_m2.py --output corpus/reports/m2-candidate
+python -m scripts.evaluation.evaluate_m2 --output corpus/reports/m2-candidate
 ```
 
 Each upstream repository forms its own workspace. The index uses the pinned
@@ -116,7 +116,7 @@ annotation quality, not just a numeric score.
 Compare two reports over the same locked inputs:
 
 ```sh
-python scripts/ecosystem_diff.py before/diagnostics.json.gz after/diagnostics.json.gz --output corpus/reports/diff
+python -m scripts.evaluation.ecosystem_diff before/diagnostics.json.gz after/diagnostics.json.gz --output corpus/reports/diff
 ```
 
 The JSON retains every added, removed, and changed diagnosis, including
@@ -130,8 +130,8 @@ Freeze tuning output before reviewing the holdout. The M3 evaluator includes
 section predictions for every document, including documents without a kind:
 
 ```sh
-python scripts/evaluate_m3.py --split tuning --output corpus/reports/m3-tuning
-python scripts/calibrate_m3.py --output corpus/reports/m3-calibration
+python -m scripts.evaluation.evaluate_m3 --split tuning --output corpus/reports/m3-tuning
+python -m scripts.evaluation.calibrate_m3 --output corpus/reports/m3-calibration
 ```
 
 The calibration script compares existing duplicate-rule thresholds on tuning
@@ -143,8 +143,8 @@ After fixing the implementation, freeze the full run and collect real Git
 document changes through an explicit commit:
 
 ```sh
-python scripts/evaluate_m3.py --split all --output corpus/reports/m3-natural
-python scripts/replay_m3.py --revision HEAD --output corpus/reports/m3-history
+python -m scripts.evaluation.evaluate_m3 --split all --output corpus/reports/m3-natural
+python -m scripts.evaluation.replay_m3 --revision HEAD --output corpus/reports/m3-history
 ```
 
 The replay stores original before/after source, commit identities, a fixed
@@ -157,10 +157,10 @@ Label all new heuristic diagnostics and every post-change replay diagnostic. M3
 labels require `id`, `code`, `input_sha256`, `diagnostic_sha256`, `label`, and
 `reason`; the bundle records `schema_version`, `report_sha256`, and
 `reviewer_kind`. Hashes use SHA-256; diagnostic hashes use `encode` from
-[`evaluate_m2.py`](../../scripts/evaluate_m2.py). Then summarize:
+[`evaluate_m2.py`](../../scripts/evaluation/evaluate_m2.py). Then summarize:
 
 ```sh
-python scripts/summarize_m3.py --report corpus/reports/m3-natural/diagnostics.json.gz --labels corpus/reports/m3-natural/labels.json --replay corpus/reports/m3-history/replay.json.gz --replay-labels corpus/reports/m3-history/labels.json --output corpus/reports/m3-summary.json
+python -m scripts.evaluation.summarize_m3 --report corpus/reports/m3-natural/diagnostics.json.gz --labels corpus/reports/m3-natural/labels.json --replay corpus/reports/m3-history/replay.json.gz --replay-labels corpus/reports/m3-history/labels.json --output corpus/reports/m3-summary.json
 ```
 
 An incorrect block is one document change with a false positive after checking,
@@ -172,8 +172,8 @@ not observed user interruptions.
 Sample section predictions independently of whether a rule reported them:
 
 ```sh
-python scripts/sections_m3.py sample --report corpus/reports/m3-natural/diagnostics.json.gz --output corpus/reports/m3-sections/sample.json
-python scripts/sections_m3.py summarize --report corpus/reports/m3-natural/diagnostics.json.gz --sample corpus/reports/m3-sections/sample.json --labels corpus/reports/m3-sections/labels.json --output corpus/reports/m3-sections/summary.json
+python -m scripts.evaluation.sections_m3 sample --report corpus/reports/m3-natural/diagnostics.json.gz --output corpus/reports/m3-sections/sample.json
+python -m scripts.evaluation.sections_m3 summarize --report corpus/reports/m3-natural/diagnostics.json.gz --sample corpus/reports/m3-sections/sample.json --labels corpus/reports/m3-sections/labels.json --output corpus/reports/m3-sections/summary.json
 ```
 
 Between those commands, label every sample with `expected_type` and `reason`,
@@ -191,7 +191,7 @@ Replay the frozen M3 outcomes against a changed implementation without
 relabeling or replacing the original reports:
 
 ```sh
-python scripts/verify_m3.py --natural corpus/reports/m3-natural/diagnostics.json.gz --history corpus/reports/m3-history/replay.json.gz --output target/m3-revalidation.json
+python -m scripts.evaluation.verify_m3 --natural corpus/reports/m3-natural/diagnostics.json.gz --history corpus/reports/m3-history/replay.json.gz --output target/m3-revalidation.json
 ```
 
 This command compares natural diagnostics, section predictions, history results,
@@ -208,8 +208,8 @@ development data. Preserve its original report and labels. Choose new public
 repositories and fixed path scopes before reviewing their content:
 
 ```sh
-python scripts/fresh_m3.py pin --source OWNER/REPO --output corpus/reports/new-cohort/selection.json
-python scripts/fresh_m3.py fetch --input corpus/reports/new-cohort/selection.json --output corpus/reports/new-cohort/corpus.lock.json
+python -m scripts.evaluation.fresh_m3 pin --source OWNER/REPO --output corpus/reports/new-cohort/selection.json
+python -m scripts.evaluation.fresh_m3 fetch --input corpus/reports/new-cohort/selection.json --output corpus/reports/new-cohort/corpus.lock.json
 ```
 
 Pinning rejects repositories from the original corpus and retained M3 cohort
@@ -227,7 +227,7 @@ retain their original fingerprints; they are historical records, not a gate on
 the current checkout.
 
 ```sh
-python scripts/fresh_m3.py evaluate --input corpus/reports/new-cohort/corpus.lock.json --profile corpus/reports/new-cohort/kinds.json --output corpus/reports/new-cohort/run
+python -m scripts.evaluation.fresh_m3 evaluate --input corpus/reports/new-cohort/corpus.lock.json --profile corpus/reports/new-cohort/kinds.json --output corpus/reports/new-cohort/run
 ```
 
 The evaluator verifies original bytes, checks that the implementation stays
@@ -244,7 +244,7 @@ prediction bindings as the original section audit.
 Summarize stored reports using an input manifest:
 
 ```sh
-python scripts/summarize_m3_optimization.py --manifest corpus/results/m3/optimization-v2/summary-inputs.json --output target/m3-optimization-summary.json
+python -m scripts.evaluation.summarize_m3_optimization --manifest corpus/results/m3/optimization-v2/summary-inputs.json --output target/m3-optimization-summary.json
 ```
 
 The manifest names `comparisons`, `cohorts`, `histories`, and `sections`, with

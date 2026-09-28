@@ -62,14 +62,19 @@ jobs:
           python corpus/corpus.py verify
           python corpus/inventory.py verify
       - name: Evaluate corpus
-        run: python current/scripts/evaluate_m3.py --split all --output "$RUNNER_TEMP/evaluation/current"
+        working-directory: current
+        run: python -m scripts.evaluation.evaluate_m3 --split all --output "$RUNNER_TEMP/evaluation/current"
       - name: Replay document changes
-        run: python current/scripts/replay_m3.py --revision "$GITHUB_SHA" --output "$RUNNER_TEMP/evaluation/history"
+        working-directory: current
+        run: python -m scripts.evaluation.replay_m3 --revision "$GITHUB_SHA" --output "$RUNNER_TEMP/evaluation/history"
       - name: Compare diagnostics
         shell: bash
         run: |
           if test -n "$BASELINE_REF"; then
-            if test -f baseline/scripts/evaluate_m2.py; then
+            if test -f baseline/scripts/evaluation/evaluate_m2.py; then
+              (cd baseline && python -m scripts.evaluation.evaluate_m2 --corpus-dir "$GITHUB_WORKSPACE/current/corpus" --output "$RUNNER_TEMP/evaluation/baseline")
+              baseline_report="$RUNNER_TEMP/evaluation/baseline/diagnostics.json.gz"
+            elif test -f baseline/scripts/evaluate_m2.py; then
               python baseline/scripts/evaluate_m2.py --corpus-dir "$GITHUB_WORKSPACE/current/corpus" --output "$RUNNER_TEMP/evaluation/baseline"
               baseline_report="$RUNNER_TEMP/evaluation/baseline/diagnostics.json.gz"
             else
@@ -89,7 +94,7 @@ jobs:
             baseline_report="$GITHUB_WORKSPACE/current/corpus/results/m1/promoted-v1/diagnostics.json.gz"
             printf '%s\n' 'Diagnostic baseline: the recorded M1 corpus run.' >> "$GITHUB_STEP_SUMMARY"
           fi
-          python current/scripts/ecosystem_diff.py "$baseline_report" "$RUNNER_TEMP/evaluation/current/diagnostics.json.gz" --output "$RUNNER_TEMP/evaluation/diff"
+          (cd current && python -m scripts.evaluation.ecosystem_diff "$baseline_report" "$RUNNER_TEMP/evaluation/current/diagnostics.json.gz" --output "$RUNNER_TEMP/evaluation/diff")
           cat "$RUNNER_TEMP/evaluation/diff/changes.md" >> "$GITHUB_STEP_SUMMARY"
       - name: Build release binaries
         shell: bash
@@ -100,16 +105,17 @@ jobs:
           fi
       - name: Measure performance
         shell: bash
+        working-directory: current
         run: |
           options=()
           if test "$PREVIEW_STRESS" = true; then
             options+=(--preview-stress)
           fi
           if test -n "$BASELINE_REF"; then
-            options+=(--baseline-binary baseline/target/release/seiso)
+            options+=(--baseline-binary "$GITHUB_WORKSPACE/baseline/target/release/seiso")
           fi
-          python current/scripts/benchmark_m2.py \
-            --binary current/target/release/seiso \
+          python -m scripts.evaluation.benchmark_m2 \
+            --binary target/release/seiso \
             --workdir "$RUNNER_TEMP" \
             --output "$RUNNER_TEMP/evaluation/performance.json" \
             --enforce-targets "${options[@]}"

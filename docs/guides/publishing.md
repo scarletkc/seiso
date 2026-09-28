@@ -15,7 +15,7 @@ provide the `seiso` executable. The workflow runs only through
 From the repository root, run:
 
 ```sh
-python scripts/bump_version.py patch --note "Release title"
+python -m scripts.release.bump_version patch --note "Release title"
 ```
 
 The version argument accepts `patch` (also the default), `minor`, `major`,
@@ -45,12 +45,12 @@ explicit version to advance the prerelease number.
 Version ordering is semantic: `alpha.9 < alpha.10 < beta.1 < rc.1 < stable`
 for the same base version. Prereleases leave npm's `latest` tag and GitHub's
 latest stable release unchanged. Parsing, ordering, and Python normalization
-are shared in [`scripts/versions.py`](../../scripts/versions.py).
+are shared in [`scripts/release/versions.py`](../../scripts/release/versions.py).
 
 For example, start a prerelease cycle with:
 
 ```sh
-python scripts/bump_version.py v1.2.3-alpha.1 --note "Alpha preview"
+python -m scripts.release.bump_version v1.2.3-alpha.1 --note "Alpha preview"
 ```
 
 After each release, advance explicitly to `1.2.3-alpha.2`, `1.2.3-beta.1`,
@@ -79,7 +79,7 @@ For example, `1.2.3-alpha.1` can compare to `v1.2.2`, `1.2.3-alpha.10` to
 Tag annotation and creation order do not affect selection. Preview the body:
 
 ```sh
-python scripts/github_release.py notes --output target/release-notes.md
+python -m scripts.release.github_release notes --output target/release-notes.md
 ```
 
 An existing `vVERSION` tag must point to the selected release commit; a
@@ -91,10 +91,10 @@ and completed note together, then validate that release ref.
 Use Python 3.12 or later and current stable Rust:
 
 ```sh
-python scripts/release.py check
-python -m unittest discover -s scripts -p 'test_*.py'
+python -m scripts.release.release check
+python -m unittest discover -s scripts/tests -p 'test_*.py'
 cargo test --locked
-python scripts/release.py crates
+python -m scripts.release.release crates
 ```
 
 The last command runs `cargo package --package seiso --locked --registry
@@ -226,7 +226,7 @@ install --upgrade --pre seiso` allows prereleases. Verify the installed CLI with
 From `1.2.3-rc.1`, promote to `1.2.3` with:
 
 ```sh
-python scripts/bump_version.py patch --note "Stable release"
+python -m scripts.release.bump_version patch --note "Stable release"
 ```
 
 Fill in `docs/release-notes/1.2.3.md`, commit the bump, and repeat validation and

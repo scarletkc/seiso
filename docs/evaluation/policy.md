@@ -71,7 +71,7 @@ in [development](../guides/development.md#build-and-validate).
 
 The canonical workload size and absolute latency targets are `FILE_COUNT`,
 `BYTES_PER_FILE`, and `TARGETS_SECONDS` in
-[`scripts/benchmark_m2.py`](../../scripts/benchmark_m2.py). Measurements use the
+[`scripts/evaluation/benchmark_m2.py`](../../scripts/evaluation/benchmark_m2.py). Measurements use the
 default rule set, file-backed concise output, process startup for hook checks,
 and the standard Linux CI runner. Record CPU model, core count, cold/warm cache
 state, revision, and workload hashes with the result.

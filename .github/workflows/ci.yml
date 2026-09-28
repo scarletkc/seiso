@@ -27,7 +27,7 @@ jobs:
           persist-credentials: false
       - name: Select CI checks
         id: scope
-        run: python3 scripts/ci_scope.py
+        run: python3 -m scripts.ci.ci_scope
 
   test:
     needs: changes
@@ -58,7 +58,7 @@ jobs:
           python-version: '3.12'
       - if: runner.os == 'Linux'
         run: |
-          python -m unittest discover -s scripts -p 'test_*.py'
+          python -m unittest discover -s scripts/tests -p 'test_*.py'
           python -m unittest discover -s corpus -p 'test_*.py'
           python -m unittest discover -s corpus/evaluation -p 'test_*.py'
 

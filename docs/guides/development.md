@@ -28,7 +28,7 @@ when an output change is intentional.
 With Python 3.12 or later, check packaging and corpus tools:
 
 ```sh
-python -m unittest discover -s scripts -p 'test_*.py'
+python -m unittest discover -s scripts/tests -p 'test_*.py'
 python -m unittest discover -s corpus -p 'test_*.py'
 python -m unittest discover -s corpus/evaluation -p 'test_*.py'
 ```
@@ -39,6 +39,21 @@ Their positive and negative Markdown examples execute as tests; positive
 diagnostics are stored in snapshots. Add regression cases for fragment
 boundaries, languages, source mappings, and suppression scope when changing
 a rule. Use the [checking guide](checking.md) to exercise the CLI.
+
+## Maintenance scripts
+
+The [`scripts/`](../../scripts/) package groups tools by responsibility:
+
+| Directory | Purpose |
+| --- | --- |
+| `ci/` | CI scope selection and pull request title validation |
+| `release/` | Versioning, packaging, publication, and installation checks |
+| `evaluation/` | Corpus runs, milestone evaluation, summaries, and benchmarks |
+| `tests/` | Python tests for the maintenance tools |
+
+Run tools as Python modules from the repository root, for example
+`python -m scripts.release.release check`. The [publishing guide](publishing.md)
+and [evaluation procedure](../../corpus/docs/evaluation.md) document their commands.
 
 ## Inspect documents
 
@@ -94,7 +109,7 @@ Build a release binary before running the benchmark:
 
 ```sh
 cargo build --release --locked -p seiso
-python scripts/benchmark_m2.py --binary target/release/seiso --output target/performance.json
+python -m scripts.evaluation.benchmark_m2 --binary target/release/seiso --output target/performance.json
 ```
 
 The benchmark generates a deterministic workspace with repeated templates
@@ -108,7 +123,7 @@ The [CI workflow](../../.github/workflows/ci.yml) runs on pull requests targetin
 repository's document checks on Linux. Other changes and manual runs also
 check formatting, Clippy, Rust tests on Linux and Windows, and Python tests.
 The path classification is defined in
-[`is_documentation`](../../scripts/ci_scope.py); unavailable change history
+[`is_documentation`](../../scripts/ci/ci_scope.py); unavailable change history
 selects full validation. The `check` job requires the selected checks to pass.
 Further updates cancel an older run for the same PR or branch. Use the manual
 trigger to check another branch before opening a PR. The
