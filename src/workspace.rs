@@ -260,11 +260,12 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
             let absolute = absolute(cwd, path);
             let path = match workspace_path(&project_root, &absolute) {
                 Ok(path) => path,
-                Err(_) if !absolute.starts_with(&project_root) => {
+                Err(_) => {
+                    // A lexical child may be an alias into a parent that a
+                    // selected frame will admit; retry after scope preflight.
                     deferred_requests.push(absolute);
                     continue;
                 }
-                Err(error) => return Err(error),
             };
             match path.try_exists() {
                 Ok(true) => {

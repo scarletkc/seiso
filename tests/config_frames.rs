@@ -753,6 +753,35 @@ fn explicit_admission_closure_is_independent_of_argument_order() {
     }
 }
 
+#[cfg(unix)]
+#[test]
+fn explicit_alias_into_parent_waits_for_selected_frame_admission() {
+    use std::os::unix::fs::symlink;
+
+    let dir = nested_project_scope_fixture();
+    let docs = dir.path().join("docs");
+    symlink("../README.md", docs.join("alias.md")).unwrap();
+    let admitted = run(
+        &docs,
+        &["parse", "sub/a.md", "alias.md", "--output-format", "json"],
+    );
+    assert!(
+        admitted.status.success(),
+        "{}",
+        String::from_utf8_lossy(&admitted.stderr)
+    );
+    let report: serde_json::Value = serde_json::from_slice(&admitted.stdout).unwrap();
+    let names: Vec<_> = report["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|file| file["filename"].as_str().unwrap())
+        .collect();
+    assert_eq!(names, ["../README.md", "sub/a.md"]);
+    let denied = run(&docs, &["parse", "alias.md", "--output-format", "json"]);
+    assert_eq!(denied.status.code(), Some(2));
+}
+
 #[test]
 fn declared_project_allows_explicit_parent_file_but_keeps_sibling_policy() {
     let dir = fixture();
