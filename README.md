@@ -61,8 +61,8 @@ npm install -g @scarletkc/seiso
 ```
 
 The PyPI and npm packages include prebuilt binaries for macOS on Apple silicon
-and Intel, Linux x64 and arm64 with glibc, and Windows x64. On other platforms,
-including musl-based Linux such as Alpine, use cargo; the PyPI package also
+and Intel, Linux x64 and arm64 with glibc or musl (such as Alpine), and
+Windows x64 and arm64. On other platforms, use cargo; the PyPI package also
 works there but builds from source, which requires a Rust toolchain. From a
 source checkout, run `cargo run -- <command>`.
 

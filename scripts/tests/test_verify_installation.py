@@ -61,6 +61,32 @@ class InstallationTests(unittest.TestCase):
         with self.assertRaises(subprocess.CalledProcessError):
             verify_installation.verify(self.root, ["seiso"])
 
+    def cli(self, check="[]", parse='{"files": [{}], "errors": []}'):
+        outputs = {"rule": "# KND001: Missing document kind\n", "check": check, "parse": parse}
+        return lambda command, **kwargs: outputs[command[command.index("seiso") + 1]]
+
+    def test_exercise_runs_rule_check_and_parse_through_the_command(self):
+        command = ["npm", "exec", "--yes", "--package", "@scarletkc/seiso@1.2.3", "--", "seiso"]
+        with patch("scripts.release.verify_installation.subprocess.check_output", side_effect=self.cli()) as output:
+            verify_installation.exercise(self.root, command)
+        self.assertEqual([call.args[0][len(command):] for call in output.call_args_list], [
+            ["rule", "KND001"],
+            ["check", "README.md", "--select", "KND", "--output-format", "json"],
+            ["parse", "README.md", "--output-format", "json"],
+        ])
+        self.assertTrue(all(call.kwargs["cwd"] == self.root for call in output.call_args_list))
+
+    def test_exercise_rejects_diagnostics_and_parse_errors(self):
+        for outputs, message in [
+            ({"check": '[{"code": "KND001"}]'}, "reported diagnostics"),
+            ({"parse": '{"files": [{}], "errors": [{"path": "README.md"}]}'}, "did not parse"),
+            ({"parse": '{"files": [], "errors": []}'}, "did not parse"),
+        ]:
+            with self.subTest(outputs=outputs), \
+                    patch("scripts.release.verify_installation.subprocess.check_output", side_effect=self.cli(**outputs)), \
+                    self.assertRaisesRegex(ValueError, message):
+                verify_installation.exercise(self.root, ["seiso"])
+
 
 if __name__ == "__main__":
     unittest.main()

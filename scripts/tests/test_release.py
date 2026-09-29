@@ -7,8 +7,13 @@ import tempfile
 import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
+from urllib.parse import unquote
 
 from scripts.release import release
+from scripts.release.prepare_npm import NPM_PLATFORMS, optional_dependencies
+
+
+NPM_PACKAGES = [*(f"@scarletkc/seiso-{platform}" for platform in NPM_PLATFORMS), "@scarletkc/seiso"]
 
 
 class ReleaseTests(unittest.TestCase):
@@ -20,8 +25,8 @@ class ReleaseTests(unittest.TestCase):
         (self.root / "Cargo.toml").write_text('[package]\nname = "seiso"\nversion = "1.2.3"\n')
         (self.root / "Cargo.lock").write_text(
             '[[package]]\nname = "seiso"\nversion = "1.2.3"\n')
-        (self.root / "npm/seiso/package.json").write_text(
-            '{"name":"@scarletkc/seiso","version":"1.2.3"}')
+        (self.root / "npm/seiso/package.json").write_text(json.dumps(
+            {"name": "@scarletkc/seiso", "version": "1.2.3", "optionalDependencies": optional_dependencies("1.2.3")}))
         (self.root / "pyproject.toml").write_text(
             '[project]\nname = "seiso"\ndynamic = ["version"]\n'
             '[tool.maturin]\nmanifest-path = "Cargo.toml"\n')
@@ -56,6 +61,16 @@ class ReleaseTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     release.validate(self.root, self.metadata)
                 file.write_text(original)
+
+    def test_npm_platform_pin_drift_fails(self):
+        file = self.root / "npm/seiso/package.json"
+        pins = optional_dependencies("1.2.3")
+        for changed in [{**pins, "@scarletkc/seiso-linux-x64-musl": "1.2.2"},
+                        {name: version for name, version in pins.items() if "win32" not in name}]:
+            with self.subTest(pins=changed):
+                file.write_text(json.dumps({"name": "@scarletkc/seiso", "version": "1.2.3", "optionalDependencies": changed}))
+                with self.assertRaisesRegex(ValueError, "optionalDependencies"):
+                    release.validate(self.root, self.metadata)
 
     def test_crate_version_drift_fails(self):
         self.metadata["packages"][0]["version"] = "1.2.4"
@@ -156,46 +171,79 @@ class ReleaseTests(unittest.TestCase):
         self.addCleanup(open_url.side_effect.close)
         self.assertIsNone(release.registry_text("https://example.com"))
 
-    def npm_archive(self, version="1.2.3"):
-        filename = self.root / "seiso.tgz"
+    def npm_archive(self, name, version="1.2.3", filename=None):
+        filename = self.root / (filename or f"{name[1:].replace('/', '-')}.tgz")
         with tarfile.open(filename, "w:gz") as archive:
-            data = json.dumps({"name": "@scarletkc/seiso", "version": version}).encode()
+            data = json.dumps({"name": name, "version": version}).encode()
             member = tarfile.TarInfo("package/package.json")
             member.size = len(data)
             archive.addfile(member, io.BytesIO(data))
         return filename
 
-    @patch("scripts.release.release.run")
-    @patch("scripts.release.release.registry_text")
-    def test_npm_default_does_not_contact_registry_or_upload(self, read, run):
-        archive = self.npm_archive()
-        release.publish_npm("1.2.3", self.root)
-        read.assert_not_called()
-        self.assertIn(str(archive), run.call_args.args[0])
-        self.assertIn("--dry-run", run.call_args.args[0])
-        self.assertEqual(run.call_args.args[0][:2], ["npm", "pack"])
+    def npm_archives(self, version="1.2.3"):
+        return [self.npm_archive(name, version) for name in NPM_PACKAGES]
+
+    def published(self, run):
+        return [call.args[0][2] for call in run.call_args_list]
 
     @patch("scripts.release.release.run")
     @patch("scripts.release.release.registry_text")
-    def test_npm_retry_skips_exact_version(self, read, run):
+    def test_npm_default_packs_every_archive_without_registry_or_upload(self, read, run):
+        archives = self.npm_archives()
+        release.publish_npm("1.2.3", self.root)
+        read.assert_not_called()
+        self.assertEqual(self.published(run), [str(archive) for archive in archives])
+        for call in run.call_args_list:
+            self.assertEqual(call.args[0][:2], ["npm", "pack"])
+            self.assertIn("--dry-run", call.args[0])
+
+    @patch("scripts.release.release.run")
+    @patch("scripts.release.release.registry_text")
+    def test_npm_retry_skips_exact_versions(self, read, run):
+        def existing(url):
+            *_, name, version = url.split("/")
+            return json.dumps({"name": unquote(name), "version": version})
+
+        read.side_effect = existing
         for version in ["1.2.3", "1.2.3-alpha.1", "1.2.3-beta.1", "1.2.3-rc.1"]:
             with self.subTest(version=version):
-                self.npm_archive(version)
-                read.return_value = json.dumps({"name": "@scarletkc/seiso", "version": version})
+                self.npm_archives(version)
                 release.publish_npm(version, self.root, execute=True)
                 read.assert_called_with(f"https://registry.npmjs.org/%40scarletkc%2Fseiso/{version}")
         run.assert_not_called()
 
     @patch("scripts.release.release.run")
-    @patch("scripts.release.release.registry_text", return_value=None)
-    def test_missing_npm_version_publishes_the_tested_archive(self, read, run):
-        archive = self.npm_archive()
+    @patch("scripts.release.release.registry_text")
+    def test_partial_npm_retry_uploads_only_missing_packages(self, read, run):
+        archives = self.npm_archives()
+        read.side_effect = lambda url: (json.dumps({"name": unquote(url.split("/")[-2]), "version": "1.2.3"})
+                                        if "darwin" in url or "win32" in url else None)
         release.publish_npm("1.2.3", self.root, execute=True)
-        args = run.call_args.args[0]
-        self.assertIn(str(archive), args)
-        self.assertNotIn("--dry-run", args)
-        self.assertIn("public", args)
-        self.assertEqual(args[args.index("--tag") + 1], "latest")
+        missing = [str(archive) for name, archive in zip(NPM_PACKAGES, archives)
+                   if "darwin" not in name and "win32" not in name]
+        self.assertEqual(self.published(run), missing)
+
+    @patch("scripts.release.release.run")
+    @patch("scripts.release.release.registry_text", return_value=None)
+    def test_missing_npm_version_publishes_platform_packages_before_the_main_package(self, read, run):
+        archives = self.npm_archives()
+        release.publish_npm("1.2.3", self.root, execute=True)
+        self.assertEqual(self.published(run), [str(archive) for archive in archives])
+        self.assertEqual(self.published(run)[-1], str(self.root / "scarletkc-seiso.tgz"))
+        for call in run.call_args_list:
+            args = call.args[0]
+            self.assertEqual(args[:2], ["npm", "publish"])
+            self.assertNotIn("--dry-run", args)
+            self.assertIn("public", args)
+            self.assertEqual(args[args.index("--tag") + 1], "latest")
+
+    @patch("scripts.release.release.run", side_effect=[None, subprocess.CalledProcessError(1, "npm")])
+    @patch("scripts.release.release.registry_text", return_value=None)
+    def test_failed_platform_upload_stops_before_the_main_package(self, read, run):
+        self.npm_archives()
+        with self.assertRaises(subprocess.CalledProcessError):
+            release.publish_npm("1.2.3", self.root, execute=True)
+        self.assertEqual(run.call_count, 2)
 
     @patch("scripts.release.release.run")
     @patch("scripts.release.release.registry_text", return_value=None)
@@ -203,18 +251,19 @@ class ReleaseTests(unittest.TestCase):
         for stage in ["alpha", "beta", "rc"]:
             with self.subTest(stage=stage):
                 version = f"1.2.3-{stage}.1"
-                self.npm_archive(version)
+                self.npm_archives(version)
                 release.publish_npm(version, self.root, execute=True)
-                args = run.call_args.args[0]
-                self.assertEqual(args[args.index("--tag") + 1], stage)
-                self.assertNotIn("latest", args)
+                for call in run.call_args_list[-len(NPM_PACKAGES):]:
+                    args = call.args[0]
+                    self.assertEqual(args[args.index("--tag") + 1], stage)
+                    self.assertNotIn("latest", args)
 
     @patch("scripts.release.release.run")
     @patch("scripts.release.release.registry_text")
     def test_invalid_version_fails_before_registry_access_or_upload(self, read, run):
         for version in ["1.2.3-beta.01", "1.2.3-preview.1", "v1.2.3-alpha.1"]:
             with self.subTest(version=version):
-                self.npm_archive(version)
+                self.npm_archives(version)
                 with self.assertRaises(ValueError):
                     release.publish_npm(version, self.root, execute=True)
                 with self.assertRaises(ValueError):
@@ -223,18 +272,30 @@ class ReleaseTests(unittest.TestCase):
         run.assert_not_called()
 
     @patch("scripts.release.release.run")
-    def test_wrong_npm_archive_fails_before_upload(self, run):
-        self.npm_archive("1.2.4")
-        with self.assertRaisesRegex(ValueError, "name/version"):
+    @patch("scripts.release.release.registry_text", return_value=None)
+    def test_wrong_npm_archive_version_fails_before_upload(self, read, run):
+        self.npm_archives()
+        self.npm_archive("@scarletkc/seiso-win32-arm64", "1.2.4")
+        with self.assertRaisesRegex(ValueError, "version differs"):
             release.publish_npm("1.2.3", self.root, execute=True)
         run.assert_not_called()
 
     @patch("scripts.release.release.run")
-    def test_ambiguous_npm_archives_fail(self, run):
-        self.npm_archive()
-        (self.root / "old.tgz").write_bytes(b"stale")
-        with self.assertRaisesRegex(ValueError, "exactly one"):
-            release.publish_npm("1.2.3", self.root, execute=True)
+    @patch("scripts.release.release.registry_text", return_value=None)
+    def test_missing_extra_or_duplicate_npm_archives_fail_before_upload(self, read, run):
+        cases = [
+            ("missing", lambda: (self.root / "scarletkc-seiso-linux-arm64-musl.tgz").unlink(), "exactly"),
+            ("extra", lambda: self.npm_archive("@scarletkc/seiso-linux-ia32"), "exactly"),
+            ("duplicate", lambda: self.npm_archive("@scarletkc/seiso", filename="old.tgz"), "More than one"),
+        ]
+        for label, change, message in cases:
+            with self.subTest(label):
+                for archive in self.root.glob("*.tgz"):
+                    archive.unlink()
+                self.npm_archives()
+                change()
+                with self.assertRaisesRegex(ValueError, message):
+                    release.publish_npm("1.2.3", self.root, execute=True)
         run.assert_not_called()
 
 

@@ -91,9 +91,19 @@ jobs:
           - platform: linux-x64
             runner: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+          - platform: linux-x64-musl
+            runner: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            manylinux: musllinux_1_2
+            image: python:3.12-alpine
           - platform: linux-arm64
             runner: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
+          - platform: linux-arm64-musl
+            runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-musl
+            manylinux: musllinux_1_2
+            image: python:3.12-alpine
           - platform: darwin-x64
             runner: macos-15-intel
             target: x86_64-apple-darwin
@@ -103,6 +113,9 @@ jobs:
           - platform: win32-x64
             runner: windows-latest
             target: x86_64-pc-windows-msvc
+          - platform: win32-arm64
+            runner: windows-11-arm
+            target: aarch64-pc-windows-msvc
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
     steps:
@@ -114,8 +127,9 @@ jobs:
           python-version: '3.12'
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      # Shared preflight runs the Rust tests on Linux x64.
-      - if: matrix.platform != 'linux-x64'
+      # Shared preflight runs the Rust tests on Linux x64. On a musl row, cargo test would repeat
+      # the glibc row's host tests, so its wheel is exercised on Alpine instead.
+      - if: matrix.platform != 'linux-x64' && !matrix.image
         run: cargo test --locked
       - uses: PyO3/maturin-action@v1
         with:
@@ -123,17 +137,19 @@ jobs:
           command: build
           target: ${{ matrix.target }}
           args: --release --locked --out dist
-          manylinux: '2014'
+          manylinux: ${{ matrix.manylinux || '2014' }}
       - name: Install and exercise the wheel
+        if: '!matrix.image'
         shell: bash
         run: |
           python -m pip install dist/*.whl
           python -m scripts.release.verify_installation --python-package
-          seiso rule KND001
-          seiso check README.md --select KND --output-format json > checked.json
-          python -c "import json; assert json.load(open('checked.json', encoding='utf-8')) == []"
-          seiso parse README.md --output-format json > parsed.json
-          python -c "import json; r=json.load(open('parsed.json', encoding='utf-8')); assert len(r['files']) == 1 and not r['errors']"
+      - name: Install and exercise the wheel in ${{ matrix.image }}
+        if: matrix.image
+        run: >-
+          docker run --rm -e PYTHONDONTWRITEBYTECODE=1 -v "$PWD:/work" -w /work ${{ matrix.image }}
+          sh -euc 'python -m pip install --root-user-action=ignore dist/*.whl &&
+          python -m scripts.release.verify_installation --python-package'
       - if: matrix.platform == 'linux-x64'
         uses: PyO3/maturin-action@v1
         with:
@@ -168,7 +184,7 @@ jobs:
           merge-multiple: true
           path: dist
       - run: python -m scripts.release.prepare_npm --wheels dist
-      - run: npm pack ./npm/seiso --pack-destination dist
+      - run: npm pack ./npm/seiso ./npm/seiso-* --pack-destination dist
       - uses: dtolnay/rust-toolchain@stable
       - run: python -m scripts.release.release npm
       - uses: actions/upload-artifact@v4
@@ -178,11 +194,21 @@ jobs:
           if-no-files-found: error
 
   npm-install:
-    needs: npm
+    needs: [preflight, npm]
     strategy:
       fail-fast: false
       matrix:
-        runner: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-latest, windows-latest]
+        include:
+          - runner: ubuntu-latest
+          - runner: ubuntu-latest
+            image: node:22-alpine
+          - runner: ubuntu-24.04-arm
+          - runner: ubuntu-24.04-arm
+            image: node:22-alpine
+          - runner: macos-15-intel
+          - runner: macos-latest
+          - runner: windows-latest
+          - runner: windows-11-arm
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 10
     steps:
@@ -199,15 +225,25 @@ jobs:
         with:
           name: npm-package
           path: dist
-      - name: Exercise the packed npm executable
+      # The local registry serves the packed archives, so npm selects the platform package itself.
+      - name: Install the packed npm packages and exercise the executable
+        if: '!matrix.image'
         shell: bash
-        run: |
-          python -m scripts.release.verify_installation -- npm exec --yes --package ./dist/*.tgz -- seiso
-          npm exec --yes --package ./dist/*.tgz -- seiso rule KND001
-          npm exec --yes --package ./dist/*.tgz -- seiso check README.md --select KND --output-format json > checked.json
-          python -c "import json; assert json.load(open('checked.json', encoding='utf-8')) == []"
-          npm exec --yes --package ./dist/*.tgz -- seiso parse README.md --output-format json > parsed.json
-          python -c "import json; r=json.load(open('parsed.json', encoding='utf-8')); assert len(r['files']) == 1 and not r['errors']"
+        env:
+          PACKAGE: '@scarletkc/seiso@${{ needs.preflight.outputs.version }}'
+        run: >-
+          python -m scripts.release.npm_registry dist --
+          python -m scripts.release.verify_installation -- npm exec --yes --package "$PACKAGE" -- seiso
+      - name: Install the packed npm packages in ${{ matrix.image }} and exercise the executable
+        if: matrix.image
+        env:
+          PACKAGE: '@scarletkc/seiso@${{ needs.preflight.outputs.version }}'
+        run: >-
+          python -m scripts.release.npm_registry dist --
+          docker run --rm --network host -e npm_config_registry -e PYTHONDONTWRITEBYTECODE=1
+          -v "$PWD:/work" -w /work ${{ matrix.image }}
+          sh -euc "apk add --no-cache python3 > /dev/null &&
+          python3 -m scripts.release.verify_installation -- npm exec --yes --package $PACKAGE -- seiso"
 
   publish-npm:
     if: inputs.publish_all || inputs.publish_npm

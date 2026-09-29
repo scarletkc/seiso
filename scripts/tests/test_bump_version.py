@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 import tempfile
 import tomllib
@@ -6,6 +7,7 @@ from unittest.mock import patch
 
 from scripts.release import bump_version
 from scripts.release.bump_version import next_version, plan_bump
+from scripts.release.prepare_npm import optional_dependencies
 
 
 class BumpVersionTests(unittest.TestCase):
@@ -21,8 +23,9 @@ class BumpVersionTests(unittest.TestCase):
             'version = 4\n\n[[package]]\nname = "seiso"\nversion = "1.2.3"\n'
             'dependencies = ["external 1.2.3"]\n'
             '[[package]]\nname = "external"\nversion = "1.2.3"\nsource = "registry+https://example.com"\n')
-        (self.root / "npm/seiso/package.json").write_text(
-            '{"name":"@scarletkc/seiso", "version": "1.2.3", "custom": "1.2.3"}\n')
+        (self.root / "npm/seiso/package.json").write_text(json.dumps(
+            {"name": "@scarletkc/seiso", "version": "1.2.3", "custom": "1.2.3",
+             "optionalDependencies": optional_dependencies("1.2.3")}, indent=2) + "\n")
 
     def test_version_modes_and_optional_v_prefix(self):
         for requested, expected in [("patch", "1.2.4"), ("minor", "1.3.0"),
@@ -62,7 +65,9 @@ class BumpVersionTests(unittest.TestCase):
         lock = tomllib.loads(changes[self.root / "Cargo.lock"])["package"]
         self.assertEqual([p["version"] for p in lock], ["1.2.4", "1.2.3"])
         self.assertEqual(lock[0]["dependencies"], ["external 1.2.3"])
-        self.assertIn('"custom": "1.2.3"', changes[self.root / "npm/seiso/package.json"])
+        npm = json.loads(changes[self.root / "npm/seiso/package.json"])
+        self.assertEqual(npm["custom"], "1.2.3")
+        self.assertEqual(npm["optionalDependencies"], optional_dependencies("1.2.4"))
         self.assertEqual(changes[self.root / "docs/release-notes/1.2.4.md"], "## Fix links\n\n")
         self.assertIn('version = "1.2.3"', (self.root / "Cargo.toml").read_text())
 
@@ -94,6 +99,15 @@ class BumpVersionTests(unittest.TestCase):
                 self.assertEqual(tomllib.loads(changes[self.root / "Cargo.lock"])["package"][0]["version"], version)
                 self.assertIn(f'"version": "{version}"', changes[self.root / "npm/seiso/package.json"])
                 self.assertEqual(changes[self.root / f"docs/release-notes/{version}.md"], "## Preview\n\n")
+
+    def test_platform_pin_drift_fails_before_any_write(self):
+        path = self.root / "npm/seiso/package.json"
+        package = json.loads(path.read_text())
+        package["optionalDependencies"]["@scarletkc/seiso-linux-x64-musl"] = "1.2.2"
+        path.write_text(json.dumps(package))
+        with self.assertRaisesRegex(ValueError, "optionalDependencies"):
+            plan_bump(self.root, "1.2.3", "1.2.4", "Fix links")
+        self.assertFalse((self.root / "docs/release-notes").exists())
 
     @patch("scripts.release.bump_version.release_metadata")
     def test_invalid_or_lower_request_does_not_write_any_file(self, metadata):

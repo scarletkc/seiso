@@ -12,6 +12,7 @@ from urllib.error import HTTPError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
+from .prepare_npm import NPM_PLATFORMS, PACKAGE, optional_dependencies
 from .versions import parse_version
 
 
@@ -31,8 +32,10 @@ def validate(root, metadata, crates=False):
         raise ValueError("The root Cargo package must be named seiso")
     parse_version(version)
     npm = json.loads((root / "npm/seiso/package.json").read_text(encoding="utf-8"))
-    if npm["name"] != "@scarletkc/seiso" or npm["version"] != version:
-        raise ValueError("npm name/version must be @scarletkc/seiso and the Cargo package version")
+    if npm["name"] != PACKAGE or npm["version"] != version:
+        raise ValueError(f"npm name/version must be {PACKAGE} and the Cargo package version")
+    if npm.get("optionalDependencies") != optional_dependencies(version):
+        raise ValueError(f"npm optionalDependencies must pin every platform package to {version}")
     python = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
     if (python["project"]["name"] != "seiso"
             or "version" not in python["project"].get("dynamic", [])
@@ -106,30 +109,41 @@ def publish_crates(version, execute=False):
     run(command)
 
 
+def npm_archives(version, directory):
+    """Return the packed npm archives in upload order: platform packages, then the main package."""
+    archives = {}
+    for archive in sorted(directory.glob("*.tgz")):
+        with tarfile.open(archive) as bundle:
+            package = json.load(bundle.extractfile("package/package.json"))
+        if package["version"] != version:
+            raise ValueError(f"{archive.name}: npm archive version differs from the release")
+        if package["name"] in archives:
+            raise ValueError(f"More than one npm archive supplies {package['name']}")
+        archives[package["name"]] = archive.resolve()
+    expected = [*(f"{PACKAGE}-{platform}" for platform in NPM_PLATFORMS), PACKAGE]
+    if sorted(archives) != sorted(expected):
+        raise ValueError(f"Expected npm archives for exactly {', '.join(expected)} in {directory}")
+    return [(name, archives[name]) for name in expected]
+
+
 def publish_npm(version, directory, execute=False):
     stage = parse_version(version)[1]
-    archives = sorted(directory.glob("*.tgz"))
-    if len(archives) != 1:
-        raise ValueError(f"Expected exactly one npm archive in {directory}")
-    archive = archives[0].resolve()
-    with tarfile.open(archive) as bundle:
-        package = json.load(bundle.extractfile("package/package.json"))
-    if package["name"] != "@scarletkc/seiso" or package["version"] != version:
-        raise ValueError("npm archive name/version differs from the release")
-    if execute:
-        contents = registry_text(f"{NPM_REGISTRY}/{quote(package['name'], safe='')}/{version}")
-        if contents is not None:
-            existing = json.loads(contents)
-            if existing["name"] != package["name"] or existing["version"] != version:
-                raise ValueError("npm registry returned unexpected package metadata")
-            print(f"Skip npm: {package['name']} {version} already exists", flush=True)
-            return
-    # npm publish --dry-run rejects an existing version, blocking partial-release retries.
-    # Packing the tested archive validates it without requiring registry availability.
-    command = (["npm", "publish", str(archive), "--access", "public", "--ignore-scripts",
-                "--registry", NPM_REGISTRY, "--tag", stage or "latest"] if execute else
-               ["npm", "pack", str(archive), "--dry-run", "--ignore-scripts"])
-    run(command)
+    # Publishing the main package last keeps its optional dependencies resolvable once it is visible.
+    for name, archive in npm_archives(version, directory):
+        if execute:
+            contents = registry_text(f"{NPM_REGISTRY}/{quote(name, safe='')}/{version}")
+            if contents is not None:
+                existing = json.loads(contents)
+                if existing["name"] != name or existing["version"] != version:
+                    raise ValueError("npm registry returned unexpected package metadata")
+                print(f"Skip npm: {name} {version} already exists", flush=True)
+                continue
+        # npm publish --dry-run rejects an existing version, blocking partial-release retries.
+        # Packing the tested archive validates it without requiring registry availability.
+        command = (["npm", "publish", str(archive), "--access", "public", "--ignore-scripts",
+                    "--registry", NPM_REGISTRY, "--tag", stage or "latest"] if execute else
+                   ["npm", "pack", str(archive), "--dry-run", "--ignore-scripts"])
+        run(command)
 
 
 def main():

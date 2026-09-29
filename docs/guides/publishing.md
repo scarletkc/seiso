@@ -24,9 +24,10 @@ the affected files. The script rejects equal or lower versions, checks the
 existing versions for consistency, and plans all edits before writing.
 
 The script updates `package.version` in the root `Cargo.toml`, the `seiso`
-entry in `Cargo.lock`, and `npm/seiso/package.json`. Third-party dependency
-versions remain unchanged. clap reads the package version for the CLI's
-`--version`, and maturin reads it for PyPI. No separate CLI or Python version
+entry in `Cargo.lock`, and the version and platform package pins in
+`npm/seiso/package.json`. Third-party dependency versions remain unchanged.
+clap reads the package version for the CLI's `--version`, and maturin reads
+it for PyPI. No separate CLI or Python version
 literal needs editing. Release versions use `MAJOR.MINOR.PATCH`, optionally
 followed by `-alpha.N`, `-beta.N`, or `-rc.N`. Python distribution metadata uses
 the corresponding PEP 440 spelling; Cargo, npm, Git tags, release-note filenames,
@@ -114,10 +115,15 @@ and choose the release branch or tag. Leave all `publish_*` checkboxes unchecked
 The workflow checks version consistency and release notes, runs script and
 Rust tests, verifies the Cargo package, builds and exercises a wheel on each
 platform in the `wheels` job matrix, creates a source archive, packs the npm
-package, and exercises its executable on each of those platforms. Installation
-checks require CLI output to match Cargo's SemVer and installed Python metadata
-to match its PEP 440 version. Build jobs have no publishing secrets or OIDC
-permissions and do not enter publishing environments. This is the complete
+packages, and exercises the npm executable on each of those platforms. musl
+wheels and npm installations are exercised in Alpine containers. npm
+installations resolve `@scarletkc/seiso` from a local registry that serves the
+packed archives
+([`npm_registry.py`](../../scripts/release/npm_registry.py)), so npm selects
+the platform package as it would from npmjs.com. Installation checks require
+CLI output to match Cargo's SemVer and installed Python metadata to match its
+PEP 440 version. Build jobs have no publishing secrets or OIDC permissions and
+do not enter publishing environments. This is the complete
 validation path. A selected registry upload waits for shared preflight and its
 required artifacts:
 
@@ -125,13 +131,13 @@ required artifacts:
 | --- | --- |
 | `publish_crates` | Cargo package |
 | `publish_pypi` | Wheels and source archive |
-| `publish_npm` | Wheels and source archive, then the npm package using those binaries |
+| `publish_npm` | Wheels and source archive, then the npm packages using those binaries |
 | `publish_github`, `publish_all`, or no upload selection | All distributions and release notes |
 
 Selections are additive. Script tests and Linux x64 Rust tests run once in
-shared preflight; the other wheel jobs also run the Rust tests on their own
-platforms. Release notes and tag checks apply to the full validation and GitHub
-Release paths.
+shared preflight; the other wheel jobs, except the musl ones, also run the
+Rust tests on their own platforms. Release notes and tag checks apply to the
+full validation and GitHub Release paths.
 
 Download the artifacts and generated release body:
 
@@ -139,9 +145,14 @@ Download the artifacts and generated release body:
 gh run download RUN_ID -p 'distributions-*' -p npm-package -p cargo-package -p release-notes -D dist/downloaded
 ```
 
-The npm package requires Node.js 18 or later and contains the native binary
-from each verified wheel, with version and checksum checks before packing.
-It has no install-time download or build step. Source installations require Rust.
+`@scarletkc/seiso` requires Node.js 18 or later. It contains the `seiso`
+launcher and pins one `@scarletkc/seiso-PLATFORM` package per entry in
+`NPM_PLATFORMS` in [`prepare_npm.py`](../../scripts/release/prepare_npm.py) as
+an optional dependency. Each platform package holds the executable from the
+matching verified wheel and declares `os`, `cpu`, and on Linux `libc`, so npm
+installs only the package that matches. The launcher picks the musl package
+when Node reports no glibc. Nothing downloads or builds at install time. Source
+installations require Rust.
 
 ## Authentication
 
@@ -159,6 +170,19 @@ and the environment. Registry upload jobs alone receive `id-token: write`.
 Build jobs require no registry credentials. Environment deployment rules must
 permit the selected release ref.
 
+On npm, `@scarletkc/seiso` and every platform package need their own Trusted
+Publisher configuration, and npm offers one only for a package that already
+exists. Before the first release that includes a new platform package, publish
+its archive from a validation run once by hand, then configure its Trusted
+Publisher:
+
+```sh
+npm publish scarletkc-seiso-PLATFORM-VERSION.tgz --access public --tag TAG
+```
+
+Use the release's dist-tag as `TAG` (`latest` for a stable version). The
+workflow then skips that existing version and publishes the rest.
+
 crates.io authentication uses a temporary token from
 `rust-lang/crates-io-auth-action`. No stored registry publishing token is needed.
 
@@ -172,7 +196,7 @@ after the selected uploads succeed. On its own, `publish_github` builds all
 distributions and creates the GitHub Release without registry uploads.
 
 The GitHub Release is named `seiso vVERSION`, tags the checked-out commit, and
-includes the generated body, wheels, source archive, npm archive, and the
+includes the generated body, wheels, source archive, npm archives, and the
 `seiso` crate archive. Registry uploads are independent after shared validation; a failure
 in one cannot roll back another. GitHub Release creation waits for all selected
 registries to succeed.
@@ -190,8 +214,10 @@ gh workflow run publish.yml --ref release/v1.2.3-alpha.1 -f publish_all=true
 Re-run the same release commit to finish a partial release, or select only the
 failed destination:
 
-- npm checks the exact package version and skips one that exists. A new version
-  uses the tested archive without repacking it.
+- npm checks each package's exact version and skips those that exist. Platform
+  packages upload before `@scarletkc/seiso`, so the main package never pins a
+  missing platform package. New versions use the tested archives without
+  repacking them.
 - crates.io checks the exact `seiso` version in its sparse index and skips an
   existing version. Yanked versions stop the release.
 - PyPI retains `skip-existing: true` and uploads missing distribution files.

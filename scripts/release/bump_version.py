@@ -1,4 +1,4 @@
-"""Bump Cargo, Cargo.lock, and npm together.
+"""Bump Cargo, Cargo.lock, npm, and the npm platform package pins together.
 
 Usage: python -m scripts.release.bump_version [patch|minor|major|VERSION] [--note TITLE]
 The default is patch, which promotes a prerelease to its stable version.
@@ -11,6 +11,7 @@ import json
 import re
 import tomllib
 
+from .prepare_npm import PACKAGE, optional_dependencies
 from .release import ROOT, release_metadata
 from .versions import parse_version, python_version, version_key
 
@@ -72,11 +73,17 @@ def plan_bump(root, current, version, note=None):
     changes[lock_path] = "".join(blocks)
 
     npm_path = root / "npm/seiso/package.json"
-    changes[npm_path] = replace_once(
+    npm = replace_once(
         npm_path.read_text(encoding="utf-8"), rf'("version"\s*:\s*"){re.escape(current)}(")',
         rf'\g<1>{version}\2', "npm version")
-    if json.loads(changes[npm_path])["version"] != version:
+    npm = re.sub(rf'("{re.escape(PACKAGE)}-[a-z0-9-]+"\s*:\s*"){re.escape(current)}(")',
+                 rf'\g<1>{version}\2', npm)
+    package = json.loads(npm)
+    if package["version"] != version:
         raise ValueError("Failed to update npm version")
+    if package.get("optionalDependencies") != optional_dependencies(version):
+        raise ValueError(f"npm optionalDependencies must pin every platform package to {current}")
+    changes[npm_path] = npm
 
     if note is not None:
         if not note.strip() or len(note.strip().splitlines()) != 1:
