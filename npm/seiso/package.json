@@ -1,6 +1,6 @@
 {
   "name": "@scarletkc/seiso",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A Markdown convention and linter for project docs written by AI and read by humans and agents",
   "license": "MIT",
   "author": "scarletkc",
@@ -24,14 +24,14 @@
     "prepack": "node scripts/verify.cjs"
   },
   "optionalDependencies": {
-    "@scarletkc/seiso-darwin-arm64": "0.2.0",
-    "@scarletkc/seiso-darwin-x64": "0.2.0",
-    "@scarletkc/seiso-linux-arm64": "0.2.0",
-    "@scarletkc/seiso-linux-arm64-musl": "0.2.0",
-    "@scarletkc/seiso-linux-x64": "0.2.0",
-    "@scarletkc/seiso-linux-x64-musl": "0.2.0",
-    "@scarletkc/seiso-win32-arm64": "0.2.0",
-    "@scarletkc/seiso-win32-x64": "0.2.0"
+    "@scarletkc/seiso-darwin-arm64": "0.3.0",
+    "@scarletkc/seiso-darwin-x64": "0.3.0",
+    "@scarletkc/seiso-linux-arm64": "0.3.0",
+    "@scarletkc/seiso-linux-arm64-musl": "0.3.0",
+    "@scarletkc/seiso-linux-x64": "0.3.0",
+    "@scarletkc/seiso-linux-x64-musl": "0.3.0",
+    "@scarletkc/seiso-win32-arm64": "0.3.0",
+    "@scarletkc/seiso-win32-x64": "0.3.0"
   },
   "keywords": ["markdown", "documentation", "linter", "markdown-linter", "docs-as-code", "ai-agents", "cli"]
 }
