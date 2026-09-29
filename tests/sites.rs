@@ -246,6 +246,59 @@ fn the_written_path_wins_over_a_route_and_the_dump_shows_resolved_targets() {
     assert_eq!(outside["links"][0]["resolution"]["status"], "missing");
 }
 
+/// Some generators lowercase routes, so `/guide/contributing` can serve
+/// `CONTRIBUTING.md`; no generator serves `/guide/Setup` for `setup.md`.
+#[test]
+fn only_a_lowercase_route_reaches_a_page_whose_name_differs_in_letter_case() {
+    let workspace = site_workspace(SITE);
+    let root = workspace.path();
+    write(
+        root,
+        "site/guide/CONTRIBUTING.md",
+        "# Contributing
+
+## Setup
+",
+    );
+    write(
+        root,
+        "site/guide/start.md",
+        "---
+kind: howto
+---
+# Start
+
+[route](/guide/contributing#setup) [anchor](/guide/contributing#removed)
+
+[route case](/guide/Setup)
+
+[path case](Setup.md)
+",
+    );
+    let found = diagnostics(root);
+    let summary: Vec<_> = found
+        .iter()
+        .map(|(code, message, _)| (code.as_str(), message.as_str()))
+        .collect();
+    assert_eq!(
+        summary,
+        [
+            (
+                "LNK002",
+                "Anchor \"removed\" does not exist in site/guide/CONTRIBUTING.md."
+            ),
+            (
+                "LNK001",
+                "Local link target \"/guide/Setup\" differs in letter case from \"site/guide/setup.md\"."
+            ),
+            (
+                "LNK001",
+                "Local link target \"Setup.md\" differs in letter case from \"site/guide/setup.md\"."
+            ),
+        ]
+    );
+}
+
 #[test]
 fn policy_names_each_file_site() {
     let workspace = site_workspace(SITE);

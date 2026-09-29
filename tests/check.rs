@@ -500,6 +500,91 @@ fn malformed_arguments_and_outside_stdin_paths_return_tool_errors() {
     }
 }
 
+/// Windows and macOS open these targets, but GitHub and Linux do not.
+#[test]
+fn link_targets_that_differ_in_letter_case_are_reported_on_every_platform() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    write(
+        root,
+        "seiso.toml",
+        "preview = true
+
+[lint]
+select = ['LNK001', 'LNK002']
+",
+    );
+    write(
+        root,
+        ".gitignore",
+        "build/
+",
+    );
+    write(
+        root,
+        "docs/setup.md",
+        "# Setup
+",
+    );
+    write(root, "build/Report.txt", "report");
+    write(
+        root,
+        "README.md",
+        "---
+kind: readme
+---
+# Project
+
+[exact](docs/setup.md#setup)
+
+[file](DOCS/setup.md)
+
+[anchor](docs/Setup.md#removed)
+
+[directory](Docs/)
+
+[ignored](build/report.txt)
+",
+    );
+    let output = run(root, &["check", "--output-format", "json"], None);
+    assert_eq!(
+        output.status.code(),
+        Some(1),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let report = value(&output);
+    let messages: Vec<_> = report
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|diagnostic| {
+            assert_eq!(diagnostic["code"], "LNK001");
+            diagnostic["message"].as_str().unwrap()
+        })
+        .collect();
+    assert_eq!(
+        messages,
+        [
+            "Local link target \"DOCS/setup.md\" differs in letter case from \"docs/setup.md\".",
+            "Local link target \"docs/Setup.md#removed\" differs in letter case from \"docs/setup.md\".",
+            "Local link target \"Docs/\" differs in letter case from \"docs\".",
+            "Local link target \"build/report.txt\" differs in letter case from \"build/Report.txt\".",
+        ]
+    );
+    let dump = value(&run(root, &["index", "--dump"], None));
+    let statuses: Vec<_> = dump["index"]["files"][0]["links"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|link| link["resolution"]["status"].as_str().unwrap())
+        .collect();
+    assert_eq!(
+        statuses,
+        ["anchor_found", "missing", "missing", "missing", "missing"]
+    );
+}
+
 #[test]
 fn symlinked_external_directories_are_not_traversed_or_reported_as_missing() {
     let workspace = workspace();

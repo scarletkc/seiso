@@ -7,7 +7,9 @@ use std::sync::{Arc, OnceLock};
 use crate::config::Config;
 use crate::diagnostics::Span;
 use crate::md::{BlockKind, Document, FragmentKind};
-use crate::paths::{LinkPathError, TargetStatus, local_link, local_target_status, select_target};
+use crate::paths::{
+    LinkPathError, Listings, TargetStatus, local_link, local_target_status, select_target,
+};
 use crate::rules::{PathStatus, WorkspaceFiles};
 use regex::Regex;
 use serde::Serialize;
@@ -30,6 +32,9 @@ pub struct WorkspaceIndex {
     pub complete: bool,
     anchors: BTreeMap<String, OnceLock<AnchorIndex>>,
     inventory: Option<BTreeMap<String, InventoryEntryKind>>,
+    /// Inventory paths by their lowercase form, built on the first missing target.
+    lowercase_inventory: OnceLock<BTreeMap<String, String>>,
+    listings: Listings,
 }
 
 #[derive(Clone, Debug)]
@@ -85,6 +90,8 @@ impl WorkspaceIndex {
             complete,
             anchors,
             inventory: None,
+            lowercase_inventory: OnceLock::new(),
+            listings: Listings::default(),
         }
     }
 
@@ -157,15 +164,14 @@ impl WorkspaceIndex {
                 return result;
             }
         };
-        let (selected, status) = select_target(&link.locations, |location| {
+        let (location, status) = select_target(&self.root, &link.locations, |location| {
             self.target_status(&location.path, &location.target)
         });
-        let location = &link.locations[selected];
         let mut target = location.target.clone();
         result.target = Some(target.clone());
         result.anchor = link.anchor;
-        // Resolve native aliases only through filesystem identity. Lowercasing names
-        // would incorrectly merge distinct files on case-sensitive filesystems.
+        // Resolve symbolic-link aliases through filesystem identity. The target's
+        // spelling is already confirmed, so this cannot merge letter-case variants.
         if self.inventory.is_none()
             && matches!(status, TargetStatus::File)
             && self.file(&target).is_none()
@@ -187,7 +193,8 @@ impl WorkspaceIndex {
             }
             TargetStatus::File | TargetStatus::Unknown => LinkStatus::AnchorUnknown,
             TargetStatus::Directory => LinkStatus::Directory,
-            TargetStatus::Missing => LinkStatus::Missing,
+            // LNK001 reports the spelling.
+            TargetStatus::CaseMismatch(_) | TargetStatus::Missing => LinkStatus::Missing,
             TargetStatus::OutsideWorkspace => LinkStatus::OutsideWorkspace,
             TargetStatus::Unreadable(error) => {
                 result.error = Some(error);
@@ -214,13 +221,27 @@ impl WorkspaceIndex {
                 Some(InventoryEntryKind::File) => TargetStatus::File,
                 Some(InventoryEntryKind::Unknown) => TargetStatus::Unknown,
                 None if target.is_empty() => TargetStatus::Directory,
-                None => TargetStatus::Missing,
+                None => self
+                    .lowercase_inventory
+                    .get_or_init(|| {
+                        let mut paths = BTreeMap::new();
+                        for path in inventory.keys() {
+                            paths
+                                .entry(path.to_lowercase())
+                                .or_insert_with(|| path.clone());
+                        }
+                        paths
+                    })
+                    .get(&target.to_lowercase())
+                    .map_or(TargetStatus::Missing, |actual| {
+                        TargetStatus::CaseMismatch(actual.clone())
+                    }),
             };
         }
         match local_target_status(&self.root, path) {
             status @ (TargetStatus::OutsideWorkspace | TargetStatus::Unreadable(_)) => status,
             _ if self.file(target).is_some() => TargetStatus::File,
-            status => status,
+            status => self.listings.confirm(&self.root, path, status),
         }
     }
 

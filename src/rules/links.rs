@@ -2,7 +2,8 @@ use std::path::Path;
 
 use crate::diagnostics::Diagnostic;
 use crate::paths::{
-    LinkPathError, TargetStatus, local_link_targets, local_target_status, normalize, select_target,
+    LinkPathError, Listings, TargetStatus, local_link_targets, local_target_status, normalize,
+    select_target,
 };
 
 use crate::rules::CheckContext;
@@ -17,6 +18,8 @@ pub(crate) struct LinkResult {
 #[derive(Debug, Eq, PartialEq)]
 pub enum PathStatus {
     Exists,
+    /// Exists under this workspace-relative spelling, which differs in letter case.
+    CaseMismatch(String),
     Missing,
     Unknown,
     Error(String),
@@ -26,11 +29,15 @@ pub trait WorkspaceFiles {
     fn status(&self, workspace_root: &Path, target: &Path) -> PathStatus;
 }
 
-pub struct LocalWorkspaceFiles;
+#[derive(Default)]
+pub struct LocalWorkspaceFiles {
+    listings: Listings,
+}
 
 impl WorkspaceFiles for LocalWorkspaceFiles {
     fn status(&self, workspace_root: &Path, target: &Path) -> PathStatus {
-        local_target_status(workspace_root, target).into()
+        let status = local_target_status(workspace_root, target);
+        self.listings.confirm(workspace_root, target, status).into()
     }
 }
 
@@ -38,6 +45,7 @@ impl From<TargetStatus> for PathStatus {
     fn from(status: TargetStatus) -> Self {
         match status {
             TargetStatus::File | TargetStatus::Directory => Self::Exists,
+            TargetStatus::CaseMismatch(actual) => Self::CaseMismatch(actual),
             TargetStatus::Missing => Self::Missing,
             TargetStatus::Unknown | TargetStatus::OutsideWorkspace => Self::Unknown,
             TargetStatus::Unreadable(error) => Self::Error(error),
@@ -49,6 +57,7 @@ impl From<PathStatus> for TargetStatus {
     fn from(status: PathStatus) -> Self {
         match status {
             PathStatus::Exists => Self::File,
+            PathStatus::CaseMismatch(actual) => Self::CaseMismatch(actual),
             PathStatus::Missing => Self::Missing,
             PathStatus::Unknown => Self::Unknown,
             PathStatus::Error(error) => Self::Unreadable(error),
@@ -59,6 +68,7 @@ impl From<PathStatus> for TargetStatus {
 pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> LinkResult {
     let mut result = LinkResult::default();
     let site = context.config.site_routes(context.path);
+    let root = normalize(context.workspace_root);
     let current = normalize(context.path);
     for link in &context.document.links {
         let destination = link.destination.as_str();
@@ -75,7 +85,7 @@ pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> L
                 continue;
             }
         };
-        let (_, status) = select_target(&targets, |target| {
+        let (_, status) = select_target(&root, &targets, |target| {
             // The current document can be a new stdin overlay with no disk entry.
             if target.path == current {
                 TargetStatus::File
@@ -85,6 +95,18 @@ pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> L
         });
         match status {
             TargetStatus::File | TargetStatus::Directory => {}
+            TargetStatus::CaseMismatch(actual) => {
+                result.diagnostics.push(Diagnostic::new(
+                    context.filename,
+                    &context.document.source,
+                    "LNK001",
+                    link.span,
+                    format!(
+                        "Local link target {destination:?} differs in letter case from {actual:?}."
+                    ),
+                    "Change the link to the same letter case; GitHub and Linux treat names that differ only in case as different files, even where Windows or macOS open them.",
+                ));
+            }
             TargetStatus::Missing => {
                 let suggestion = match &site {
                     None => "Update the path or restore the target; paths resolve from this document's directory, or from the workspace root when they start with /, and seiso does not add .md or index.md.".to_owned(),

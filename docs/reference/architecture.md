@@ -84,7 +84,10 @@ sources of its route. `paths::select_target` picks the first that exists, and
 workspace containment, normalization, and route candidates are shared by
 file-existence and index rules. A relative path starts at the source directory;
 a leading slash starts at the workspace root. Local filesystem inspection and frozen Git
-inventories supply physical existence through their respective adapters.
+inventories supply physical existence through their respective adapters. Both
+compare letter case with entry names, which `paths::Listings` reads from
+directories and an inventory lists as Git paths, so a case-insensitive
+filesystem resolves the same targets as Git.
 
 Existence and anchor knowledge are distinct. A file outside the parsed sample
 can exist while its anchors remain unknown. External URLs, template values,

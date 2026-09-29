@@ -1,7 +1,10 @@
 //! Shared lexical paths and workspace-local link targets.
 
+use std::borrow::Cow;
+use std::collections::{BTreeSet, HashMap};
 use std::io::ErrorKind;
 use std::path::{Component, Path, PathBuf};
+use std::sync::{Arc, Mutex, PoisonError};
 
 /// Remove lexical `.` and `..` components without accessing the filesystem.
 pub fn normalize(path: impl AsRef<Path>) -> PathBuf {
@@ -50,6 +53,7 @@ impl SiteRoutes {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct LocalTarget {
     pub path: PathBuf,
     pub target: String,
@@ -212,23 +216,56 @@ fn page_sources(route: &Path, directory: bool) -> Vec<PathBuf> {
 
 /// Choose the first candidate that exists. A directory reached only as a route
 /// serves no page itself, so a later page source takes precedence over it.
+/// A route written in lowercase reaches a page whose name has capitals, as
+/// generators that lowercase routes serve it; any other letter-case mismatch
+/// is the result only when no candidate exists.
 pub(crate) fn select_target(
+    root: &Path,
     targets: &[LocalTarget],
     mut status: impl FnMut(&LocalTarget) -> TargetStatus,
-) -> (usize, TargetStatus) {
+) -> (LocalTarget, TargetStatus) {
     let mut directory = None;
-    for (index, target) in targets.iter().enumerate() {
-        match status(target) {
+    let mut mismatch = None;
+    for candidate in targets {
+        let mut target = Cow::Borrowed(candidate);
+        let mut found = status(candidate);
+        if let TargetStatus::CaseMismatch(actual) = &found
+            && candidate.route
+            && lowercase_route(&candidate.target, actual)
+        {
+            target = Cow::Owned(LocalTarget {
+                path: normalize(root.join(actual)),
+                target: actual.clone(),
+                route: true,
+            });
+            found = status(&target);
+        }
+        match found {
             TargetStatus::Missing => {}
             TargetStatus::Directory if target.route => {
-                directory.get_or_insert(index);
+                directory.get_or_insert_with(|| target.into_owned());
             }
-            status => return (index, status),
+            TargetStatus::CaseMismatch(actual) => {
+                mismatch.get_or_insert_with(|| (target.into_owned(), actual));
+            }
+            status => return (target.into_owned(), status),
         }
     }
-    directory.map_or((0, TargetStatus::Missing), |index| {
-        (index, TargetStatus::Directory)
-    })
+    if let Some(target) = directory {
+        (target, TargetStatus::Directory)
+    } else if let Some((target, actual)) = mismatch {
+        (target, TargetStatus::CaseMismatch(actual))
+    } else {
+        (targets[0].clone(), TargetStatus::Missing)
+    }
+}
+
+/// Each written component that differs from the entry's is its lowercase form.
+fn lowercase_route(written: &str, actual: &str) -> bool {
+    written
+        .split('/')
+        .zip(actual.split('/'))
+        .all(|(written, actual)| written == actual || written == actual.to_lowercase())
 }
 
 fn is_template(value: &str) -> bool {
@@ -268,6 +305,8 @@ fn percent_decode(value: &str) -> Option<String> {
 pub(crate) enum TargetStatus {
     File,
     Directory,
+    /// Exists under this workspace-relative spelling, which differs in letter case.
+    CaseMismatch(String),
     Missing,
     Unknown,
     OutsideWorkspace,
@@ -312,6 +351,92 @@ pub(crate) fn local_target_status(root: &Path, target: &Path) -> TargetStatus {
 
 fn missing(error: &std::io::Error) -> bool {
     matches!(error.kind(), ErrorKind::NotFound | ErrorKind::NotADirectory)
+}
+
+/// Directory entry names, read once per directory, that confirm the letter
+/// case of link targets. Windows and macOS open a path under any letter case,
+/// while Git and Linux treat it as a different file.
+#[derive(Debug, Default)]
+pub(crate) struct Listings(Mutex<HashMap<PathBuf, Option<Entries>>>);
+
+/// Names in a directory; `None` in the cache marks one that cannot be read.
+type Entries = Arc<BTreeSet<String>>;
+
+impl Clone for Listings {
+    fn clone(&self) -> Self {
+        Self(Mutex::new(self.lock().clone()))
+    }
+}
+
+impl Listings {
+    /// Compare an inspected target with the entries on its path. A name that
+    /// matches no entry exactly takes the first entry that differs only in
+    /// letter case; other names stay as written for the filesystem to judge.
+    pub(crate) fn confirm(&self, root: &Path, target: &Path, status: TargetStatus) -> TargetStatus {
+        if !matches!(
+            status,
+            TargetStatus::File | TargetStatus::Directory | TargetStatus::Missing
+        ) {
+            return status;
+        }
+        let mut directory = normalize(root);
+        let Ok(relative) = target.strip_prefix(&directory) else {
+            return status;
+        };
+        let mut spelling = Vec::new();
+        let mut differs = false;
+        for component in relative.components() {
+            let Some(name) = component.as_os_str().to_str() else {
+                return status;
+            };
+            let entry = match self.entries(&directory) {
+                Some(entries) if !entries.contains(name) => {
+                    let lowercase = name.to_lowercase();
+                    match entries
+                        .iter()
+                        .find(|entry| entry.to_lowercase() == lowercase)
+                    {
+                        Some(entry) => {
+                            differs = true;
+                            entry.clone()
+                        }
+                        None if status == TargetStatus::Missing => return status,
+                        // Such as another Unicode normalization form on macOS.
+                        None => name.to_owned(),
+                    }
+                }
+                // An unreadable directory cannot contradict the filesystem.
+                _ => name.to_owned(),
+            };
+            directory.push(&entry);
+            spelling.push(entry);
+        }
+        if differs {
+            TargetStatus::CaseMismatch(spelling.join("/"))
+        } else {
+            status
+        }
+    }
+
+    fn entries(&self, directory: &Path) -> Option<Entries> {
+        if let Some(entries) = self.lock().get(directory) {
+            return entries.clone();
+        }
+        let entries = std::fs::read_dir(directory)
+            .and_then(|entries| {
+                entries
+                    .map(|entry| entry.map(|entry| entry.file_name().into_string().ok()))
+                    .collect::<Result<Vec<_>, _>>()
+            })
+            .ok()
+            .map(|names| Arc::new(names.into_iter().flatten().collect()));
+        self.lock().insert(directory.to_owned(), entries.clone());
+        entries
+    }
+
+    fn lock(&self) -> std::sync::MutexGuard<'_, HashMap<PathBuf, Option<Entries>>> {
+        self.0.lock().unwrap_or_else(PoisonError::into_inner)
+    }
 }
 
 #[cfg(test)]
@@ -400,28 +525,113 @@ mod tests {
             "guide/index.md" => TargetStatus::File,
             _ => TargetStatus::Missing,
         };
+        let select = |candidates: &[LocalTarget]| {
+            let (target, status) = select_target(Path::new(""), candidates, status);
+            (target.target, status)
+        };
         let candidates = [
             target("missing", false),
             target("guide", true),
             target("guide.md", true),
             target("guide/index.md", true),
         ];
-        assert_eq!(select_target(&candidates, status), (3, TargetStatus::File));
         assert_eq!(
-            select_target(&candidates[..3], status),
-            (1, TargetStatus::Directory)
+            select(&candidates),
+            ("guide/index.md".into(), TargetStatus::File)
         );
         assert_eq!(
-            select_target(
-                &[target("physical", false), target("guide/index.md", true)],
-                status
-            ),
-            (0, TargetStatus::Directory)
+            select(&candidates[..3]),
+            ("guide".into(), TargetStatus::Directory)
         );
         assert_eq!(
-            select_target(&candidates[..1], status),
-            (0, TargetStatus::Missing)
+            select(&[target("physical", false), target("guide/index.md", true)]),
+            ("physical".into(), TargetStatus::Directory)
         );
+        assert_eq!(
+            select(&candidates[..1]),
+            ("missing".into(), TargetStatus::Missing)
+        );
+    }
+
+    #[test]
+    fn only_lowercase_routes_reach_entries_with_capitals() {
+        let target = |target: &str, route| LocalTarget {
+            path: PathBuf::from(target),
+            target: target.into(),
+            route,
+        };
+        let status = |target: &LocalTarget| match target.target.as_str() {
+            "Guide.md" => TargetStatus::CaseMismatch("guide.md".into()),
+            "site/contributing.md" => TargetStatus::CaseMismatch("site/CONTRIBUTING.md".into()),
+            "site/Contributing.md" => TargetStatus::CaseMismatch("site/contributing.md".into()),
+            "site/intro" => TargetStatus::CaseMismatch("site/Intro".into()),
+            "site/intro/index.md" => TargetStatus::CaseMismatch("site/Intro/index.md".into()),
+            "site/guide.md" | "site/CONTRIBUTING.md" | "site/Intro/index.md" => TargetStatus::File,
+            "site/Intro" => TargetStatus::Directory,
+            _ => TargetStatus::Missing,
+        };
+        let select = |candidates: &[LocalTarget]| {
+            let (target, status) = select_target(Path::new(""), candidates, status);
+            (target.target, status)
+        };
+        let written = target("Guide.md", false);
+        assert_eq!(
+            select(std::slice::from_ref(&written)),
+            (
+                "Guide.md".into(),
+                TargetStatus::CaseMismatch("guide.md".into())
+            )
+        );
+        assert_eq!(
+            select(&[written.clone(), target("site/guide.md", true)]),
+            ("site/guide.md".into(), TargetStatus::File)
+        );
+        assert_eq!(
+            select(&[target("site/contributing.md", true)]),
+            ("site/CONTRIBUTING.md".into(), TargetStatus::File)
+        );
+        assert_eq!(
+            select(&[target("site/Contributing.md", true)]),
+            (
+                "site/Contributing.md".into(),
+                TargetStatus::CaseMismatch("site/contributing.md".into())
+            )
+        );
+        assert_eq!(
+            select(&[written, target("site/intro", true)]),
+            ("site/Intro".into(), TargetStatus::Directory)
+        );
+        assert_eq!(
+            select(&[
+                target("site/intro", true),
+                target("site/intro/index.md", true)
+            ]),
+            ("site/Intro/index.md".into(), TargetStatus::File)
+        );
+    }
+
+    #[test]
+    fn listings_confirm_the_letter_case_of_each_component() {
+        let root = tempfile::tempdir().unwrap();
+        std::fs::create_dir_all(root.path().join("docs/Guide")).unwrap();
+        std::fs::write(root.path().join("docs/Guide/setup.md"), "").unwrap();
+        let listings = Listings::default();
+        let confirm = |target: &str| {
+            let path = normalize(root.path().join(target));
+            listings.confirm(root.path(), &path, local_target_status(root.path(), &path))
+        };
+        assert_eq!(confirm("docs/Guide/setup.md"), TargetStatus::File);
+        assert_eq!(confirm("docs/Guide"), TargetStatus::Directory);
+        assert_eq!(
+            confirm("DOCS/guide/setup.md"),
+            TargetStatus::CaseMismatch("docs/Guide/setup.md".into())
+        );
+        assert_eq!(
+            confirm("docs/guide"),
+            TargetStatus::CaseMismatch("docs/Guide".into())
+        );
+        assert_eq!(confirm("docs/Guide/missing.md"), TargetStatus::Missing);
+        assert_eq!(confirm("docs/Guide/setup.md/child"), TargetStatus::Missing);
     }
 
     #[test]

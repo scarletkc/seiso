@@ -276,24 +276,35 @@ fn excluded_target_anchors_remain_unknown_and_do_not_stale_suppressions() {
     );
 }
 
-#[cfg(windows)]
+/// Case-insensitive filesystems open the target, but Git and Linux do not, so
+/// LNK001 reports the spelling and the anchor stays unchecked on every platform.
 #[test]
-fn case_insensitive_targets_still_validate_anchors_and_selected_related_paths() {
+fn targets_that_differ_in_letter_case_leave_anchors_to_lnk001() {
     let root = workspace(LINKS);
-    write(root.path(), "target.md", "# Target\n");
-    if !root.path().join("TARGET.md").exists() {
-        return;
-    }
-    write(root.path(), "guide.md", "[Missing](TARGET.md#missing)\n");
+    write(
+        root.path(),
+        "target.md",
+        "# Target
+",
+    );
+    write(
+        root.path(),
+        "guide.md",
+        "[Missing](TARGET.md#missing)
+",
+    );
     let full = run(root.path(), &["check", "--output-format", "json"], None);
     status(&full, 1);
-    assert_eq!(value(&full)[0]["code"], "LNK002");
+    let report = value(&full);
+    assert_eq!(report.as_array().unwrap().len(), 1);
+    assert_eq!(report[0]["code"], "LNK001");
     let selected = run(
         root.path(),
         &["check", "target.md", "--output-format", "json"],
         None,
     );
-    assert_eq!(selected.stdout, full.stdout);
+    status(&selected, 0);
+    assert_eq!(value(&selected), json!([]));
 }
 
 #[cfg(windows)]

@@ -98,11 +98,11 @@ pub struct RawCheckResult {
 }
 
 pub fn check_raw(context: &CheckContext<'_>) -> Result<RawCheckResult, ConfigError> {
-    check_raw_with_files(context, &LocalWorkspaceFiles)
+    check_raw_with_files(context, &LocalWorkspaceFiles::default())
 }
 
 pub fn check(context: &CheckContext<'_>) -> Result<CheckResult, ConfigError> {
-    check_with_files(context, &LocalWorkspaceFiles)
+    check_with_files(context, &LocalWorkspaceFiles::default())
 }
 
 /// Use a frozen file inventory while preserving the production link resolver.

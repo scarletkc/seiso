@@ -94,6 +94,79 @@ fn index_inventory_supplies_file_checks_without_a_materialized_workspace() {
 }
 
 #[test]
+fn frozen_inventories_compare_letter_case_like_the_filesystem() {
+    let directory = tempfile::tempdir().unwrap();
+    let root = directory.path().join("snapshot");
+    let document = seiso::md::parse(
+        "[path](Setup.md#install)
+
+[route](/docs/contributing#setup)
+
+[route case](/docs/Setup)
+",
+    )
+    .unwrap();
+    let config = Config::parse(
+        "[lint]
+select=['LNK001']
+[[sites]]
+path='docs/**'
+root='docs'
+base='/docs/'
+",
+        &root,
+    )
+    .unwrap();
+    let path = root.join("docs/new.md");
+    let index = WorkspaceIndex::new(
+        root.clone(),
+        vec![IndexedFile {
+            filename: "docs/new.md".into(),
+            path: path.clone(),
+            document: document.clone().into(),
+            kind: None,
+            domain: String::new(),
+            enabled_rules: vec!["LNK001".into()],
+            config: config.clone(),
+        }],
+        true,
+    )
+    .with_inventory(BTreeMap::from([
+        ("docs".into(), InventoryEntryKind::Directory),
+        ("docs/CONTRIBUTING.md".into(), InventoryEntryKind::File),
+        ("docs/setup.md".into(), InventoryEntryKind::File),
+    ]));
+    let context = CheckContext {
+        document: &document,
+        filename: "docs/new.md",
+        path: &path,
+        workspace_root: &root,
+        config: &config,
+        overrides: &CliOverrides::default(),
+    };
+    let messages: Vec<_> = check_raw_with_files(&context, &index)
+        .unwrap()
+        .diagnostics
+        .into_iter()
+        .map(|diagnostic| diagnostic.message)
+        .collect();
+    assert_eq!(
+        messages,
+        [
+            "Local link target \"Setup.md#install\" differs in letter case from \"docs/setup.md\".",
+            "Local link target \"/docs/Setup\" differs in letter case from \"docs/setup.md\".",
+        ]
+    );
+    let route = index.resolve_link("docs/new.md", "/docs/contributing#setup");
+    assert_eq!(route.target.as_deref(), Some("docs/CONTRIBUTING.md"));
+    assert_eq!(route.status, LinkStatus::AnchorUnknown);
+    assert_eq!(
+        index.resolve_link("docs/new.md", "Setup.md#install").status,
+        LinkStatus::Missing
+    );
+}
+
+#[test]
 fn file_existence_ignores_unresolved_fragments_and_queries() {
     let root = tempfile::tempdir().unwrap();
     std::fs::write(root.path().join("target.md"), "# Target\n").unwrap();
