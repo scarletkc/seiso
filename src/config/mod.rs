@@ -3,6 +3,7 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 
 use globset::{GlobBuilder, GlobMatcher};
 use serde::{Deserialize, Serialize};
@@ -10,6 +11,10 @@ use thiserror::Error;
 
 use crate::paths::{SiteRoutes, normalize};
 use crate::rules::{rule, rules};
+
+mod frame;
+
+use frame::{EnvironmentFrame, FrameId, FrameRelation, FramedKind, FramedValue, overlay};
 
 pub const KINDS: [&str; 8] = [
     "readme",
@@ -186,24 +191,144 @@ pub struct Config {
     pub source: Option<PathBuf>,
     pub directory: PathBuf,
     pub settings: Settings,
-    include: Vec<GlobMatcher>,
-    exclude: Vec<GlobMatcher>,
-    kinds: Vec<GlobMatcher>,
-    domains: Vec<GlobMatcher>,
-    sites: Vec<GlobMatcher>,
-    per_file_ignores: Vec<(GlobMatcher, Vec<String>)>,
+    frames: Vec<EnvironmentFrame>,
+    include: Vec<BoundGlob>,
+    exclude: Vec<BoundGlob>,
+    kinds: Vec<BoundGlob>,
+    domains: Vec<BoundGlob>,
+    sites: Vec<BoundGlob>,
+    per_file_ignores: Vec<(BoundGlob, Vec<String>)>,
+    catalog_dirs: Vec<PathBuf>,
+    catalog_frames: Vec<FrameId>,
+}
+
+/// The declaration environments and effective path-field bindings of a policy.
+///
+/// Binding arrays align by index with the corresponding arrays in `Settings`.
+/// This additive report leaves the established settings JSON shape unchanged.
+#[derive(Clone, Debug, Serialize)]
+pub struct EnvironmentReport {
+    pub frames: Vec<FrameReport>,
+    pub include: Vec<FrameId>,
+    pub exclude: Vec<FrameId>,
+    pub kinds: Vec<FrameId>,
+    pub domains: Vec<FrameId>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub sites: Vec<FrameId>,
+    pub per_file_ignores: BTreeMap<String, FrameId>,
+    pub catalog_dirs: Vec<FrameId>,
+}
+
+/// A configuration unit's source, path base, and incoming inheritance edge.
+#[derive(Clone, Debug, Serialize)]
+pub struct FrameReport {
+    pub source: String,
+    pub policy_base: String,
+    pub extender: Option<FrameId>,
+    pub relation: &'static str,
+}
+
+/// A compiled pattern bound to the environment that declared it.
+#[derive(Clone, Debug)]
+struct BoundGlob {
+    matcher: GlobMatcher,
+    frame: FrameId,
+}
+
+/// Candidate paths cached by effective base while matching one file.
+///
+/// Most policies use one base, so the first entry avoids tree lookups. The
+/// overflow map preserves bounded lookup cost for deeply mixed frame chains.
+#[derive(Default)]
+struct CandidatePaths<'a> {
+    first: Option<(&'a Path, Option<String>)>,
+    overflow: BTreeMap<&'a Path, Option<String>>,
+}
+
+impl<'a> CandidatePaths<'a> {
+    /// Return the file path relative to this base, computing it only once.
+    fn relative(&mut self, base: &'a Path, path: &Path) -> Option<&str> {
+        if self.first.is_none() {
+            self.first = Some((base, relative_to(path, base)));
+        }
+        let (first_base, first_path) = self.first.as_ref().unwrap();
+        if std::ptr::eq(*first_base, base) || *first_base == base {
+            return first_path.as_deref();
+        }
+        self.overflow
+            .entry(base)
+            .or_insert_with(|| relative_to(path, base))
+            .as_deref()
+    }
+}
+
+/// Normalize a candidate once for all patterns bound to the same base.
+fn relative_to(path: &Path, base: &Path) -> Option<String> {
+    path.strip_prefix(base)
+        .ok()
+        .map(|relative| relative.to_string_lossy().replace('\\', "/"))
 }
 
 impl Config {
+    /// The outermost governing ancestor admitted by this configuration chain.
+    ///
+    /// Shared templates do not widen a project's document universe merely
+    /// because their source files live elsewhere. A governing frame does.
+    pub fn project_root(&self, selection_root: &Path) -> PathBuf {
+        let mut root = selection_root.to_path_buf();
+        for frame in &self.frames {
+            if frame.relation == FrameRelation::GoverningAncestor
+                && root.starts_with(&frame.policy_base)
+            {
+                root = frame.policy_base.clone();
+            }
+        }
+        root
+    }
+
+    /// Root admitted by this selected configuration's own governing chain.
+    ///
+    /// A wider index may serve another file whose configuration inherits a
+    /// parent, but that must not grant this configuration the same scope.
+    pub fn project_root_for_source(&self) -> PathBuf {
+        self.project_root(&self.directory)
+    }
+
+    /// Include the project's scope already granted by the invoking policy.
+    ///
+    /// A standalone nested config must not shrink the historical workspace
+    /// visible when seiso was invoked from a wider root. Conversely, a nested
+    /// governing ancestor may expand a narrower invocation's scope.
+    pub fn project_root_for_source_within(&self, invocation_root: &Path) -> PathBuf {
+        let own_root = self.project_root_for_source();
+        if invocation_root.starts_with(&own_root) {
+            own_root
+        } else if own_root.starts_with(invocation_root) {
+            invocation_root.to_path_buf()
+        } else {
+            // A dependency in a sibling subtree was not governed by the
+            // invoking configuration. Keep its own root, not the filesystem
+            // common ancestor of two independently admitted scopes.
+            own_root
+        }
+    }
+
     /// Load a configuration and its explicit inheritance chain.
     ///
-    /// Each `extend` path is relative to the file declaring it. All effective
-    /// glob patterns, including inherited patterns, use the selected file's
-    /// directory as their base.
+    /// Each `extend` path is relative to the declaring file. A governing
+    /// ancestor retains its own path base; a shared template inherits the
+    /// extending unit's base.
     pub fn load(path: &Path) -> Result<Self, ConfigError> {
         let path = absolute(path)?;
-        let value = load_extended(&path, &mut Vec::new())?;
-        Self::from_value(value, parent(&path).to_path_buf(), Some(path))
+        let directory = parent(&path).to_path_buf();
+        let mut frames = vec![EnvironmentFrame {
+            source: path.clone(),
+            policy_base: directory.clone(),
+            extender: None,
+            relation: FrameRelation::Selected,
+        }];
+        let value = load_extended(&path, 0, &mut frames, &mut Vec::new())?;
+        Self::from_value(value, frames, directory, Some(path))
     }
 
     /// Load an explicitly selected configuration whose patterns apply from `directory`.
@@ -211,8 +336,15 @@ impl Config {
     /// `extend` paths remain relative to the file declaring them.
     pub fn load_from(path: &Path, directory: &Path) -> Result<Self, ConfigError> {
         let path = absolute(path)?;
-        let value = load_extended(&path, &mut Vec::new())?;
-        Self::from_value(value, absolute(directory)?, Some(path))
+        let directory = absolute(directory)?;
+        let mut frames = vec![EnvironmentFrame {
+            source: path.clone(),
+            policy_base: directory.clone(),
+            extender: None,
+            relation: FrameRelation::Selected,
+        }];
+        let value = load_extended(&path, 0, &mut frames, &mut Vec::new())?;
+        Self::from_value(value, frames, directory, Some(path))
     }
 
     /// Parse a standalone configuration; relative paths use `directory` as their base.
@@ -226,7 +358,13 @@ impl Config {
                 "extend requires Config::load so its source file can be resolved",
             ));
         }
-        Self::from_value(value, directory, None)
+        let frames = vec![EnvironmentFrame {
+            source: path,
+            policy_base: directory.clone(),
+            extender: None,
+            relation: FrameRelation::Selected,
+        }];
+        Self::from_value(FramedValue::bind(value, 0), frames, directory, None)
     }
 
     pub fn defaults(directory: &Path) -> Result<Self, ConfigError> {
@@ -234,7 +372,8 @@ impl Config {
     }
 
     fn from_value(
-        value: toml::Value,
+        value: FramedValue,
+        frames: Vec<EnvironmentFrame>,
         directory: PathBuf,
         source: Option<PathBuf>,
     ) -> Result<Self, ConfigError> {
@@ -242,158 +381,344 @@ impl Config {
             .clone()
             .unwrap_or_else(|| directory.join("seiso.toml"));
         let mut value = value;
-        let extend_exclude = take_extension_list(&mut value, "extend-exclude", &label)?;
-        let (extend_select, extend_ignore) =
-            if let Some(lint) = value.as_table_mut().and_then(|table| table.get_mut("lint")) {
-                (
-                    take_extension_list(lint, "extend-select", &label)?,
-                    take_extension_list(lint, "extend-ignore", &label)?,
-                )
-            } else {
-                (Vec::new(), Vec::new())
-            };
-        let mut settings: Settings = value.try_into().map_err(|e| invalid(&label, e))?;
-        settings.exclude.extend(extend_exclude);
-        settings.lint.select.extend(extend_select);
-        settings.lint.ignore.extend(extend_ignore);
-        validate_settings(&settings, &label)?;
-        let include = compile_patterns(&settings.include, &label, "include")?;
-        let exclude = compile_patterns(&settings.exclude, &label, "exclude")?;
-        let kinds = settings
+        let include_frames = entry_frames(value.get("include"), 0);
+        let mut exclude_frames = entry_frames(value.get("exclude"), 0);
+        let mut kind_frames = entry_frames(value.get("kinds"), 0);
+        let mut domain_frames = entry_frames(value.get("domains"), 0);
+        let mut site_frames = entry_frames(value.get("sites"), 0);
+        let catalog_frames = entry_frames(
+            value
+                .get("lint")
+                .and_then(|lint| lint.get("ptr"))
+                .and_then(|ptr| ptr.get("catalog-dirs")),
+            0,
+        );
+        let per_file_frames: BTreeMap<_, _> = value
+            .get("lint")
+            .and_then(|lint| lint.get("per-file-ignores"))
+            .and_then(FramedValue::table)
+            .into_iter()
+            .flat_map(|table| table.iter().map(|(key, value)| (key.clone(), value.frame)))
+            .collect();
+
+        let extend_exclude = take_string_extension_list(&mut value, "extend-exclude", &label)?;
+        let extend_kinds =
+            take_mapping_extension_list::<KindMapping>(&mut value, "extend-kinds", &label)?;
+        let extend_domains =
+            take_mapping_extension_list::<DomainMapping>(&mut value, "extend-domains", &label)?;
+        let extend_sites =
+            take_mapping_extension_list::<SiteMapping>(&mut value, "extend-sites", &label)?;
+        let (extend_select, extend_ignore) = if let Some(lint) = value.get_mut("lint") {
+            (
+                take_string_extension_list(lint, "extend-select", &label)?,
+                take_string_extension_list(lint, "extend-ignore", &label)?,
+            )
+        } else {
+            (Vec::new(), Vec::new())
+        };
+        let mut settings: Settings = value
+            .into_toml()
+            .try_into()
+            .map_err(|e| invalid(&label, e))?;
+        settings
+            .exclude
+            .extend(extend_exclude.iter().map(|(entry, _)| entry.clone()));
+        exclude_frames.extend(extend_exclude.into_iter().map(|(_, frame)| frame));
+        settings
             .kinds
-            .iter()
-            .map(|m| compile_pattern(&m.path, &label, "kinds.path"))
-            .collect::<Result<_, _>>()?;
-        let domains = settings
+            .extend(extend_kinds.iter().map(|(entry, _)| entry.clone()));
+        kind_frames.extend(extend_kinds.into_iter().map(|(_, frame)| frame));
+        settings
             .domains
-            .iter()
-            .map(|m| compile_pattern(&m.path, &label, "domains.path"))
-            .collect::<Result<_, _>>()?;
-        let sites = settings
+            .extend(extend_domains.iter().map(|(entry, _)| entry.clone()));
+        domain_frames.extend(extend_domains.into_iter().map(|(_, frame)| frame));
+        settings
             .sites
-            .iter()
-            .map(|m| compile_pattern(&m.path, &label, "sites.path"))
-            .collect::<Result<_, _>>()?;
+            .extend(extend_sites.iter().map(|(entry, _)| entry.clone()));
+        site_frames.extend(extend_sites.into_iter().map(|(_, frame)| frame));
+        settings
+            .lint
+            .select
+            .extend(extend_select.into_iter().map(|(entry, _)| entry));
+        settings
+            .lint
+            .ignore
+            .extend(extend_ignore.into_iter().map(|(entry, _)| entry));
+        validate_settings(&settings, &label)?;
+        let include = compile_bound(
+            &settings.include,
+            &include_frames,
+            &frames,
+            &label,
+            "include",
+        )?;
+        let exclude = compile_bound(
+            &settings.exclude,
+            &exclude_frames,
+            &frames,
+            &label,
+            "exclude",
+        )?;
+        let kinds = compile_bound(
+            &settings
+                .kinds
+                .iter()
+                .map(|entry| entry.path.clone())
+                .collect::<Vec<_>>(),
+            &kind_frames,
+            &frames,
+            &label,
+            "kinds.path",
+        )?;
+        let domains = compile_bound(
+            &settings
+                .domains
+                .iter()
+                .map(|entry| entry.path.clone())
+                .collect::<Vec<_>>(),
+            &domain_frames,
+            &frames,
+            &label,
+            "domains.path",
+        )?;
+        let sites = compile_bound(
+            &settings
+                .sites
+                .iter()
+                .map(|entry| entry.path.clone())
+                .collect::<Vec<_>>(),
+            &site_frames,
+            &frames,
+            &label,
+            "sites.path",
+        )?;
         let per_file_ignores = settings
             .lint
             .per_file_ignores
             .iter()
             .map(|(pattern, selectors)| {
+                let frame = *per_file_frames.get(pattern).unwrap_or(&0);
                 Ok((
-                    compile_pattern(pattern, &label, "lint.per-file-ignores")?,
+                    BoundGlob {
+                        matcher: compile_pattern(
+                            pattern,
+                            &frames[frame].source,
+                            "lint.per-file-ignores",
+                        )?,
+                        frame,
+                    },
                     selectors.clone(),
                 ))
             })
             .collect::<Result<_, ConfigError>>()?;
+        let catalog_dirs = settings
+            .lint
+            .ptr
+            .catalog_dirs
+            .iter()
+            .enumerate()
+            .map(|(i, dir)| {
+                let frame = *catalog_frames.get(i).unwrap_or(&0);
+                normalize(frames[frame].policy_base.join(dir.trim_end_matches('/')))
+            })
+            .collect();
+        let catalog_frames = (0..settings.lint.ptr.catalog_dirs.len())
+            .map(|index| *catalog_frames.get(index).unwrap_or(&0))
+            .collect();
         Ok(Self {
             source,
             directory,
             settings,
+            frames,
             include,
             exclude,
             kinds,
             domains,
             sites,
             per_file_ignores,
+            catalog_dirs,
+            catalog_frames,
         })
     }
 
+    /// Describe the environment of every effective path-bearing declaration.
+    pub fn environment_report(&self, root: &Path) -> EnvironmentReport {
+        let frames = self
+            .frames
+            .iter()
+            .map(|frame| FrameReport {
+                source: relative_label(root, &frame.source),
+                policy_base: relative_label(root, &frame.policy_base),
+                extender: frame.extender,
+                relation: match frame.relation {
+                    FrameRelation::Selected => "selected",
+                    FrameRelation::GoverningAncestor => "governing-ancestor",
+                    FrameRelation::SharedTemplate => "shared-template",
+                },
+            })
+            .collect();
+        EnvironmentReport {
+            frames,
+            include: self.include.iter().map(|entry| entry.frame).collect(),
+            exclude: self.exclude.iter().map(|entry| entry.frame).collect(),
+            kinds: self.kinds.iter().map(|entry| entry.frame).collect(),
+            domains: self.domains.iter().map(|entry| entry.frame).collect(),
+            sites: self.sites.iter().map(|entry| entry.frame).collect(),
+            per_file_ignores: self
+                .settings
+                .lint
+                .per_file_ignores
+                .keys()
+                .zip(&self.per_file_ignores)
+                .map(|(key, (entry, _))| (key.clone(), entry.frame))
+                .collect(),
+            catalog_dirs: self.catalog_frames.clone(),
+        }
+    }
+
     pub fn relative_path(&self, path: &Path) -> Option<String> {
-        let path = normalize(if path.is_absolute() {
-            path.to_path_buf()
-        } else {
-            self.directory.join(path)
-        });
+        let path = self.absolute_path(path);
         path.strip_prefix(&self.directory)
             .ok()
             .map(|p| p.to_string_lossy().replace('\\', "/"))
     }
 
+    fn absolute_path(&self, path: &Path) -> PathBuf {
+        normalize(if path.is_absolute() {
+            path.to_path_buf()
+        } else {
+            self.directory.join(path)
+        })
+    }
+
+    /// Compute each distinct frame base's candidate path at most once.
+    fn matches<'a>(
+        &'a self,
+        pattern: &BoundGlob,
+        path: &Path,
+        paths: &mut CandidatePaths<'a>,
+    ) -> bool {
+        let base = self.frames[pattern.frame].policy_base.as_path();
+        paths
+            .relative(base, path)
+            .is_some_and(|relative| pattern.matcher.is_match(relative))
+    }
+
+    /// Find a matching entry without losing declaration-order precedence.
+    ///
+    /// A standalone config has one environment: derive its candidate once,
+    /// then run matchers directly. Mixed environments use per-base reuse.
+    fn matching_index(&self, path: &Path, patterns: &[BoundGlob], last: bool) -> Option<usize> {
+        if patterns.is_empty() {
+            return None;
+        }
+        let path = self.absolute_path(path);
+        if self.frames.len() == 1 {
+            let relative = relative_to(&path, &self.frames[0].policy_base)?;
+            return if last {
+                patterns
+                    .iter()
+                    .rposition(|pattern| pattern.matcher.is_match(&relative))
+            } else {
+                patterns
+                    .iter()
+                    .position(|pattern| pattern.matcher.is_match(&relative))
+            };
+        }
+        let mut paths = CandidatePaths::default();
+        if last {
+            patterns
+                .iter()
+                .rposition(|pattern| self.matches(pattern, &path, &mut paths))
+        } else {
+            patterns
+                .iter()
+                .position(|pattern| self.matches(pattern, &path, &mut paths))
+        }
+    }
+
     pub fn includes(&self, path: &Path) -> bool {
-        self.relative_path(path)
-            .is_some_and(|p| self.include.iter().any(|m| m.is_match(&p)))
+        self.matching_index(path, &self.include, false).is_some()
     }
 
     pub fn excludes(&self, path: &Path) -> bool {
-        self.relative_path(path)
-            .is_some_and(|p| self.exclude.iter().any(|m| m.is_match(&p)))
+        self.matching_index(path, &self.exclude, false).is_some()
     }
 
     pub fn kind_for(&self, path: &Path) -> Option<&str> {
-        let path = self.relative_path(path)?;
-        self.kinds
-            .iter()
-            .zip(&self.settings.kinds)
-            .rev()
-            .find(|(m, _)| m.is_match(&path))
-            .map(|(_, entry)| entry.kind.as_str())
+        self.matching_index(path, &self.kinds, true)
+            .map(|index| self.settings.kinds[index].kind.as_str())
     }
 
     pub fn domain_for(&self, path: &Path) -> Option<&str> {
-        let path = self.relative_path(path)?;
-        self.domains
-            .iter()
-            .zip(&self.settings.domains)
-            .rev()
-            .find(|(m, _)| m.is_match(&path))
-            .map(|(_, entry)| entry.name.as_str())
+        self.matching_index(path, &self.domains, true)
+            .map(|index| self.settings.domains[index].name.as_str())
+    }
+
+    fn site_index(&self, path: &Path) -> Option<usize> {
+        self.matching_index(path, &self.sites, true)
     }
 
     pub fn site_for(&self, path: &Path) -> Option<&SiteMapping> {
-        if self.sites.is_empty() {
-            return None;
-        }
-        let path = self.relative_path(path)?;
-        self.sites
-            .iter()
-            .zip(&self.settings.sites)
-            .rev()
-            .find(|(m, _)| m.is_match(&path))
-            .map(|(_, entry)| entry)
+        self.site_index(path)
+            .map(|index| &self.settings.sites[index])
     }
 
-    /// Site directories must stay inside the workspace, where their pages can be checked.
+    /// Reject site directories outside this source's admitted project root.
+    ///
+    /// The caller derives `root` from the invocation and this configuration's
+    /// governing frames before validation; an inherited parent is ordinary
+    /// project scope here, not an exception to containment.
     fn with_sites_inside(self, root: &Path) -> Result<Self, ConfigError> {
         let label = self
             .source
             .clone()
             .unwrap_or_else(|| self.directory.join("seiso.toml"));
-        for site in &self.settings.sites {
+        for (site, pattern) in self.settings.sites.iter().zip(&self.sites) {
+            let base = &self.frames[pattern.frame].policy_base;
             for (field, value) in [
                 ("sites.root", Some(&site.root)),
                 ("sites.public", site.public.as_ref()),
             ] {
-                if let Some(value) = value
-                    && !normalize(self.directory.join(value)).starts_with(root)
-                {
-                    return Err(invalid(
-                        &label,
-                        format!(
-                            "{field} {value:?} is outside workspace {}; choose a directory inside the workspace",
-                            root.display()
-                        ),
-                    ));
+                if let Some(value) = value {
+                    let resolved = normalize(base.join(value));
+                    if !resolved.starts_with(root) {
+                        return Err(invalid(
+                            &label,
+                            format!(
+                                "{field} {value:?} is outside workspace {}; choose a directory inside the workspace",
+                                root.display()
+                            ),
+                        ));
+                    }
                 }
             }
         }
         Ok(self)
     }
 
-    /// Resolve the matching site's directories from this configuration's directory.
+    /// Resolve the matching site's directories in its declaration frame.
     pub(crate) fn site_routes(&self, path: &Path) -> Option<SiteRoutes> {
-        let site = self.site_for(path)?;
+        let index = self.site_index(path)?;
+        let site = &self.settings.sites[index];
+        let directory = &self.frames[self.sites[index].frame].policy_base;
         let mut base = site.base.clone();
         if !base.ends_with('/') {
             base.push('/');
         }
         Some(SiteRoutes {
-            root: normalize(self.directory.join(&site.root)),
+            root: normalize(directory.join(&site.root)),
             public: site
                 .public
                 .as_ref()
-                .map(|public| normalize(self.directory.join(public))),
+                .map(|public| normalize(directory.join(public))),
             base,
         })
+    }
+
+    /// Whether a resolved path is a configured pointer catalog directory.
+    pub fn is_catalog_dir(&self, path: &Path) -> bool {
+        self.catalog_dirs.iter().any(|directory| directory == path)
     }
 
     /// Apply selection and applicability before exposing accepted or opt-in rules.
@@ -422,7 +747,14 @@ impl Config {
             .as_ref()
             .unwrap_or(&self.settings.lint.select);
         let selectors: Vec<_> = select.iter().chain(&overrides.extend_select).collect();
-        let relative_path = self.relative_path(path);
+        let path = self.absolute_path(path);
+        let mut paths = CandidatePaths::default();
+        let per_file_ignores: Vec<_> = self
+            .per_file_ignores
+            .iter()
+            .filter(|(pattern, _)| self.matches(pattern, &path, &mut paths))
+            .flat_map(|(_, entries)| entries.iter())
+            .collect();
         let mut enabled: Vec<_> = rules()
             .iter()
             .filter(|rule| self.settings.preview || overrides.preview || rule.is_stable())
@@ -438,10 +770,9 @@ impl Config {
                     .max();
                 let selected = selected.is_some_and(|s| ignored.is_none_or(|i| s > i));
                 selected
-                    && !self.per_file_ignores.iter().any(|(pattern, entries)| {
-                        relative_path.as_ref().is_some_and(|p| pattern.is_match(p))
-                            && entries.iter().any(|s| specificity(s, code).is_some())
-                    })
+                    && !per_file_ignores
+                        .iter()
+                        .any(|selector| specificity(selector, code).is_some())
             })
             .collect();
         enabled.sort_unstable();
@@ -451,12 +782,66 @@ impl Config {
 
 #[derive(Clone, Debug)]
 pub struct Workspace {
+    /// Default selection and user-facing path base for this invocation.
     pub root: PathBuf,
+    /// Containment and index base admitted by governing ancestor frames.
+    pub project_root: PathBuf,
     pub config: Config,
     explicit_config: bool,
+    resolver: Arc<Mutex<ConfigResolver>>,
+}
+
+/// Invocation-scoped discovery and compiled-policy cache.
+///
+/// A selected config path uniquely determines its normal-discovery base.
+/// Shared templates are elaborated within that selected config, never cached
+/// by template path alone because the same template can have different bases.
+#[derive(Debug, Default)]
+struct ConfigResolver {
+    directories: BTreeMap<PathBuf, Option<PathBuf>>,
+    compiled: BTreeMap<PathBuf, Config>,
+}
+
+impl ConfigResolver {
+    /// Return the selected nested source, or the workspace's own configuration.
+    fn selected(&mut self, directory: &Path, root: &Path) -> Result<Option<PathBuf>, ConfigError> {
+        let mut visited = Vec::new();
+        let mut selected = None;
+        for ancestor in directory
+            .ancestors()
+            .take_while(|path| path.starts_with(root))
+        {
+            if let Some(cached) = self.directories.get(ancestor) {
+                selected = cached.clone();
+                break;
+            }
+            visited.push(ancestor.to_path_buf());
+            if let Some(path) = config_in(ancestor)? {
+                selected = Some(path);
+                break;
+            }
+            if ancestor == root {
+                break;
+            }
+        }
+        for directory in visited {
+            self.directories.insert(directory, selected.clone());
+        }
+        Ok(selected)
+    }
 }
 
 impl Workspace {
+    fn new(root: PathBuf, project_root: PathBuf, config: Config, explicit_config: bool) -> Self {
+        Self {
+            root,
+            project_root,
+            config,
+            explicit_config,
+            resolver: Arc::new(Mutex::new(ConfigResolver::default())),
+        }
+    }
+
     pub fn discover(cwd: &Path, explicit_config: Option<&Path>) -> Result<Self, ConfigError> {
         let cwd = absolute(cwd)?;
         if let Some(path) = explicit_config {
@@ -469,58 +854,69 @@ impl Workspace {
             // patterns apply from the repository root around the caller.
             let root = repository_root(&cwd);
             let config = Config::load_from(&path, &root)?.with_sites_inside(&root)?;
-            return Ok(Self {
-                root,
-                config,
-                explicit_config: true,
-            });
+            return Ok(Self::new(root.clone(), root, config, true));
         }
         for directory in cwd.ancestors() {
             if let Some(path) = config_in(directory)? {
-                let config = Config::load(&path)?.with_sites_inside(directory)?;
-                return Ok(Self {
-                    root: directory.to_path_buf(),
+                let config = Config::load(&path)?;
+                let project_root = config.project_root(directory);
+                let config = config.with_sites_inside(&project_root)?;
+                return Ok(Self::new(
+                    directory.to_path_buf(),
+                    project_root,
                     config,
-                    explicit_config: false,
-                });
+                    false,
+                ));
             }
         }
         let root = repository_root(&cwd);
         let config = Config::defaults(&root)?;
-        Ok(Self {
-            root,
-            config,
-            explicit_config: false,
-        })
+        Ok(Self::new(root.clone(), root, config, false))
     }
 
     pub fn config_for(&self, file: &Path) -> Result<Config, ConfigError> {
+        self.config_for_within(file, &self.project_root)
+    }
+
+    /// Resolve policy inside an admitted project root discovered during the
+    /// selected-file preflight, without changing the invocation's scan root.
+    pub(crate) fn config_for_within(
+        &self,
+        file: &Path,
+        project_root: &Path,
+    ) -> Result<Config, ConfigError> {
         let file = normalize(if file.is_absolute() {
             file.to_path_buf()
         } else {
             self.root.join(file)
         });
-        if !file.starts_with(&self.root) {
+        if !file.starts_with(project_root) {
             return Err(ConfigError::OutsideWorkspace {
                 path: file,
-                root: self.root.clone(),
+                root: project_root.to_path_buf(),
             });
         }
         if self.explicit_config {
             return Ok(self.config.clone());
         }
-        for directory in parent(&file)
-            .ancestors()
-            .take_while(|d| d.starts_with(&self.root))
-        {
-            if directory == self.root {
-                return Ok(self.config.clone());
-            }
-            if let Some(path) = config_in(directory)? {
-                return Config::load(&path)?.with_sites_inside(&self.root);
-            }
+        let mut resolver = self
+            .resolver
+            .lock()
+            .unwrap_or_else(|poison| poison.into_inner());
+        let Some(path) = resolver.selected(parent(&file), project_root)? else {
+            return Config::defaults(project_root);
+        };
+        if self.config.source.as_ref() == Some(&path) {
+            return Ok(self.config.clone());
         }
-        Ok(self.config.clone())
+        if let Some(config) = resolver.compiled.get(&path) {
+            return Ok(config.clone());
+        }
+        let config = Config::load(&path)?;
+        let allowed_root = config.project_root_for_source_within(&self.project_root);
+        let config = config.with_sites_inside(&allowed_root)?;
+        resolver.compiled.insert(path, config.clone());
+        Ok(config)
     }
 }
 
@@ -686,15 +1082,37 @@ fn validate_settings(settings: &Settings, path: &Path) -> Result<(), ConfigError
     Ok(())
 }
 
-fn compile_patterns(
+/// Compile effective patterns with their surviving declaration environments.
+fn compile_bound(
     patterns: &[String],
+    origins: &[FrameId],
+    frames: &[EnvironmentFrame],
     path: &Path,
     field: &str,
-) -> Result<Vec<GlobMatcher>, ConfigError> {
+) -> Result<Vec<BoundGlob>, ConfigError> {
     patterns
         .iter()
-        .map(|p| compile_pattern(p, path, field))
+        .enumerate()
+        .map(|(index, pattern)| {
+            let frame = *origins.get(index).unwrap_or(&0);
+            Ok(BoundGlob {
+                matcher: compile_pattern(
+                    pattern,
+                    frames.get(frame).map_or(path, |f| &f.source),
+                    field,
+                )?,
+                frame,
+            })
+        })
         .collect()
+}
+
+/// Frame IDs of an effective array; absent arrays inherit default settings.
+fn entry_frames(value: Option<&FramedValue>, _default: FrameId) -> Vec<FrameId> {
+    value
+        .and_then(FramedValue::array)
+        .map(|entries| entries.iter().map(|entry| entry.frame).collect())
+        .unwrap_or_default()
 }
 
 fn compile_pattern(pattern: &str, path: &Path, field: &str) -> Result<GlobMatcher, ConfigError> {
@@ -731,7 +1149,12 @@ fn config_in(directory: &Path) -> Result<Option<PathBuf>, ConfigError> {
     Ok(None)
 }
 
-fn load_extended(path: &Path, stack: &mut Vec<PathBuf>) -> Result<toml::Value, ConfigError> {
+fn load_extended(
+    path: &Path,
+    frame: FrameId,
+    frames: &mut Vec<EnvironmentFrame>,
+    stack: &mut Vec<PathBuf>,
+) -> Result<FramedValue, ConfigError> {
     if stack.len() >= 128 {
         return Err(invalid(
             path,
@@ -752,18 +1175,36 @@ fn load_extended(path: &Path, stack: &mut Vec<PathBuf>) -> Result<toml::Value, C
         return Err(ConfigError::Cycle(chain));
     }
     stack.push(identity);
-    let mut value = read_document(path)?
-        .ok_or_else(|| invalid(path, "pyproject.toml has no [tool.seiso] table"))?;
-    let extension = value
-        .as_table_mut()
-        .and_then(|table| table.remove("extend"));
+    let mut value = FramedValue::bind(
+        read_document(path)?
+            .ok_or_else(|| invalid(path, "pyproject.toml has no [tool.seiso] table"))?,
+        frame,
+    );
+    let extension = value.remove("extend");
     if let Some(extension) = extension {
         let extension = extension
-            .as_str()
+            .string()
             .filter(|s| !s.is_empty())
             .ok_or_else(|| invalid(path, "extend must be a non-empty configuration file path"))?;
         let inherited_path = normalize(parent(path).join(extension));
-        let mut base = load_extended(&inherited_path, stack)?;
+        let relation = if governing_ancestor(path, &inherited_path)? {
+            FrameRelation::GoverningAncestor
+        } else {
+            FrameRelation::SharedTemplate
+        };
+        let policy_base = if relation == FrameRelation::GoverningAncestor {
+            parent(&inherited_path).to_path_buf()
+        } else {
+            frames[frame].policy_base.clone()
+        };
+        let next_frame = frames.len();
+        frames.push(EnvironmentFrame {
+            source: inherited_path.clone(),
+            policy_base,
+            extender: Some(frame),
+            relation,
+        });
+        let mut base = load_extended(&inherited_path, next_frame, frames, stack)?;
         overlay(&mut base, value);
         value = base;
     }
@@ -771,44 +1212,62 @@ fn load_extended(path: &Path, stack: &mut Vec<PathBuf>) -> Result<toml::Value, C
     Ok(value)
 }
 
-fn overlay(base: &mut toml::Value, local: toml::Value) {
-    match (base, local) {
-        (toml::Value::Table(base), toml::Value::Table(local)) => {
-            for (key, value) in local {
-                match (base.get_mut(&key), value) {
-                    (Some(existing), toml::Value::Array(mut additions))
-                        if matches!(
-                            key.as_str(),
-                            "extend-select" | "extend-ignore" | "extend-exclude"
-                        ) =>
-                    {
-                        if let toml::Value::Array(inherited) = existing {
-                            inherited.append(&mut additions);
-                        }
-                    }
-                    (Some(existing), value) => overlay(existing, value),
-                    (None, value) => {
-                        base.insert(key, value);
-                    }
-                }
+/// A governing edge is selected by ordinary discovery in a proper ancestor.
+fn governing_ancestor(path: &Path, inherited: &Path) -> Result<bool, ConfigError> {
+    let source_dir = parent(path);
+    let target_dir = parent(inherited);
+    if target_dir == source_dir || !source_dir.starts_with(target_dir) {
+        return Ok(false);
+    }
+    let name = inherited.file_name().and_then(|name| name.to_str());
+    let named = |expected: &str| {
+        name.is_some_and(|name| {
+            if cfg!(windows) {
+                name.eq_ignore_ascii_case(expected)
+            } else {
+                name == expected
             }
-        }
-        (base, local) => *base = local,
+        })
+    };
+    if named(".seiso.toml") {
+        return Ok(true);
+    }
+    if named("seiso.toml") {
+        return Ok(!candidate_exists(&target_dir.join(".seiso.toml"))?);
+    }
+    if named("pyproject.toml") {
+        return Ok(!candidate_exists(&target_dir.join(".seiso.toml"))?
+            && !candidate_exists(&target_dir.join("seiso.toml"))?);
+    }
+    Ok(false)
+}
+
+/// Probe only higher-precedence candidates; the target itself is read next.
+fn candidate_exists(path: &Path) -> Result<bool, ConfigError> {
+    match fs::metadata(path) {
+        Ok(metadata) if metadata.is_file() => Ok(true),
+        Ok(_) => Err(invalid(
+            path,
+            "expected a configuration file, found a directory",
+        )),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(false),
+        Err(source) => Err(ConfigError::Read {
+            path: path.to_path_buf(),
+            source,
+        }),
     }
 }
 
-fn take_extension_list(
-    value: &mut toml::Value,
+/// Consume an additive string list without discarding its per-entry frames.
+fn take_string_extension_list(
+    value: &mut FramedValue,
     field: &str,
     path: &Path,
-) -> Result<Vec<String>, ConfigError> {
-    let Some(table) = value.as_table_mut() else {
+) -> Result<Vec<(String, FrameId)>, ConfigError> {
+    let Some(value) = value.remove(field) else {
         return Ok(Vec::new());
     };
-    let Some(value) = table.remove(field) else {
-        return Ok(Vec::new());
-    };
-    let toml::Value::Array(entries) = value else {
+    let FramedKind::Array(entries) = value.kind else {
         return Err(invalid(
             path,
             format!("{field} must be an array of strings"),
@@ -818,9 +1277,37 @@ fn take_extension_list(
         .into_iter()
         .map(|entry| {
             entry
-                .as_str()
-                .map(str::to_owned)
+                .string()
+                .map(|string| (string.to_owned(), entry.frame))
                 .ok_or_else(|| invalid(path, format!("{field} must contain only strings")))
+        })
+        .collect()
+}
+
+/// Consume additive mapping entries, decoding only the surviving effective list.
+fn take_mapping_extension_list<T: serde::de::DeserializeOwned>(
+    value: &mut FramedValue,
+    field: &str,
+    path: &Path,
+) -> Result<Vec<(T, FrameId)>, ConfigError> {
+    let Some(value) = value.remove(field) else {
+        return Ok(Vec::new());
+    };
+    let FramedKind::Array(entries) = value.kind else {
+        return Err(invalid(
+            path,
+            format!("{field} must be an array of mappings"),
+        ));
+    };
+    entries
+        .into_iter()
+        .map(|entry| {
+            let frame = entry.frame;
+            let mapping = entry
+                .into_toml()
+                .try_into()
+                .map_err(|error| invalid(path, format!("invalid {field} entry: {error}")))?;
+            Ok((mapping, frame))
         })
         .collect()
 }
@@ -854,6 +1341,30 @@ fn invalid(path: &Path, message: impl std::fmt::Display) -> ConfigError {
 
 fn parent(path: &Path) -> &Path {
     path.parent().unwrap_or(path)
+}
+
+/// Render a frame path without embedding machine-specific workspace prefixes.
+fn relative_label(root: &Path, path: &Path) -> String {
+    for ancestor in root.ancestors() {
+        if let Ok(suffix) = path.strip_prefix(ancestor) {
+            let mut relative = PathBuf::new();
+            for _ in root
+                .strip_prefix(ancestor)
+                .into_iter()
+                .flat_map(Path::components)
+            {
+                relative.push("..");
+            }
+            relative.push(suffix);
+            let text = relative.to_string_lossy().replace('\\', "/");
+            return if text.is_empty() {
+                ".".to_owned()
+            } else {
+                text
+            };
+        }
+    }
+    path.to_string_lossy().replace('\\', "/")
 }
 
 fn absolute(path: &Path) -> Result<PathBuf, ConfigError> {

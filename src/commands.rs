@@ -7,7 +7,7 @@ use std::path::{Path, PathBuf};
 
 use clap::{Args, Subcommand, ValueEnum};
 use seiso::analysis::{self, Analysis};
-use seiso::config::{CliOverrides, Settings, Workspace};
+use seiso::config::{CliOverrides, EnvironmentReport, Settings, Workspace};
 use seiso::diagnostics::{render_concise, render_github, render_json, render_sarif, render_text};
 use seiso::workspace::{
     self, FilePolicy, InputError, LoadOptions, LoadScope, Snapshot, is_markdown,
@@ -119,48 +119,69 @@ pub enum HookCommand {
 }
 
 #[derive(Serialize)]
-struct PolicyReport<'a> {
-    configurations: &'a BTreeMap<String, Settings>,
-    files: Vec<&'a FilePolicy>,
-    errors: &'a [InputError],
+struct PolicyReport {
+    configurations: BTreeMap<String, Settings>,
+    /// Environment frames and aligned bindings for every effective configuration.
+    environments: BTreeMap<String, EnvironmentReport>,
+    files: Vec<FilePolicy>,
+    errors: Vec<InputError>,
 }
 
 type Evaluation = Analysis;
 
 fn render(evaluation: &Evaluation, format: CheckFormat) -> Result<String, String> {
+    let diagnostics = displayed_diagnostics(evaluation);
     match format {
         CheckFormat::Text => {
-            let filenames: BTreeSet<_> = evaluation
+            let sources = evaluation
                 .diagnostics
                 .iter()
-                .map(|diagnostic| diagnostic.filename.as_str())
-                .collect();
-            let sources = filenames
-                .into_iter()
-                .filter_map(|filename| {
+                .filter_map(|diagnostic| {
                     evaluation
                         .snapshot
                         .index
-                        .file(filename)
-                        .map(|file| (file.filename.clone(), file.document.source.clone()))
+                        .file(&diagnostic.filename)
+                        .map(|file| {
+                            (
+                                evaluation.snapshot.display_name(&file.filename),
+                                file.document.source.clone(),
+                            )
+                        })
                 })
                 .collect();
-            Ok(render_text(&evaluation.diagnostics, &sources))
+            Ok(render_text(&diagnostics, &sources))
         }
-        CheckFormat::Concise => Ok(render_concise(&evaluation.diagnostics)),
-        CheckFormat::Json => {
-            render_json(&evaluation.diagnostics).map_err(|error| error.to_string())
-        }
-        CheckFormat::Sarif => {
-            render_sarif(&evaluation.diagnostics).map_err(|error| error.to_string())
-        }
-        CheckFormat::Github => Ok(render_github(&evaluation.diagnostics)),
+        CheckFormat::Concise => Ok(render_concise(&diagnostics)),
+        CheckFormat::Json => render_json(&diagnostics).map_err(|error| error.to_string()),
+        CheckFormat::Sarif => render_sarif(&diagnostics).map_err(|error| error.to_string()),
+        CheckFormat::Github => Ok(render_github(&diagnostics)),
     }
+}
+
+/// Project filenames only in output copies; analysis and fixes keep project IDs.
+fn displayed_diagnostics(evaluation: &Evaluation) -> Vec<seiso::diagnostics::Diagnostic> {
+    evaluation
+        .diagnostics
+        .iter()
+        .cloned()
+        .map(|mut diagnostic| {
+            diagnostic.filename = evaluation.snapshot.display_name(&diagnostic.filename);
+            for related in &mut diagnostic.related {
+                related.filename = evaluation.snapshot.display_name(&related.filename);
+            }
+            diagnostic
+        })
+        .collect()
 }
 
 fn print_errors(snapshot: &Snapshot, github: bool) {
     for error in &snapshot.errors {
-        let message = format!("{}: {}", error.filename, error.message);
+        let filename = if error.filename == "." {
+            ".".to_owned()
+        } else {
+            snapshot.display_name(&error.filename)
+        };
+        let message = format!("{}: {}", filename, error.message);
         if github {
             print_github_log(&message);
         } else {
@@ -275,6 +296,8 @@ pub fn policy(args: PolicyArgs) -> Result<u8, String> {
         config: args.config,
         overrides: args.selection.overrides(),
         no_cache: true,
+        explain_environment: true,
+        project_dependencies: args.evaluate,
         ..LoadOptions::default()
     };
     let mut snapshot = workspace::load(&current_dir()?, &options, LoadScope::Workspace)?;
@@ -283,10 +306,49 @@ pub fn policy(args: PolicyArgs) -> Result<u8, String> {
     } else {
         analysis::inspect_policy(&mut snapshot);
     }
+    let files: Vec<FilePolicy> = snapshot
+        .policies
+        .values()
+        .filter(|file| {
+            snapshot
+                .index
+                .root
+                .join(&file.filename)
+                .starts_with(&snapshot.selection_root)
+        })
+        .cloned()
+        .map(|mut file| {
+            file.filename = snapshot.display_name(&file.filename);
+            file
+        })
+        .collect();
+    let mut labels = BTreeSet::from([snapshot.invocation_configuration.clone()]);
+    labels.extend(files.iter().map(|file| file.configuration.clone()));
     let report = PolicyReport {
-        configurations: &snapshot.configurations,
-        files: snapshot.policies.values().collect(),
-        errors: &snapshot.errors,
+        configurations: snapshot
+            .configurations
+            .iter()
+            .filter(|(name, _)| labels.contains(*name))
+            .map(|(name, settings)| (name.clone(), settings.clone()))
+            .collect(),
+        environments: snapshot
+            .environments
+            .iter()
+            .filter(|(name, _)| labels.contains(*name))
+            .map(|(name, environment)| (name.clone(), environment.clone()))
+            .collect(),
+        files,
+        errors: snapshot
+            .errors
+            .iter()
+            .cloned()
+            .map(|mut error| {
+                if error.filename != "." {
+                    error.filename = snapshot.display_name(&error.filename);
+                }
+                error
+            })
+            .collect(),
     };
     write_stdout(
         &(serde_json::to_string_pretty(&report).map_err(|error| error.to_string())? + "\n"),
@@ -299,10 +361,46 @@ pub fn index(args: IndexArgs) -> Result<u8, String> {
     let options = LoadOptions {
         config: args.config,
         no_cache: args.no_cache,
+        project_dependencies: true,
         ..LoadOptions::default()
     };
     let snapshot = workspace::load(&current_dir()?, &options, LoadScope::Workspace)?;
-    let result = serde_json::json!({"index":snapshot.index.dump(),"errors":snapshot.errors});
+    let mut index = snapshot.index.dump();
+    if let Some(files) = index["files"].as_array_mut() {
+        files.retain(|file| {
+            file["filename"].as_str().is_some_and(|name| {
+                snapshot
+                    .index
+                    .root
+                    .join(name)
+                    .starts_with(&snapshot.selection_root)
+            })
+        });
+        for file in files {
+            if let Some(filename) = file["filename"].as_str() {
+                file["filename"] = snapshot.display_name(filename).into();
+            }
+            if let Some(links) = file["links"].as_array_mut() {
+                for link in links {
+                    if let Some(target) = link["resolution"]["target"].as_str() {
+                        link["resolution"]["target"] = snapshot.display_name(target).into();
+                    }
+                }
+            }
+        }
+    }
+    let errors: Vec<_> = snapshot
+        .errors
+        .iter()
+        .cloned()
+        .map(|mut error| {
+            if error.filename != "." {
+                error.filename = snapshot.display_name(&error.filename);
+            }
+            error
+        })
+        .collect();
+    let result = serde_json::json!({"index":index,"errors":errors});
     write_stdout(
         &(serde_json::to_string_pretty(&result).map_err(|error| error.to_string())? + "\n"),
     )?;
@@ -329,7 +427,7 @@ fn statistics(evaluation: &Evaluation) -> serde_json::Value {
         .flat_map(|file| {
             file.suppressions
                 .iter()
-                .map(|record| serde_json::json!({"filename":file.filename,"declaration":record}))
+                .map(|record| serde_json::json!({"filename":evaluation.snapshot.display_name(&file.filename),"declaration":record}))
         })
         .collect();
     serde_json::json!({"rules":counts,"suppressions":suppressions})
@@ -347,7 +445,7 @@ fn statistics_text(evaluation: &Evaluation) -> String {
             let reason = record.reason.replace(['\r', '\n'], " ");
             text.push_str(&format!(
                 "  {}: {} -- {} ({})\n",
-                file.filename,
+                evaluation.snapshot.display_name(&file.filename),
                 serde_json::json!(record.codes),
                 reason,
                 serde_json::json!(record.states)
@@ -377,7 +475,7 @@ fn render_evaluation(
         return render(evaluation, format);
     }
     match format {
-        CheckFormat::Json => serde_json::to_string_pretty(&serde_json::json!({"diagnostics":evaluation.diagnostics,"statistics":statistics(evaluation)}))
+        CheckFormat::Json => serde_json::to_string_pretty(&serde_json::json!({"diagnostics":displayed_diagnostics(evaluation),"statistics":statistics(evaluation)}))
             .map(|text|text+"\n").map_err(|error|error.to_string()),
         CheckFormat::Sarif => {
             let mut sarif: serde_json::Value = serde_json::from_str(&render(evaluation, format)?).map_err(|error|error.to_string())?;
@@ -455,6 +553,8 @@ fn evaluate(
         overrides: args.selection.overrides(),
         stdin: args.stdin_filename.clone().zip(replacement),
         no_cache: args.no_cache,
+        explain_environment: false,
+        project_dependencies: false,
     };
     let snapshot = workspace::load(cwd, &options, LoadScope::Check)?;
     analysis::check(snapshot, &options.overrides)
@@ -507,8 +607,12 @@ fn render_rule(rule: &seiso::rules::Rule) -> String {
     output.trim_end().to_owned()
 }
 
-pub fn init() -> Result<u8, String> {
+/// Initialize a root policy, or a child overlay bound to its governing ancestor.
+pub fn init(extend: bool) -> Result<u8, String> {
     let cwd = current_dir()?;
+    if extend {
+        return init_extended(&cwd);
+    }
     let workspace = Workspace::discover(&cwd, None).map_err(|error| error.to_string())?;
     if let Some(path) = workspace.config.source {
         return Err(format!(
@@ -608,30 +712,7 @@ pub fn init() -> Result<u8, String> {
         }
     }
     let path = root.join("seiso.toml");
-    let builder = tempfile::Builder::new();
-    #[cfg(unix)]
-    let builder = {
-        let mut builder = builder;
-        builder.permissions(std::fs::Permissions::from_mode(0o666));
-        builder
-    };
-    let mut temporary = builder.tempfile_in(&root).map_err(|error| {
-        format!(
-            "Cannot create {}: {error}; preserve or edit the existing configuration.",
-            path.display()
-        )
-    })?;
-    temporary
-        .write_all(contents.as_bytes())
-        .and_then(|()| temporary.flush())
-        .map_err(|error| format!("Cannot write {}: {error}", path.display()))?;
-    temporary.persist_noclobber(&path).map_err(|error| {
-        format!(
-            "Cannot create {}: {}; preserve or edit the existing configuration.",
-            path.display(),
-            error.error
-        )
-    })?;
+    write_config(&root, &path, &contents)?;
     let created = if root == seiso::paths::normalize(&cwd) {
         "seiso.toml".to_owned()
     } else {
@@ -645,6 +726,165 @@ pub fn init() -> Result<u8, String> {
     write_stdout(&format!(
         "Created {created}. Review the suggested {suggestions}, then run `seiso check`.\n"
     ))?;
+    Ok(0)
+}
+
+/// Create a configuration atomically without replacing any concurrent writer.
+fn write_config(directory: &Path, path: &Path, contents: &str) -> Result<(), String> {
+    let builder = tempfile::Builder::new();
+    #[cfg(unix)]
+    let builder = {
+        let mut builder = builder;
+        builder.permissions(std::fs::Permissions::from_mode(0o666));
+        builder
+    };
+    let mut temporary = builder.tempfile_in(directory).map_err(|error| {
+        format!(
+            "Cannot create {}: {error}; preserve or edit the existing configuration.",
+            path.display()
+        )
+    })?;
+    temporary
+        .write_all(contents.as_bytes())
+        .and_then(|()| temporary.flush())
+        .map_err(|error| format!("Cannot write {}: {error}", path.display()))?;
+    temporary.persist_noclobber(path).map_err(|error| {
+        format!(
+            "Cannot create {}: {}; preserve or edit the existing configuration.",
+            path.display(),
+            error.error
+        )
+    })?;
+    Ok(())
+}
+
+/// Bind a child overlay to the nearest configuration that actually governs it.
+/// The parent path is lexical because `extend` is resolved from this new file.
+fn init_extended(cwd: &Path) -> Result<u8, String> {
+    let directory = seiso::paths::normalize(cwd);
+    let workspace = Workspace::discover(&directory, None).map_err(|error| error.to_string())?;
+    let parent = workspace.config.source.ok_or_else(|| {
+        "No governing ancestor configuration exists; run `seiso init` first.".to_owned()
+    })?;
+    let parent_dir = parent
+        .parent()
+        .ok_or("The governing configuration has no parent directory.")?;
+    if parent_dir == directory {
+        return Err(format!(
+            "Configuration already exists at {}; edit that file instead.",
+            parent.display()
+        ));
+    }
+    let below_parent = directory.strip_prefix(parent_dir).map_err(|_| {
+        format!(
+            "Governing configuration {} is not an ancestor.",
+            parent.display()
+        )
+    })?;
+    let mut relative = PathBuf::new();
+    for _ in below_parent.components() {
+        relative.push("..");
+    }
+    relative.push(
+        parent
+            .file_name()
+            .ok_or("The governing configuration has no filename.")?,
+    );
+    let quote = |value: &str| toml::Value::String(value.to_owned()).to_string();
+    let mut contents = format!(
+        "# Inherit the nearest governing configuration; review these local additions.\nextend = {}\n",
+        quote(&relative.to_string_lossy().replace('\\', "/"))
+    );
+    let excludes: Vec<String> = [
+        ".github/ISSUE_TEMPLATE",
+        ".github/DISCUSSION_TEMPLATE",
+        ".github/PULL_REQUEST_TEMPLATE",
+        "node_modules",
+        "vendor",
+        "third_party",
+    ]
+    .into_iter()
+    .filter(|name| directory.join(name).is_dir())
+    .map(|name| format!("{name}/**"))
+    .chain(community_files(&directory, "PULL_REQUEST_TEMPLATE.md"))
+    .chain(community_files(&directory, "CODE_OF_CONDUCT.md"))
+    .collect();
+    if !excludes.is_empty() {
+        contents.push_str("\n# Local templates and adopted texts are not project documentation.\nextend-exclude = [\n");
+        for pattern in &excludes {
+            contents.push_str(&format!("  {},\n", quote(pattern)));
+        }
+        contents.push_str("]\n");
+    }
+    let mut kinds: Vec<(String, &str)> = [
+        (
+            "**/README.md",
+            "readme",
+            directory.join("README.md").is_file(),
+        ),
+        (
+            "**/CHANGELOG.md",
+            "changelog",
+            directory.join("CHANGELOG.md").is_file(),
+        ),
+        ("guides/**", "howto", directory.join("guides").is_dir()),
+        ("howto/**", "howto", directory.join("howto").is_dir()),
+        (
+            "reference/**",
+            "reference",
+            directory.join("reference").is_dir(),
+        ),
+        (
+            "runbooks/**",
+            "runbook",
+            directory.join("runbooks").is_dir(),
+        ),
+        ("adr/**", "adr", directory.join("adr").is_dir()),
+        ("plans/**", "plan", directory.join("plans").is_dir()),
+    ]
+    .into_iter()
+    .filter(|(_, _, exists)| *exists)
+    .map(|(path, kind, _)| (path.to_owned(), kind))
+    .collect();
+    for name in ["CONTRIBUTING.md", "SECURITY.md", "SUPPORT.md"] {
+        kinds.extend(
+            community_files(&directory, name)
+                .into_iter()
+                .map(|path| (path, "howto")),
+        );
+    }
+    for (path, kind) in &kinds {
+        contents.push_str(&format!(
+            "\n[[extend-kinds]]\npath = {}\nkind = \"{kind}\"\n",
+            quote(path)
+        ));
+    }
+    let sites = site_suggestions(&directory);
+    if !sites.is_empty() {
+        contents
+            .push_str("\n# Local site generators resolve links as routes; review these entries.\n");
+    }
+    for site in &sites {
+        let path = if site.root == "." {
+            "**".to_owned()
+        } else {
+            format!("{}/**", site.root)
+        };
+        contents.push_str(&format!(
+            "\n[[extend-sites]] # {}\npath = {}\nroot = {}\n",
+            site.found,
+            quote(&path),
+            quote(&site.root)
+        ));
+        if let Some(public) = &site.public {
+            contents.push_str(&format!("public = {}\n", quote(public)));
+        }
+    }
+    let path = directory.join("seiso.toml");
+    write_config(&directory, &path, &contents)?;
+    write_stdout(
+        "Created seiso.toml extending the governing configuration. Review the local suggestions, then run `seiso check`.\n",
+    )?;
     Ok(0)
 }
 

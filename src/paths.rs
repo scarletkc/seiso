@@ -83,7 +83,20 @@ pub(crate) fn local_link(
     destination: &str,
     site: Option<&SiteRoutes>,
 ) -> Result<LocalLink, LinkPathError> {
-    let locations = local_link_targets(root, source, destination, site)?;
+    local_link_scoped(root, root, source, destination, site)
+}
+
+/// Resolve a link within `project_root`, interpreting a written leading `/`
+/// relative to `written_root`. Site routes retain their own absolute bases.
+pub(crate) fn local_link_scoped(
+    project_root: &Path,
+    written_root: &Path,
+    source: &Path,
+    destination: &str,
+    site: Option<&SiteRoutes>,
+) -> Result<LocalLink, LinkPathError> {
+    let locations =
+        local_link_targets_scoped(project_root, written_root, source, destination, site)?;
     if percent_decode(destination).is_some_and(|value| is_template(&value)) {
         return Err(LinkPathError::Template);
     }
@@ -114,6 +127,18 @@ pub(crate) fn local_link_targets(
     destination: &str,
     site: Option<&SiteRoutes>,
 ) -> Result<Vec<LocalTarget>, LinkPathError> {
+    local_link_targets_scoped(root, root, source, destination, site)
+}
+
+/// Produce project-relative candidates without reinterpreting source-relative
+/// or site-routed targets when the written `/` base is a selected subtree.
+pub(crate) fn local_link_targets_scoped(
+    project_root: &Path,
+    written_root: &Path,
+    source: &Path,
+    destination: &str,
+    site: Option<&SiteRoutes>,
+) -> Result<Vec<LocalTarget>, LinkPathError> {
     if destination.starts_with("//") || has_scheme(destination) {
         return Err(LinkPathError::External);
     }
@@ -129,16 +154,16 @@ pub(crate) fn local_link_targets(
     let source = if source.is_absolute() {
         source.to_path_buf()
     } else {
-        root.join(source)
+        project_root.join(source)
     };
     let physical = normalize(if path.is_empty() {
         source
     } else if path.starts_with('/') {
-        root.join(path.trim_start_matches('/'))
+        written_root.join(path.trim_start_matches('/'))
     } else {
-        source.parent().unwrap_or(root).join(&path)
+        source.parent().unwrap_or(project_root).join(&path)
     });
-    let root = normalize(root);
+    let root = normalize(project_root);
     let relative = |candidate: &Path| {
         candidate
             .strip_prefix(&root)

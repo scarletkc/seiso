@@ -5,7 +5,6 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::diagnostics::{Diagnostic, RelatedLocation, Span, sorted_diagnostics};
 use crate::index::{IndexedFile, LinkStatus, WorkspaceIndex};
 use crate::md::{BlockKind, Document, FragmentKind, Language};
-use crate::paths::normalize;
 
 const DUPLICATION_RULES: [&str; 5] = ["DUP001", "DUP002", "DUP003", "OWN001", "OWN002"];
 
@@ -127,16 +126,7 @@ fn check_links(index: &WorkspaceIndex, file: &IndexedFile, report: &mut CrossRep
                     continue;
                 };
                 let path = index.root.join(target);
-                let allowed = file
-                    .config
-                    .settings
-                    .lint
-                    .ptr
-                    .catalog_dirs
-                    .iter()
-                    .any(|catalog| {
-                        normalize(file.config.directory.join(catalog.trim_end_matches('/'))) == path
-                    });
+                let allowed = file.config.is_catalog_dir(&path);
                 if !allowed {
                     let mut diagnostic = Diagnostic::new(
                         &file.filename,
@@ -421,6 +411,16 @@ fn similarity_edges(
     heads_only: bool,
     plan_only: bool,
 ) -> Edges {
+    // The index stores the union needed by all selected sources. A pair is
+    // evidence for one source only if that source's own frames admit its peer.
+    let allowed_roots: Vec<_> = index
+        .files()
+        .iter()
+        .map(|file| {
+            file.config
+                .project_root_for_source_within(index.invocation_project_root())
+        })
+        .collect();
     let mut postings: BTreeMap<(&str, u8, &str), Vec<usize>> = BTreeMap::new();
     let mut frequencies: BTreeMap<(&str, u8, &str), usize> = BTreeMap::new();
     let mut minimum_threshold: BTreeMap<(&str, u8), f64> = BTreeMap::new();
@@ -507,6 +507,13 @@ fn similarity_edges(
             for (source, target, source_file) in
                 [(current, previous, file), (previous, current, other_file)]
             {
+                let target_file = &index.files()[units[target].file];
+                if !target_file
+                    .path
+                    .starts_with(&allowed_roots[units[source].file])
+                {
+                    continue;
+                }
                 let settings = &source_file.config.settings.lint.dup;
                 let qualifies = if unit.paragraph {
                     // Different shingle sizes do not describe the same comparison measure.
@@ -537,6 +544,14 @@ fn similarity_edges(
 
 fn restatement_edges(index: &WorkspaceIndex, units: &[Unit], report: &mut CrossReport) -> Edges {
     let mut edges = Edges::new();
+    let allowed_roots: Vec<_> = index
+        .files()
+        .iter()
+        .map(|file| {
+            file.config
+                .project_root_for_source_within(index.invocation_project_root())
+        })
+        .collect();
     for (source_index, unit) in units.iter().enumerate() {
         if unit.whole_document {
             continue;
@@ -617,7 +632,9 @@ fn restatement_edges(index: &WorkspaceIndex, units: &[Unit], report: &mut CrossR
             && ratio >= file.config.settings.lint.dup.min_jaccard
         {
             edges.entry(source_index).or_default().insert(target_index);
-            edges.entry(target_index).or_default().insert(source_index);
+            if file.path.starts_with(&allowed_roots[target_unit.file]) {
+                edges.entry(target_index).or_default().insert(source_index);
+            }
         }
     }
     edges

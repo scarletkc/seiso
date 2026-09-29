@@ -1,9 +1,10 @@
+use std::borrow::Cow;
 use std::path::Path;
 
 use crate::diagnostics::Diagnostic;
 use crate::paths::{
-    LinkPathError, Listings, TargetStatus, local_link_targets, local_target_status, normalize,
-    select_target,
+    LinkPathError, Listings, TargetStatus, local_link_targets_scoped, local_target_status,
+    normalize, select_target,
 };
 
 use crate::rules::CheckContext;
@@ -26,6 +27,18 @@ pub enum PathStatus {
 }
 
 pub trait WorkspaceFiles {
+    /// Scope established by the invocation before independent source policies
+    /// widen the shared index. Legacy single-root clients inherit their root.
+    fn invocation_root<'a>(&'a self, workspace_root: &'a Path) -> &'a Path {
+        workspace_root
+    }
+
+    /// Base of a Markdown leading-`/` link written by `source_path`. The
+    /// default retains the historical one-root interpretation for clients.
+    fn written_root<'a>(&'a self, workspace_root: &'a Path, _source_path: &Path) -> Cow<'a, Path> {
+        Cow::Borrowed(workspace_root)
+    }
+
     fn status(&self, workspace_root: &Path, target: &Path) -> PathStatus;
 }
 
@@ -69,11 +82,16 @@ pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> L
     let mut result = LinkResult::default();
     let site = context.config.site_routes(context.path);
     let root = normalize(context.workspace_root);
+    let allowed_root = context
+        .config
+        .project_root_for_source_within(files.invocation_root(context.workspace_root));
+    let written_root = files.written_root(context.workspace_root, context.path);
     let current = normalize(context.path);
     for link in &context.document.links {
         let destination = link.destination.as_str();
-        let targets = match local_link_targets(
+        let targets = match local_link_targets_scoped(
             context.workspace_root,
+            written_root.as_ref(),
             context.path,
             destination,
             site.as_ref(),
@@ -86,11 +104,14 @@ pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> L
             }
         };
         let (_, status) = select_target(&root, &targets, |target| {
+            if !target.path.starts_with(&allowed_root) {
+                return TargetStatus::OutsideWorkspace;
+            }
             // The current document can be a new stdin overlay with no disk entry.
             if target.path == current {
                 TargetStatus::File
             } else {
-                files.status(context.workspace_root, &target.path).into()
+                files.status(&allowed_root, &target.path).into()
             }
         });
         match status {

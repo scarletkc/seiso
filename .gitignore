@@ -1,4 +1,7 @@
 /target/
+# Project-local experiments and build caches.
+/.temp/
+/.cache/
 **/*.snap.new
 /.seiso_cache/
 /dist/

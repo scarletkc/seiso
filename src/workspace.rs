@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use crate::cache::ParseCache;
-use crate::config::{CliOverrides, Config, Settings, SiteMapping, Workspace};
+use crate::config::{CliOverrides, Config, EnvironmentReport, Settings, SiteMapping, Workspace};
 use crate::index::{IndexedFile, WorkspaceIndex};
 use crate::md::Document;
 use crate::paths::normalize;
@@ -26,6 +26,10 @@ pub struct LoadOptions {
     pub overrides: CliOverrides,
     pub stdin: Option<(PathBuf, String)>,
     pub no_cache: bool,
+    /// Build serializable frame provenance only for consumers that display it.
+    pub explain_environment: bool,
+    /// Load project-wide dependencies even when the selected policy needs none.
+    pub project_dependencies: bool,
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -38,7 +42,7 @@ pub enum LoadScope {
     Workspace,
 }
 
-#[derive(Serialize)]
+#[derive(Clone, Serialize)]
 pub struct FilePolicy {
     pub filename: String,
     pub configuration: String,
@@ -53,9 +57,15 @@ pub struct FilePolicy {
 
 pub struct Snapshot {
     pub index: WorkspaceIndex,
+    /// Root that defines user-facing selected paths, distinct from index.root.
+    pub selection_root: PathBuf,
+    /// The invoking directory's policy, retained even when no file is selected.
+    pub invocation_configuration: String,
     pub selected: BTreeSet<String>,
     pub requested: BTreeSet<PathBuf>,
     pub configurations: BTreeMap<String, Settings>,
+    /// Pattern provenance keyed identically to `configurations`.
+    pub environments: BTreeMap<String, EnvironmentReport>,
     pub policies: BTreeMap<String, FilePolicy>,
     pub errors: Vec<InputError>,
     /// Requested paths, or the whole workspace, that selected no document to check.
@@ -63,6 +73,10 @@ pub struct Snapshot {
 }
 
 impl Snapshot {
+    /// Render an internal project-relative file ID from the selection root.
+    pub fn display_name(&self, filename: &str) -> String {
+        display_name(&self.selection_root, &self.index.root, filename)
+    }
     pub fn enabled_count(&self) -> usize {
         self.index
             .files()
@@ -134,55 +148,14 @@ fn load_documents(
     })
 }
 
-/// Resolve file policies before deciding which sources a check needs to read.
-pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snapshot, String> {
-    options
-        .overrides
-        .validate()
-        .map_err(|error| error.to_string())?;
-    let workspace =
-        Workspace::discover(cwd, options.config.as_deref()).map_err(|error| error.to_string())?;
-    let root = normalize(&workspace.root);
-    let mut errors = Vec::new();
-    let mut requested = BTreeSet::new();
-    let mut inputs = BTreeMap::new();
-    let overlay = if let Some((path, source)) = &options.stdin {
-        let path = workspace_path(&root, &absolute(cwd, path))?;
-        if !is_markdown(&path) {
-            return Err("The stdin filename must have a .md or .markdown extension.".into());
-        }
-        if ignored_by_git(&root, &path, false)? {
-            return Err(format!(
-                "{} is excluded by .gitignore; choose an included Markdown path.",
-                relative(&root, &path)
-            ));
-        }
-        requested.insert(path.clone());
-        Some((path, source.clone()))
-    } else {
-        for path in &options.paths {
-            let path = workspace_path(&root, &absolute(cwd, path))?;
-            match path.try_exists() {
-                Ok(true) => {
-                    requested.insert(path);
-                }
-                Ok(false) => errors.push(InputError {
-                    filename: relative(&root, &path),
-                    message: "Path does not exist; provide an existing file or directory.".into(),
-                }),
-                Err(error) => errors.push(InputError {
-                    filename: relative(&root, &path),
-                    message: format!("Cannot access this path: {error}"),
-                }),
-            }
-        }
-        None
-    };
-    let all_selected = options.paths.is_empty() && options.stdin.is_none();
-    let selected_path =
-        |path: &Path| all_selected || requested.iter().any(|selected| path.starts_with(selected));
-    let mut discovery_errors = Vec::new();
-    let walker = ignore::WalkBuilder::new(&root)
+/// Discover Markdown under one root without following symlinks or cache files.
+fn walk_markdown(
+    root: &Path,
+    inputs: &mut BTreeMap<PathBuf, Option<String>>,
+    errors: &mut Vec<(Option<PathBuf>, InputError)>,
+    project_root: &Path,
+) {
+    let walker = ignore::WalkBuilder::new(root)
         .hidden(false)
         .follow_links(false)
         .git_ignore(true)
@@ -198,19 +171,19 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
             Ok(entry) => {
                 let path = normalize(entry.path());
                 if let Some(error) = entry.error() {
-                    discovery_errors.push((
+                    errors.push((
                         Some(path.clone()),
                         InputError {
-                            filename: relative(&root, &path),
+                            filename: relative(project_root, &path),
                             message: format!("Cannot fully apply ignore rules: {error}"),
                         },
                     ));
                 }
                 if entry.file_type().is_some_and(|kind| kind.is_file()) && is_markdown(&path) {
-                    inputs.insert(path, None);
+                    inputs.entry(path).or_insert(None);
                 }
             }
-            Err(error) => discovery_errors.push((
+            Err(error) => errors.push((
                 discovery_error_path(&error).map(Path::to_owned),
                 InputError {
                     filename: ".".into(),
@@ -219,32 +192,151 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
             )),
         }
     }
+}
+
+/// Resolve file policies before deciding which sources a check needs to read.
+pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snapshot, String> {
+    options
+        .overrides
+        .validate()
+        .map_err(|error| error.to_string())?;
+    let workspace =
+        Workspace::discover(cwd, options.config.as_deref()).map_err(|error| error.to_string())?;
+    let root = normalize(&workspace.root);
+    let mut project_root = normalize(&workspace.project_root);
+    let invocation_project_root = project_root.clone();
+    let mut errors = Vec::new();
+    let mut requested = BTreeSet::new();
+    let mut inputs = BTreeMap::new();
+    let overlay = if let Some((path, source)) = &options.stdin {
+        let path = workspace_path(&project_root, &absolute(cwd, path))?;
+        if !is_markdown(&path) {
+            return Err("The stdin filename must have a .md or .markdown extension.".into());
+        }
+        if ignored_by_git(&project_root, &path, false)? {
+            return Err(format!(
+                "{} is excluded by .gitignore; choose an included Markdown path.",
+                relative(&root, &path)
+            ));
+        }
+        requested.insert(path.clone());
+        Some((path, source.clone()))
+    } else {
+        for path in &options.paths {
+            let path = workspace_path(&project_root, &absolute(cwd, path))?;
+            match path.try_exists() {
+                Ok(true) => {
+                    requested.insert(path);
+                }
+                Ok(false) => errors.push(InputError {
+                    filename: relative(&project_root, &path),
+                    message: "Path does not exist; provide an existing file or directory.".into(),
+                }),
+                Err(error) => errors.push(InputError {
+                    filename: relative(&project_root, &path),
+                    message: format!("Cannot access this path: {error}"),
+                }),
+            }
+        }
+        None
+    };
+    let all_selected = options.paths.is_empty() && options.stdin.is_none();
+    let selected_path = |path: &Path| {
+        (all_selected && path.starts_with(&root))
+            || requested.iter().any(|selected| path.starts_with(selected))
+    };
+    let mut discovery_errors = Vec::new();
+    walk_markdown(&root, &mut inputs, &mut discovery_errors, &project_root);
+    for target in requested.iter().filter(|path| !path.starts_with(&root)) {
+        if target.is_file() && is_markdown(target) {
+            if !ignored_by_git(&project_root, target, false)? {
+                inputs.entry(target.clone()).or_insert(None);
+            }
+        } else if target.is_dir() {
+            walk_markdown(target, &mut inputs, &mut discovery_errors, &project_root);
+        }
+    }
     if let Some((path, source)) = overlay {
         inputs.insert(path, Some(source));
     }
+    // Nested selected configurations can explicitly inherit an ancestor that
+    // the invoking configuration did not. Discover their scope before the
+    // dependency index is built; dependency files never widen it in turn.
+    let mut config_cache = BTreeMap::new();
+    for path in inputs.keys().filter(|path| selected_path(path)) {
+        let directory = path.parent().unwrap_or(&root).to_path_buf();
+        let config = config_cache.entry(directory).or_insert_with(|| {
+            workspace
+                .config_for_within(path, &project_root)
+                .map_err(|error| error.to_string())
+        });
+        if let Ok(config) = config {
+            let admitted = config.project_root_for_source();
+            if project_root.starts_with(&admitted) {
+                project_root = admitted;
+            }
+        }
+    }
+    // The old single-root path needs no preflight: its first walk already
+    // discovered every possible dependency. Skip duplicate policy resolution.
+    let selected_requires_index = project_root != root
+        && scope == LoadScope::Check
+        && inputs
+            .keys()
+            .filter(|path| selected_path(path))
+            .try_fold(false, |required, path| {
+                if required {
+                    return Ok::<_, String>(true);
+                }
+                // Defer malformed nested configs to the normal per-file error
+                // path so one bad directory does not hide unrelated failures.
+                let Some(Ok(config)) = config_cache.get(path.parent().unwrap_or(&root)) else {
+                    return Ok(false);
+                };
+                if !config.includes(path) || config.excludes(path) {
+                    return Ok(false);
+                }
+                let rules = config
+                    .selected_rules(path, &options.overrides)
+                    .map_err(|error| error.to_string())?;
+                Ok(rules
+                    .iter()
+                    .any(|code| crate::rules::rule(code).is_some_and(|rule| rule.requires_index)))
+            })?;
+    let project_dependencies = options.project_dependencies || selected_requires_index;
+    if project_dependencies && project_root != root {
+        walk_markdown(
+            &project_root,
+            &mut inputs,
+            &mut discovery_errors,
+            &project_root,
+        );
+    }
     let mut configurations = BTreeMap::new();
-    record_configuration(
+    let mut environments = BTreeMap::new();
+    let invocation_configuration = record_configuration(
         &mut configurations,
+        &mut environments,
         &root,
         &workspace.config,
         &options.overrides,
+        options.explain_environment,
     );
     let mut policies = BTreeMap::new();
-    let mut config_cache = BTreeMap::new();
     let mut pending = Vec::new();
     let mut deferred_errors = Vec::new();
     let mut excluded_inputs = Vec::new();
-    let mut needs_index = scope == LoadScope::Workspace;
+    let mut needs_index = scope == LoadScope::Workspace || project_dependencies;
     for (path, source_override) in inputs {
         let selected = selected_path(&path);
         if scope == LoadScope::Selected && !selected {
             continue;
         }
-        let filename = relative(&root, &path);
+        let filename = relative(&project_root, &path);
         let directory = path.parent().unwrap_or(&root).to_path_buf();
         let config = match config_cache.entry(directory).or_insert_with(|| {
             workspace
-                .config_for(&path)
+                .config_for_within(&path, &project_root)
                 .map_err(|error| error.to_string())
         }) {
             Ok(config) => config.clone(),
@@ -261,8 +353,14 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
                 continue;
             }
         };
-        let configuration =
-            record_configuration(&mut configurations, &root, &config, &options.overrides);
+        let configuration = record_configuration(
+            &mut configurations,
+            &mut environments,
+            &root,
+            &config,
+            &options.overrides,
+            options.explain_environment,
+        );
         let excluded = if !config.includes(&path) {
             Some("include")
         } else if config.excludes(&path) {
@@ -388,18 +486,30 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
         .collect();
     let skipped = skipped_inputs(
         &root,
+        &project_root,
         &requested,
         all_selected,
         &checked,
         &excluded_inputs,
         &errors,
     );
-    let index = WorkspaceIndex::new(root, files, errors.is_empty());
+    let complete =
+        needs_index && (project_root == root || project_dependencies) && errors.is_empty();
+    let index = WorkspaceIndex::new_with_scope(
+        project_root,
+        root.clone(),
+        invocation_project_root,
+        files,
+        complete,
+    );
     let mut snapshot = Snapshot {
         index,
+        selection_root: root,
+        invocation_configuration,
         selected,
         requested,
         configurations,
+        environments,
         policies,
         errors,
         skipped,
@@ -411,6 +521,7 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
 /// Explain each requested path, or an empty workspace, that selected no document.
 fn skipped_inputs(
     root: &Path,
+    project_root: &Path,
     requested: &BTreeSet<PathBuf>,
     all_selected: bool,
     checked: &[&Path],
@@ -427,7 +538,7 @@ fn skipped_inputs(
         if checked.iter().any(|path| path.starts_with(target))
             || errors
                 .iter()
-                .any(|error| root.join(&error.filename).starts_with(target))
+                .any(|error| project_root.join(&error.filename).starts_with(target))
         {
             continue;
         }
@@ -445,7 +556,7 @@ fn skipped_inputs(
                 } else {
                     format!("`include` in {configuration} does not match it")
                 }
-            } else if ignored_by_git(root, target, false).unwrap_or(false) {
+            } else if ignored_by_git(project_root, target, false).unwrap_or(false) {
                 ".gitignore ignores it".to_owned()
             } else {
                 "workspace discovery skipped it; symbolic links are not followed".to_owned()
@@ -454,7 +565,7 @@ fn skipped_inputs(
             let count = excluded_here.len();
             let files = if count == 1 { "file" } else { "files" };
             format!("configuration excludes its {count} Markdown {files}; inspect `seiso policy`")
-        } else if target != root && ignored_by_git(root, target, true).unwrap_or(false) {
+        } else if target != root && ignored_by_git(project_root, target, true).unwrap_or(false) {
             ".gitignore ignores it".to_owned()
         } else if contains_markdown_ignored_by_git(target) {
             ".gitignore ignores its Markdown files".to_owned()
@@ -515,9 +626,11 @@ fn discovery_error_path(error: &ignore::Error) -> Option<&Path> {
 
 fn record_configuration(
     configurations: &mut BTreeMap<String, Settings>,
+    environments: &mut BTreeMap<String, EnvironmentReport>,
     root: &Path,
     config: &Config,
     overrides: &CliOverrides,
+    explain_environment: bool,
 ) -> String {
     let name = config
         .source
@@ -533,6 +646,11 @@ fn record_configuration(
         settings.lint.select.extend(overrides.extend_select.clone());
         settings
     });
+    if explain_environment {
+        environments
+            .entry(name.clone())
+            .or_insert_with(|| config.environment_report(root));
+    }
     name
 }
 
@@ -631,4 +749,21 @@ pub fn relative(root: &Path, path: &Path) -> String {
         .unwrap_or(path)
         .to_string_lossy()
         .replace('\\', "/")
+}
+
+/// Convert a project-relative internal ID into an invocation-relative label.
+fn display_name(selection_root: &Path, project_root: &Path, filename: &str) -> String {
+    let path = project_root.join(filename);
+    let from: Vec<_> = selection_root.components().collect();
+    let to: Vec<_> = path.components().collect();
+    let common = from.iter().zip(&to).take_while(|(a, b)| a == b).count();
+    let mut relative = PathBuf::new();
+    for _ in common..from.len() {
+        relative.push("..");
+    }
+    for component in &to[common..] {
+        relative.push(component.as_os_str());
+    }
+    let label = relative.to_string_lossy().replace('\\', "/");
+    if label.is_empty() { ".".into() } else { label }
 }

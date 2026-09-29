@@ -35,8 +35,12 @@ enum Command {
     Index(commands::IndexArgs),
     /// Print a rule's explanation and examples.
     Rule(commands::RuleArgs),
-    /// Create a repository-root configuration with suggested exclusions and kind mappings.
-    Init,
+    /// Create a repository-root configuration or a child overlay with --extend.
+    Init {
+        /// Extend the nearest governing ancestor without replacing its policy lists.
+        #[arg(long)]
+        extend: bool,
+    },
     /// Adapt editor events to Markdown checks.
     Hook {
         #[command(subcommand)]
@@ -105,7 +109,7 @@ fn run(cli: Cli) -> Result<u8, String> {
         Command::Policy(args) => commands::policy(args),
         Command::Index(args) => commands::index(args),
         Command::Rule(args) => commands::rule(args),
-        Command::Init => commands::init(),
+        Command::Init { extend } => commands::init(extend),
         Command::Hook { command } => Ok(commands::hook(command)),
     }
 }
@@ -134,14 +138,32 @@ fn parse_workspace(args: ParseArgs) -> Result<u8, String> {
         },
         LoadScope::Selected,
     )?;
-    let root = snapshot.index.root.clone();
+    let root = snapshot.selection_root.clone();
+    let labels: Vec<_> = snapshot
+        .index
+        .files()
+        .iter()
+        .map(|file| snapshot.display_name(&file.filename))
+        .collect();
+    let errors = snapshot
+        .errors
+        .iter()
+        .cloned()
+        .map(|mut error| {
+            if error.filename != "." {
+                error.filename = snapshot.display_name(&error.filename);
+            }
+            error
+        })
+        .collect();
     let report = ParseReport {
         files: snapshot
             .index
             .into_files()
             .into_iter()
-            .map(|file| ParsedFile {
-                filename: file.filename,
+            .zip(labels)
+            .map(|(file, label)| ParsedFile {
+                filename: label,
                 configuration: file
                     .config
                     .source
@@ -153,7 +175,7 @@ fn parse_workspace(args: ParseArgs) -> Result<u8, String> {
                 document: Arc::unwrap_or_clone(file.document),
             })
             .collect(),
-        errors: snapshot.errors,
+        errors,
     };
     let rendered = match args.output_format {
         OutputFormat::Json => {

@@ -725,6 +725,263 @@ fn init_writes_at_the_repository_root_with_exclusions_and_community_kinds() {
     assert!(root.join(".seiso_cache/CACHEDIR.TAG").is_file());
 }
 
+#[test]
+fn init_extend_targets_the_nearest_governing_ancestor_without_replacing_lists() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    write(
+        root,
+        "seiso.toml",
+        "[[kinds]]\npath = 'docs/**'\nkind = 'howto'\n",
+    );
+    write(
+        root,
+        "docs/.seiso.toml",
+        "[[kinds]]\npath = '**'\nkind = 'reference'\n",
+    );
+    write(root, "docs/guide/README.md", "# Guide\n");
+    write(root, "docs/guide/reference/api.md", "# API\n");
+    write(
+        root,
+        "docs/guide/node_modules/dependency.md",
+        "# Dependency\n",
+    );
+    let child = root.join("docs/guide");
+    let output = run(&child, &["init", "--extend"], None);
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let config = std::fs::read_to_string(child.join("seiso.toml")).unwrap();
+    assert!(config.contains("extend = \"../.seiso.toml\""), "{config}");
+    assert!(config.contains("extend-exclude = ["), "{config}");
+    assert!(
+        config.contains("[[extend-kinds]]\npath = \"reference/**\"\nkind = \"reference\""),
+        "{config}"
+    );
+    for forbidden in [
+        "include =",
+        "\nexclude =",
+        "\n[[kinds]]",
+        "\n[[sites]]",
+        "preview =",
+    ] {
+        assert!(!config.contains(forbidden), "{forbidden}: {config}");
+    }
+    let repeated = run(&child, &["init", "--extend"], None);
+    assert_eq!(repeated.status.code(), Some(2));
+    assert_eq!(
+        std::fs::read_to_string(child.join("seiso.toml")).unwrap(),
+        config
+    );
+}
+
+#[test]
+fn init_extend_accepts_pyproject_parent_and_rejects_missing_parent() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    write(root, "pyproject.toml", "[tool.seiso]\npreview = false\n");
+    write(root, "docs/nested/page.md", "# Page\n");
+    let child = root.join("docs/nested");
+    assert_eq!(
+        run(&child, &["init", "--extend"], None).status.code(),
+        Some(0)
+    );
+    let config = std::fs::read_to_string(child.join("seiso.toml")).unwrap();
+    assert!(
+        config.contains("extend = \"../../pyproject.toml\""),
+        "{config}"
+    );
+    let output = run(root, &["init", "--extend"], None);
+    assert_eq!(output.status.code(), Some(2));
+    assert!(!root.join("seiso.toml").exists());
+    let empty = TempDir::new().unwrap();
+    let output = run(empty.path(), &["init", "--extend"], None);
+    assert_eq!(output.status.code(), Some(2));
+    assert!(!empty.path().join("seiso.toml").exists());
+}
+
+#[test]
+fn init_extend_suggests_local_sites_without_replacing_parent_sites() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    write(
+        root,
+        "seiso.toml",
+        "[[sites]]\npath = 'external/**'\nroot = 'external'\n",
+    );
+    write(
+        root,
+        "docs/.vitepress/config.ts",
+        "export default defineConfig({});\n",
+    );
+    write(root, "docs/index.md", "# Home\n");
+    let child = root.join("docs");
+    assert_eq!(
+        run(&child, &["init", "--extend"], None).status.code(),
+        Some(0)
+    );
+    let config = std::fs::read_to_string(child.join("seiso.toml")).unwrap();
+    assert!(
+        config.contains("[[extend-sites]] # VitePress: .vitepress/config.ts"),
+        "{config}"
+    );
+    assert!(config.contains("path = \"**\"\nroot = \".\""), "{config}");
+    assert!(!config.contains("\n[[sites]]"), "{config}");
+}
+
+#[test]
+fn policy_exposes_environment_frames_without_changing_configuration_values() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    write(
+        root,
+        "seiso.toml",
+        "[[kinds]]\npath = 'docs/**'\nkind = 'howto'\n",
+    );
+    write(
+        root,
+        "docs/seiso.toml",
+        "extend = '../seiso.toml'\n[[extend-kinds]]\npath = 'reference/**'\nkind = 'reference'\n",
+    );
+    write(root, "docs/reference/api.md", "# API\n");
+    let output = run(root, &["policy"], None);
+    assert_eq!(
+        output.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let report = value(&output);
+    assert_eq!(
+        report["configurations"]["docs/seiso.toml"]["kinds"][0]["path"],
+        "docs/**"
+    );
+    let environment = &report["environments"]["docs/seiso.toml"];
+    assert_eq!(environment["frames"][0]["source"], "docs/seiso.toml");
+    assert_eq!(environment["frames"][0]["policy_base"], "docs");
+    assert_eq!(environment["frames"][1]["source"], "seiso.toml");
+    assert_eq!(environment["frames"][1]["policy_base"], ".");
+    assert_eq!(environment["kinds"], json!([1, 0]));
+}
+
+#[test]
+fn child_project_dependencies_stay_internal_to_policy_and_index_reports() {
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join(".temp");
+    std::fs::create_dir_all(&fixtures).unwrap();
+    let workspace = TempDir::new_in(fixtures).unwrap();
+    let root = workspace.path();
+    write(
+        root,
+        "seiso.toml",
+        "preview = true\n[lint]\nselect = ['LNK002']\n",
+    );
+    write(root, "docs/seiso.toml", "extend = '../seiso.toml'\n");
+    write(
+        root,
+        "docs/a.md",
+        "# Child\n\n[missing](../sibling/page.md#absent)\n",
+    );
+    write(root, "sibling/page.md", "# Sibling\n\n## Present\n");
+    let child = root.join("docs");
+    let check = run(&child, &["check", "--output-format", "json"], None);
+    assert_eq!(
+        check.status.code(),
+        Some(1),
+        "{}",
+        String::from_utf8_lossy(&check.stderr)
+    );
+    assert_eq!(value(&check)[0]["filename"], "a.md");
+    assert_eq!(
+        value(&check)[0]["related"][0]["filename"],
+        "../sibling/page.md"
+    );
+
+    let policy = run(&child, &["policy", "--evaluate"], None);
+    assert_eq!(
+        policy.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&policy.stderr)
+    );
+    let report = value(&policy);
+    assert_eq!(report["files"].as_array().unwrap().len(), 1);
+    assert_eq!(report["files"][0]["filename"], "a.md");
+    assert!(report["configurations"].get("../seiso.toml").is_none());
+
+    let dump = run(&child, &["index", "--dump"], None);
+    assert_eq!(
+        dump.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&dump.stderr)
+    );
+    let index = value(&dump);
+    assert_eq!(index["index"]["files"].as_array().unwrap().len(), 1);
+    assert_eq!(index["index"]["files"][0]["filename"], "a.md");
+}
+
+#[test]
+fn child_invocation_can_explicitly_select_a_project_sibling_directory() {
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join(".temp");
+    std::fs::create_dir_all(&fixtures).unwrap();
+    let workspace = TempDir::new_in(fixtures).unwrap();
+    let root = workspace.path();
+    write(root, "seiso.toml", "");
+    write(root, "docs/seiso.toml", "extend = '../seiso.toml'\n");
+    write(root, "docs/local.md", "# Local\n");
+    write(root, "sibling/one.md", "# One\n");
+    write(root, "sibling/two.md", "# Two\n");
+    let child = root.join("docs");
+    let parsed = run(
+        &child,
+        &["parse", "../sibling", "--output-format", "json"],
+        None,
+    );
+    assert_eq!(
+        parsed.status.code(),
+        Some(0),
+        "{}",
+        String::from_utf8_lossy(&parsed.stderr)
+    );
+    let report = value(&parsed);
+    let names: Vec<_> = report["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|file| file["filename"].as_str().unwrap())
+        .collect();
+    assert_eq!(names, ["../sibling/one.md", "../sibling/two.md"]);
+
+    let checked = run(
+        &child,
+        &[
+            "check",
+            "../sibling",
+            "--select",
+            "KND",
+            "--output-format",
+            "json",
+        ],
+        None,
+    );
+    assert_eq!(
+        checked.status.code(),
+        Some(1),
+        "{}",
+        String::from_utf8_lossy(&checked.stderr)
+    );
+    let names: Vec<_> = value(&checked)
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|diagnostic| diagnostic["filename"].as_str().unwrap().to_owned())
+        .collect();
+    assert_eq!(names, ["../sibling/one.md", "../sibling/two.md"]);
+}
+
 #[cfg(unix)]
 #[test]
 fn init_config_permissions_follow_the_process_umask() {

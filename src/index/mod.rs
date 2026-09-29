@@ -1,5 +1,6 @@
 //! Current workspace facts. Resolved paths and effective policy never enter the parse cache.
 
+use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, OnceLock};
@@ -8,7 +9,8 @@ use crate::config::Config;
 use crate::diagnostics::Span;
 use crate::md::{BlockKind, Document, FragmentKind};
 use crate::paths::{
-    LinkPathError, Listings, TargetStatus, local_link, local_target_status, select_target,
+    LinkPathError, Listings, TargetStatus, local_link, local_link_scoped, local_target_status,
+    select_target,
 };
 use crate::rules::{PathStatus, WorkspaceFiles};
 use regex::Regex;
@@ -27,7 +29,12 @@ pub struct IndexedFile {
 
 #[derive(Clone, Debug)]
 pub struct WorkspaceIndex {
+    /// Containment boundary and base of stable internal file identifiers.
     pub root: PathBuf,
+    /// Base of leading-`/` links written by files in the selected subtree.
+    selection_root: PathBuf,
+    /// Scope granted before unrelated selected-file frames widened the index.
+    invocation_root: PathBuf,
     files: Vec<IndexedFile>,
     pub complete: bool,
     anchors: BTreeMap<String, OnceLock<AnchorIndex>>,
@@ -78,7 +85,39 @@ pub struct LinkResolution {
 
 impl WorkspaceIndex {
     /// Sort workspace files and defer anchor extraction until a lookup needs it.
-    pub fn new(root: PathBuf, mut files: Vec<IndexedFile>, complete: bool) -> Self {
+    pub fn new(root: PathBuf, files: Vec<IndexedFile>, complete: bool) -> Self {
+        Self::new_scoped(root.clone(), root, files, complete)
+    }
+
+    /// Keep the project's safety/index scope distinct from selected files'
+    /// written leading-`/` link base. File names are project-relative.
+    pub fn new_scoped(
+        root: PathBuf,
+        selection_root: PathBuf,
+        files: Vec<IndexedFile>,
+        complete: bool,
+    ) -> Self {
+        Self::new_with_scope(
+            root,
+            selection_root.clone(),
+            selection_root,
+            files,
+            complete,
+        )
+    }
+
+    /// Construct an index whose global lookup root can be wider than the
+    /// original invocation grant. Each source may retain or expand that grant
+    /// through its own effective configuration, never through another file's.
+    pub fn new_with_scope(
+        root: PathBuf,
+        selection_root: PathBuf,
+        invocation_root: PathBuf,
+        mut files: Vec<IndexedFile>,
+        complete: bool,
+    ) -> Self {
+        debug_assert!(selection_root.starts_with(&root));
+        debug_assert!(invocation_root.starts_with(&root));
         files.sort_by(|left, right| left.filename.cmp(&right.filename));
         let anchors = files
             .iter()
@@ -86,6 +125,8 @@ impl WorkspaceIndex {
             .collect();
         Self {
             root,
+            selection_root,
+            invocation_root,
             files,
             complete,
             anchors,
@@ -104,6 +145,11 @@ impl WorkspaceIndex {
     /// To change the file set or its documents, construct a new index.
     pub fn files(&self) -> &[IndexedFile] {
         &self.files
+    }
+
+    /// The pre-widening project boundary used to authorize each source.
+    pub(crate) fn invocation_project_root(&self) -> &Path {
+        &self.invocation_root
     }
 
     /// Consume the index to recover its files without cloning their documents.
@@ -152,7 +198,14 @@ impl WorkspaceIndex {
         let site = self
             .file(source)
             .and_then(|file| file.config.site_routes(&file.path));
-        let link = match local_link(&self.root, Path::new(source), destination, site.as_ref()) {
+        let allowed_root = self
+            .file(source)
+            .map(|file| {
+                file.config
+                    .project_root_for_source_within(&self.invocation_root)
+            })
+            .unwrap_or_else(|| self.invocation_root.clone());
+        let link = match self.local_link(source, destination, site.as_ref()) {
             Ok(link) => link,
             Err(error) => {
                 result.status = match error {
@@ -165,7 +218,7 @@ impl WorkspaceIndex {
             }
         };
         let (location, status) = select_target(&self.root, &link.locations, |location| {
-            self.target_status(&location.path, &location.target)
+            self.target_status(&allowed_root, &location.path, &location.target)
         });
         let mut target = location.target.clone();
         result.target = Some(target.clone());
@@ -204,7 +257,35 @@ impl WorkspaceIndex {
         result
     }
 
-    fn target_status(&self, path: &Path, target: &str) -> TargetStatus {
+    /// Avoid an extra root classification in the overwhelmingly common
+    /// same-root case; only selected-subtree files use a child written base.
+    fn local_link(
+        &self,
+        source: &str,
+        destination: &str,
+        site: Option<&crate::paths::SiteRoutes>,
+    ) -> Result<crate::paths::LocalLink, LinkPathError> {
+        let source_path = self
+            .file(source)
+            .map(|file| file.path.as_path())
+            .unwrap_or_else(|| Path::new(source));
+        let written_root = self.written_root(&self.root, source_path);
+        if written_root.as_ref() == self.root {
+            return local_link(&self.root, Path::new(source), destination, site);
+        }
+        local_link_scoped(
+            &self.root,
+            written_root.as_ref(),
+            Path::new(source),
+            destination,
+            site,
+        )
+    }
+
+    fn target_status(&self, allowed_root: &Path, path: &Path, target: &str) -> TargetStatus {
+        if !path.starts_with(allowed_root) {
+            return TargetStatus::OutsideWorkspace;
+        }
         if let Some(inventory) = &self.inventory {
             let mut ancestor = Some(target);
             while let Some(path) = ancestor {
@@ -238,7 +319,7 @@ impl WorkspaceIndex {
                     }),
             };
         }
-        match local_target_status(&self.root, path) {
+        match local_target_status(allowed_root, path) {
             status @ (TargetStatus::OutsideWorkspace | TargetStatus::Unreadable(_)) => status,
             _ if self.file(target).is_some() => TargetStatus::File,
             status => self.listings.confirm(&self.root, path, status),
@@ -519,12 +600,45 @@ fn decode_numeric(number: &str, radix: u32) -> String {
 }
 
 impl WorkspaceFiles for WorkspaceIndex {
+    fn invocation_root<'a>(&'a self, _workspace_root: &'a Path) -> &'a Path {
+        self.invocation_project_root()
+    }
+
+    fn written_root<'a>(&'a self, _workspace_root: &'a Path, source_path: &Path) -> Cow<'a, Path> {
+        let selected = if source_path.is_absolute() {
+            source_path.starts_with(&self.selection_root)
+        } else {
+            self.root
+                .join(source_path)
+                .starts_with(&self.selection_root)
+        };
+        if selected {
+            Cow::Borrowed(self.selection_root.as_path())
+        } else {
+            source_path
+                .strip_prefix(&self.root)
+                .ok()
+                .and_then(|relative| self.file(&relative.to_string_lossy().replace('\\', "/")))
+                .map(|file| {
+                    Cow::Owned(
+                        file.config
+                            .project_root_for_source_within(&self.invocation_root),
+                    )
+                })
+                .unwrap_or_else(|| Cow::Borrowed(self.invocation_root.as_path()))
+        }
+    }
+
     fn status(&self, _workspace_root: &Path, target: &Path) -> PathStatus {
         let Ok(relative) = target.strip_prefix(&self.root) else {
             return PathStatus::Unknown;
         };
-        self.target_status(target, &relative.to_string_lossy().replace('\\', "/"))
-            .into()
+        self.target_status(
+            _workspace_root,
+            target,
+            &relative.to_string_lossy().replace('\\', "/"),
+        )
+        .into()
     }
 }
 
@@ -962,6 +1076,164 @@ mod tests {
         }
     }
 
+    /// A promoted project admits inherited routes without changing `/` in
+    /// Markdown written in the selected child directory.
+    #[test]
+    fn scoped_index_keeps_child_written_links_and_parent_site_routes() {
+        let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join(".temp");
+        std::fs::create_dir_all(&fixtures).unwrap();
+        let project = tempfile::Builder::new()
+            .prefix("scoped-index-")
+            .tempdir_in(fixtures)
+            .unwrap();
+        let root = project.path();
+        let child = root.join("docs");
+        std::fs::create_dir_all(root.join("public")).unwrap();
+        std::fs::create_dir_all(&child).unwrap();
+        std::fs::write(child.join("local.md"), "# Local\n").unwrap();
+        std::fs::write(root.join("sibling.md"), "# Sibling\n").unwrap();
+        std::fs::write(root.join("public/logo.svg"), "logo").unwrap();
+        let config = Config::parse(
+            "preview = true\n[lint]\nselect = ['LNK001', 'PTR001']\n[[sites]]\npath = 'docs/**'\nroot = '.'\npublic = 'public'\n",
+            root,
+        )
+        .unwrap();
+        let mut source = file(
+            root,
+            "docs/a.md",
+            "---\nkind: reference\n---\n# Source\n\n[Local](/local.md) [Sibling](/sibling.md) [Logo](/logo.svg)\n\nSee [configuration](/).\n",
+        );
+        source.config = config.clone();
+        let index = WorkspaceIndex::new_scoped(
+            root.to_path_buf(),
+            child,
+            vec![
+                source,
+                file(root, "docs/local.md", "# Local\n"),
+                file(root, "sibling.md", "# Sibling\n"),
+            ],
+            true,
+        );
+        for (source, destination, target, status) in [
+            ("docs/a.md", "/local.md", "docs/local.md", LinkStatus::File),
+            ("docs/a.md", "../sibling.md", "sibling.md", LinkStatus::File),
+            ("docs/a.md", "/sibling.md", "sibling.md", LinkStatus::File),
+            (
+                "docs/a.md",
+                "/logo.svg",
+                "public/logo.svg",
+                LinkStatus::File,
+            ),
+            ("sibling.md", "/sibling.md", "sibling.md", LinkStatus::File),
+        ] {
+            let resolved = index.resolve_link(source, destination);
+            assert_eq!(resolved.target.as_deref(), Some(target), "{destination}");
+            assert_eq!(resolved.status, status, "{destination}");
+        }
+        let source = index.file("docs/a.md").unwrap();
+        let context = crate::rules::CheckContext {
+            document: &source.document,
+            filename: &source.filename,
+            path: &source.path,
+            workspace_root: root,
+            config: &config,
+            overrides: &crate::config::CliOverrides::default(),
+        };
+        let checked = crate::rules::check_raw_with_files(&context, &index).unwrap();
+        assert_eq!(
+            checked
+                .diagnostics
+                .iter()
+                .map(|diagnostic| diagnostic.code.as_str())
+                .collect::<Vec<_>>(),
+            ["PTR001"]
+        );
+    }
+
+    /// The selected child's ancestor grant is not inherited by an unrelated
+    /// sibling policy merely because both files share one internal index.
+    #[test]
+    fn widened_index_does_not_authorize_neighbor_links_or_anchors() {
+        let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join(".temp");
+        std::fs::create_dir_all(&fixtures).unwrap();
+        let project = tempfile::Builder::new()
+            .prefix("scoped-neighbor-")
+            .tempdir_in(fixtures)
+            .unwrap();
+        let root = project.path();
+        let selected = root.join("docs");
+        let neighbor = root.join("other");
+        std::fs::create_dir_all(&selected).unwrap();
+        std::fs::create_dir_all(&neighbor).unwrap();
+        std::fs::write(root.join("secret.md"), "# Secret\n").unwrap();
+        std::fs::write(neighbor.join("local.md"), "# Local\n").unwrap();
+        #[cfg(unix)]
+        std::os::unix::fs::symlink(root.join("secret.md"), neighbor.join("alias.md")).unwrap();
+        let config = |directory: &Path| {
+            Config::parse("preview = true\n[lint]\nselect = ['LNK001']\n", directory).unwrap()
+        };
+        let mut selected_file = file(root, "docs/a.md", "[secret](../secret.md#secret)");
+        selected_file.config = config(root);
+        let mut neighbor_file = file(root, "other/a.md", "[secret](../secret.md#secret)");
+        neighbor_file.config = config(&neighbor);
+        let files = vec![
+            selected_file,
+            neighbor_file,
+            file(root, "secret.md", "# Secret\n"),
+            file(root, "other/local.md", "# Local\n"),
+        ];
+        let index = WorkspaceIndex::new_scoped(root.to_path_buf(), selected, files.clone(), true);
+        assert_eq!(
+            index
+                .resolve_link("docs/a.md", "../secret.md#secret")
+                .status,
+            LinkStatus::AnchorFound
+        );
+        assert_eq!(
+            index
+                .resolve_link("other/a.md", "../secret.md#secret")
+                .status,
+            LinkStatus::OutsideWorkspace
+        );
+        assert_eq!(
+            index.resolve_link("other/a.md", "/local.md").status,
+            LinkStatus::File
+        );
+        #[cfg(unix)]
+        assert_eq!(
+            index.resolve_link("other/a.md", "alias.md#secret").status,
+            LinkStatus::OutsideWorkspace
+        );
+        let source = index.file("other/a.md").unwrap();
+        let context = crate::rules::CheckContext {
+            document: &source.document,
+            filename: &source.filename,
+            path: &source.path,
+            workspace_root: root,
+            config: &source.config,
+            overrides: &crate::config::CliOverrides::default(),
+        };
+        let checked = crate::rules::check_raw_with_files(&context, &index).unwrap();
+        assert!(checked.diagnostics.is_empty());
+        assert!(checked.incomplete_rules.contains("LNK001"));
+
+        // A root invocation retains its historical grant even when a file's
+        // nearest configuration is nested below that root.
+        let root_index = WorkspaceIndex::new_with_scope(
+            root.to_path_buf(),
+            root.to_path_buf(),
+            root.to_path_buf(),
+            files,
+            true,
+        );
+        assert_eq!(
+            root_index
+                .resolve_link("other/a.md", "../secret.md#secret")
+                .status,
+            LinkStatus::AnchorFound
+        );
+    }
+
     #[test]
     fn invalid_frontmatter_cannot_claim_canonical_ownership_in_dump() {
         let root = tempfile::tempdir().unwrap();
@@ -993,6 +1265,40 @@ mod tests {
         );
         assert_eq!(
             index.resolve_link("a.md", "outside/missing.md#x").status,
+            LinkStatus::OutsideWorkspace
+        );
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn promoted_project_still_rejects_symlink_targets_outside_project() {
+        let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join(".temp");
+        std::fs::create_dir_all(&fixtures).unwrap();
+        let project = tempfile::Builder::new()
+            .prefix("scoped-project-")
+            .tempdir_in(&fixtures)
+            .unwrap();
+        let outside = tempfile::Builder::new()
+            .prefix("scoped-outside-")
+            .tempdir_in(fixtures)
+            .unwrap();
+        std::fs::create_dir(project.path().join("docs")).unwrap();
+        std::os::unix::fs::symlink(outside.path(), project.path().join("public")).unwrap();
+        let config = Config::parse(
+            "[[sites]]\npath = 'docs/**'\nroot = '.'\npublic = 'public'\n",
+            project.path(),
+        )
+        .unwrap();
+        let mut source = file(project.path(), "docs/a.md", "# Source\n");
+        source.config = config;
+        let index = WorkspaceIndex::new_scoped(
+            project.path().to_path_buf(),
+            project.path().join("docs"),
+            vec![source],
+            true,
+        );
+        assert_eq!(
+            index.resolve_link("docs/a.md", "/logo.svg").status,
             LinkStatus::OutsideWorkspace
         );
     }

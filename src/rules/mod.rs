@@ -147,11 +147,12 @@ pub fn check_raw_with_files(
         .iter()
         .any(|code| rule(code).is_some_and(|rule| rule.phase == RulePhase::Normative))
     {
+        let written_root = files.written_root(context.workspace_root, context.path);
         diagnostics.extend(normative::check(
             context.document,
             context.filename,
             context.path,
-            context.workspace_root,
+            written_root.as_ref(),
             context.config,
             &enabled,
         ));
