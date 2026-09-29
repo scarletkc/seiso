@@ -225,8 +225,14 @@ fn page_sources(route: &Path, directory: bool) -> Vec<PathBuf> {
     }
 }
 
-/// Choose the first candidate that exists. A directory reached only as a route
-/// serves no page itself, so a later page source takes precedence over it.
+#[derive(Clone, Copy, Eq, PartialEq)]
+pub(crate) enum TargetPreference {
+    Existing,
+    Page,
+}
+
+/// Existence checks accept the first existing candidate, including directories.
+/// Page lookups prefer a later page source over a directory reached only as a route.
 /// A route written in lowercase reaches a page source whose name has capitals,
 /// as generators that lowercase page routes serve it; files served under their
 /// own names keep their case. Any other letter-case mismatch is the result
@@ -234,6 +240,7 @@ fn page_sources(route: &Path, directory: bool) -> Vec<PathBuf> {
 pub(crate) fn select_target(
     root: &Path,
     targets: &[LocalTarget],
+    preference: TargetPreference,
     mut status: impl FnMut(&LocalTarget) -> TargetStatus,
 ) -> (LocalTarget, TargetStatus) {
     let mut directory = None;
@@ -254,7 +261,9 @@ pub(crate) fn select_target(
         }
         match found {
             TargetStatus::Missing => {}
-            TargetStatus::Directory if target.kind != TargetKind::Written => {
+            TargetStatus::Directory
+                if preference == TargetPreference::Page && target.kind != TargetKind::Written =>
+            {
                 directory.get_or_insert_with(|| target.into_owned());
             }
             TargetStatus::CaseMismatch(actual) => {
@@ -546,7 +555,8 @@ mod tests {
             _ => TargetStatus::Missing,
         };
         let select = |candidates: &[LocalTarget]| {
-            let (target, status) = select_target(Path::new(""), candidates, status);
+            let (target, status) =
+                select_target(Path::new(""), candidates, TargetPreference::Page, status);
             (target.target, status)
         };
         let candidates = [
@@ -592,7 +602,8 @@ mod tests {
             _ => TargetStatus::Missing,
         };
         let select = |candidates: &[LocalTarget]| {
-            let (target, status) = select_target(Path::new(""), candidates, status);
+            let (target, status) =
+                select_target(Path::new(""), candidates, TargetPreference::Page, status);
             (target.target, status)
         };
         let mismatch = |target: &str, actual: &str| {

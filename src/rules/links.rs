@@ -2,8 +2,8 @@ use std::path::Path;
 
 use crate::diagnostics::Diagnostic;
 use crate::paths::{
-    LinkPathError, Listings, TargetStatus, local_link_targets, local_target_status, normalize,
-    select_target,
+    LinkPathError, Listings, TargetPreference, TargetStatus, local_link_targets,
+    local_target_status, normalize, select_target,
 };
 
 use crate::rules::CheckContext;
@@ -55,7 +55,7 @@ pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> L
                 continue;
             }
         };
-        let (_, status) = select_target(&root, &targets, |target| {
+        let (_, status) = select_target(&root, &targets, TargetPreference::Existing, |target| {
             // The current document can be a new stdin overlay with no disk entry.
             if target.path == current {
                 TargetStatus::File

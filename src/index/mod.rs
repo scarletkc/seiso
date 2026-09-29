@@ -8,7 +8,8 @@ use crate::config::Config;
 use crate::diagnostics::Span;
 use crate::md::{BlockKind, Document, FragmentKind};
 use crate::paths::{
-    LinkPathError, Listings, TargetStatus, local_link, local_target_status, select_target,
+    LinkPathError, Listings, TargetPreference, TargetStatus, local_link, local_target_status,
+    select_target,
 };
 use crate::rules::WorkspaceFiles;
 use crate::workspace::FilePolicy;
@@ -219,9 +220,12 @@ impl WorkspaceIndex {
                 return result;
             }
         };
-        let (location, status) = select_target(&self.root, &link.locations, |location| {
-            self.target_status(&location.path, &location.target)
-        });
+        let (location, status) = select_target(
+            &self.root,
+            &link.locations,
+            TargetPreference::Page,
+            |location| self.target_status(&location.path, &location.target),
+        );
         let mut target = location.target.clone();
         result.target = Some(target.clone());
         result.anchor = link.anchor;

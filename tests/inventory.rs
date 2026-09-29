@@ -223,3 +223,38 @@ fn workspace_file_status_preserves_directories_and_outside_paths() {
         TargetStatus::OutsideWorkspace
     );
 }
+
+#[test]
+fn directory_routes_complete_existence_checks_before_page_candidates() {
+    struct RouteInventory;
+    impl WorkspaceFiles for RouteInventory {
+        fn status(&self, root: &Path, target: &Path) -> TargetStatus {
+            if target == root.join("site/guide") {
+                TargetStatus::Directory
+            } else if target == root.join("site/guide/index.md") {
+                TargetStatus::Unreadable("page source is unreadable".into())
+            } else {
+                TargetStatus::Missing
+            }
+        }
+    }
+    let root = tempfile::tempdir().unwrap();
+    let document = seiso::md::parse("[Guide](/guide/)\n").unwrap();
+    let config = Config::parse(
+        "[lint]\nselect=['LNK001']\n[[sites]]\npath='site/**'\nroot='site'\n",
+        root.path(),
+    )
+    .unwrap();
+    let context = CheckContext {
+        document: &document,
+        filename: "site/from.md",
+        path: &root.path().join("site/from.md"),
+        workspace_root: root.path(),
+        config: &config,
+        overrides: &CliOverrides::default(),
+    };
+    let result = context.check(&RouteInventory).unwrap();
+    assert!(result.diagnostics.is_empty());
+    assert!(result.errors.is_empty());
+    assert!(result.incomplete_rules.is_empty());
+}
