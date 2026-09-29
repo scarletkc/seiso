@@ -123,12 +123,7 @@ impl Diagnostic {
         let byte_range = source_map.clamp_span(span);
         let (location, end_location) = source_map.span_locations(byte_range);
         let code = code.into();
-        let url = crate::rules::rule(&code).map(|_| {
-            format!(
-                "https://github.com/scarletkc/seiso/blob/v{}/docs/rules/{code}.md",
-                env!("CARGO_PKG_VERSION")
-            )
-        });
+        let url = crate::rules::rule(&code).map(|rule| rule.url());
         Self {
             code,
             message: message.into(),

@@ -486,8 +486,9 @@ pub fn rule(args: RuleArgs) -> Result<u8, String> {
 fn render_rule(rule: &seiso::rules::Rule) -> String {
     let mut output = String::new();
     let mut status_added = false;
+    let documentation = rule.standalone_documentation();
     // The frontmatter declares the page kind for seiso's own checks, not for readers.
-    let mut lines = rule.documentation.trim_end().lines().peekable();
+    let mut lines = documentation.trim_end().lines().peekable();
     if lines.peek() == Some(&"---") {
         lines.next();
         lines.by_ref().find(|line| *line == "---");

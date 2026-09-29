@@ -51,7 +51,8 @@ pub fn resolve_kind(document: &Document, mapped: Option<&str>) -> KindResolution
                         "The generated kind can only be assigned in configuration.".into()
                     } else {
                         format!(
-                            "Unknown kind {kind:?}; use one of the lowercase kinds readme, howto, reference, runbook, adr, plan, or changelog."
+                            "Unknown kind {kind:?}; use one of the lowercase kinds {}.",
+                            declarable_kinds()
                         )
                     }),
                 }
@@ -68,6 +69,18 @@ pub fn resolve_kind(document: &Document, mapped: Option<&str>) -> KindResolution
         problem: mapped.is_none().then(|| {
             "Declare kind in frontmatter or add a matching [[kinds]] configuration entry.".into()
         }),
+    }
+}
+
+/// Kinds that frontmatter can declare, listed for diagnostic text.
+fn declarable_kinds() -> String {
+    let kinds: Vec<_> = crate::config::KINDS
+        .into_iter()
+        .filter(|kind| *kind != "generated")
+        .collect();
+    match kinds.split_last() {
+        Some((last, rest)) => format!("{}, or {last}", rest.join(", ")),
+        None => String::new(),
     }
 }
 
@@ -214,7 +227,10 @@ fn kind_diagnostics(context: &CheckContext<'_>, enabled: &BTreeSet<String>) -> V
     let mut span = Span::new(0, 0);
     let mut message =
         "Document kind is not declared and no kind mapping matches this file.".to_owned();
-    let mut suggestion = "Declare kind as readme, howto, reference, runbook, adr, plan, or changelog in YAML frontmatter, or add a matching [[kinds]] configuration entry.";
+    let mut suggestion = format!(
+        "Declare kind as {} in YAML frontmatter, or add a matching [[kinds]] configuration entry.",
+        declarable_kinds()
+    );
     if let Some(frontmatter) = &document.frontmatter {
         span = frontmatter.span;
         if let Some(error) = frontmatter.errors.first() {
@@ -223,7 +239,7 @@ fn kind_diagnostics(context: &CheckContext<'_>, enabled: &BTreeSet<String>) -> V
                 "Document kind cannot be resolved because the frontmatter is invalid: {}.",
                 error.message.trim_end_matches('.')
             );
-            suggestion = "Correct the YAML frontmatter so its kind declaration can be read.";
+            suggestion = "Correct the YAML frontmatter so its kind declaration can be read.".into();
         } else if let Some(kind) = &frontmatter.kind {
             if kind != "generated" && crate::config::KINDS.contains(&kind.as_str()) {
                 return Vec::new();
@@ -231,10 +247,13 @@ fn kind_diagnostics(context: &CheckContext<'_>, enabled: &BTreeSet<String>) -> V
             code = "KND002";
             if kind == "generated" {
                 message = "The generated kind is declared in frontmatter; it can only be assigned in configuration.".into();
-                suggestion = "Remove this declaration and assign generated with a [[kinds]] path mapping if a tool generates this file.";
+                suggestion = "Remove this declaration and assign generated with a [[kinds]] path mapping if a tool generates this file.".into();
             } else {
                 message = format!("Unknown document kind {kind:?}.");
-                suggestion = "Use one of the lowercase kinds readme, howto, reference, runbook, adr, plan, or changelog in frontmatter.";
+                suggestion = format!(
+                    "Use one of the lowercase kinds {} in frontmatter.",
+                    declarable_kinds()
+                );
             }
         } else if context.config.kind_for(context.path).is_some() {
             return Vec::new();
@@ -298,6 +317,64 @@ impl Rule {
             KindScope::Procedural => ["howto", "reference", "runbook"].contains(&kind),
         }
     }
+
+    /// This rule's page at the tag of this seiso version.
+    pub fn url(&self) -> String {
+        repository_url(&format!("docs/rules/{}.md", self.code))
+    }
+
+    /// The embedded page with its relative links pointing at this version's
+    /// tag, so they still open outside a seiso checkout.
+    pub fn standalone_documentation(&self) -> String {
+        let source = self.documentation;
+        let Ok(document) = crate::md::parse(source) else {
+            return source.to_owned();
+        };
+        let mut spans: Vec<_> = document
+            .links
+            .iter()
+            // Only a destination written without escapes can be replaced at its span.
+            .filter(|link| {
+                let span = link.destination_span;
+                source.get(span.start..span.end) == Some(link.destination.as_str())
+                    && !link.destination.starts_with(['#', '/'])
+                    && !crate::paths::has_scheme(&link.destination)
+            })
+            .map(|link| link.destination_span)
+            .collect();
+        spans.sort_by_key(|span| span.start);
+        // Reference links share their definition's span.
+        spans.dedup();
+        let mut output = source.to_owned();
+        for span in spans.into_iter().rev() {
+            let destination = &source[span.start..span.end];
+            let (path, suffix) =
+                destination.split_at(destination.find(['#', '?']).unwrap_or(destination.len()));
+            let mut segments = vec!["docs", "rules"];
+            for segment in path.split('/') {
+                match segment {
+                    "" | "." => {}
+                    ".." => {
+                        segments.pop();
+                    }
+                    segment => segments.push(segment),
+                }
+            }
+            output.replace_range(
+                span.start..span.end,
+                &(repository_url(&segments.join("/")) + suffix),
+            );
+        }
+        output
+    }
+}
+
+/// A repository file at the tag of this seiso version.
+fn repository_url(path: &str) -> String {
+    format!(
+        "https://github.com/scarletkc/seiso/blob/v{}/{path}",
+        env!("CARGO_PKG_VERSION")
+    )
 }
 
 #[derive(Debug, PartialEq, Eq)]

@@ -34,7 +34,9 @@ python -m unittest discover -s corpus/evaluation -p 'test_*.py'
 ```
 
 Run `seiso rule --all` to read the implemented rules. Their explanations are
-embedded from the Markdown files in `docs/rules/`.
+embedded from the Markdown files in `docs/rules/`. Link from them to other
+repository files with relative links; `seiso rule` points those links at the
+release tag of the running version.
 Their positive and negative Markdown examples execute as tests; positive
 diagnostics are stored in snapshots. Add regression cases for fragment
 boundaries, languages, source mappings, and suppression scope when changing

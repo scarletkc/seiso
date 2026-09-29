@@ -287,7 +287,7 @@ fn is_template(value: &str) -> bool {
     value.contains(['\0', '{', '}', '$', '<', '>'])
 }
 
-fn has_scheme(value: &str) -> bool {
+pub(crate) fn has_scheme(value: &str) -> bool {
     let Some((scheme, _)) = value.split_once(':') else {
         return false;
     };
