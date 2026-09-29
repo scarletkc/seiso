@@ -22,21 +22,14 @@ fn index(root: &Path, files: &[(&str, &str)], configuration: &str) -> WorkspaceI
             fs::create_dir_all(path.parent().unwrap()).unwrap();
             fs::write(&path, source).unwrap();
             let document = seiso::md::parse(source).unwrap();
-            let kind = seiso::rules::resolve_kind(&document, config.kind_for(&path)).value;
-            IndexedFile {
-                filename: (*filename).into(),
-                path: path.clone(),
-                enabled_rules: config
-                    .enabled_rules(&path, kind.as_deref(), &CliOverrides::default())
-                    .unwrap()
-                    .into_iter()
-                    .map(str::to_owned)
-                    .collect(),
-                domain: config.domain_for(&path).unwrap_or("").into(),
-                document: document.into(),
-                kind,
-                config: config.clone(),
-            }
+            IndexedFile::new(
+                (*filename).into(),
+                path,
+                document.into(),
+                config.clone(),
+                &CliOverrides::default(),
+            )
+            .unwrap()
         })
         .collect();
     WorkspaceIndex::new(root.to_path_buf(), files, true)

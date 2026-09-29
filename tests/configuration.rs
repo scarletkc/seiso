@@ -1,15 +1,11 @@
+use common::write;
+mod common;
 use std::fs;
 use std::path::Path;
 
 use seiso::config::{CliOverrides, Config, ConfigError, Workspace};
 use seiso::rules::rule_codes;
 use tempfile::{TempDir, tempdir};
-
-fn write(root: &Path, path: &str, source: &str) {
-    let path = root.join(path);
-    fs::create_dir_all(path.parent().unwrap()).unwrap();
-    fs::write(path, source).unwrap();
-}
 
 fn parse(source: &str) -> (TempDir, Config) {
     let dir = tempdir().unwrap();
@@ -19,7 +15,11 @@ fn parse(source: &str) -> (TempDir, Config) {
 
 fn rules(config: &Config, kind: Option<&str>, overrides: &CliOverrides) -> Vec<&'static str> {
     config
-        .enabled_rules(Path::new("docs/page.md"), kind, overrides)
+        .enabled_rules(
+            Path::new("docs/page.md"),
+            kind.and_then(seiso::rules::Kind::from_name),
+            overrides,
+        )
         .unwrap()
 }
 
@@ -522,7 +522,7 @@ fn per_file_ignores_apply_after_exact_selection() {
         config
             .enabled_rules(
                 Path::new("README.md"),
-                Some("readme"),
+                Some(seiso::rules::Kind::Readme),
                 &CliOverrides::default()
             )
             .unwrap(),
@@ -575,7 +575,11 @@ fn unimplemented_rules_are_rejected_in_every_selection_surface() {
                 ..Default::default()
             };
             assert!(matches!(
-                config.enabled_rules(Path::new("page.md"), Some("howto"), &overrides),
+                config.enabled_rules(
+                    Path::new("page.md"),
+                    Some(seiso::rules::Kind::Howto),
+                    &overrides
+                ),
                 Err(ConfigError::Selector(_))
             ));
             for selection in [
@@ -645,7 +649,11 @@ fn invalid_cli_selector_is_rejected_even_without_preview() {
         ..Default::default()
     };
     assert!(matches!(
-        config.enabled_rules(Path::new("page.md"), Some("howto"), &invalid),
+        config.enabled_rules(
+            Path::new("page.md"),
+            Some(seiso::rules::Kind::Howto),
+            &invalid
+        ),
         Err(ConfigError::Selector(_))
     ));
 }

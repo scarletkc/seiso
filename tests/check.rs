@@ -1,55 +1,10 @@
-use std::io::Write;
+use common::{run, value, workspace, write};
+mod common;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
-use std::path::Path;
-use std::process::{Command, Output, Stdio};
 
 use serde_json::{Value, json};
 use tempfile::TempDir;
-
-fn write(root: &Path, name: &str, text: &str) {
-    let path = root.join(name);
-    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
-    std::fs::write(path, text).unwrap();
-}
-
-fn run(root: &Path, arguments: &[&str], input: Option<&str>) -> Output {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_seiso"))
-        .current_dir(root)
-        .args(arguments)
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .unwrap();
-    if let Some(input) = input {
-        child
-            .stdin
-            .take()
-            .unwrap()
-            .write_all(input.as_bytes())
-            .unwrap();
-    } else {
-        drop(child.stdin.take());
-    }
-    child.wait_with_output().unwrap()
-}
-
-fn value(output: &Output) -> Value {
-    serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
-        panic!(
-            "{error}; stdout={} stderr={}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
-        )
-    })
-}
-
-fn workspace() -> TempDir {
-    let root = TempDir::new().unwrap();
-    write(root.path(), "seiso.toml", "");
-    root
-}
 
 #[test]
 fn preview_is_opt_in_even_when_a_rule_is_explicitly_selected() {
@@ -87,7 +42,7 @@ fn preview_is_opt_in_even_when_a_rule_is_explicitly_selected() {
 
 #[test]
 fn stable_rules_run_by_default_and_respect_selection_ignores_and_generated() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "a.md", "# Missing kind\n\n[Missing](missing.md)\n");
     let output = run(root, &["check", "--output-format", "json"], None);
@@ -123,7 +78,7 @@ fn stable_rules_run_by_default_and_respect_selection_ignores_and_generated() {
 
 #[test]
 fn selected_reports_are_deterministic_subsets_of_full_reports() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "a.md", "# A\n");
     write(root, "nested/b.md", "# B\n");
@@ -160,7 +115,7 @@ fn selected_reports_are_deterministic_subsets_of_full_reports() {
 
 #[test]
 fn incomplete_checks_preserve_diagnostics_and_override_exit_zero() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "good.md", "# Missing kind\n");
     std::fs::write(root.join("unreadable.md"), [0xff, 0xfe]).unwrap();
@@ -198,7 +153,7 @@ fn incomplete_checks_preserve_diagnostics_and_override_exit_zero() {
 
 #[test]
 fn local_checks_and_stdin_ignore_unrelated_source_and_configuration_errors() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "good.md", "# Original\n");
     write(root, "broken-config/seiso.toml", "unexpected = true\n");
@@ -251,7 +206,7 @@ fn local_checks_and_stdin_ignore_unrelated_source_and_configuration_errors() {
 
 #[test]
 fn local_checks_ignore_unrelated_ignore_pattern_errors() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "good.md", "---\nkind: reference\n---\n# Good\n");
     write(root, "other/.gitignore", "[z-a]\n");
@@ -286,7 +241,7 @@ fn local_checks_ignore_unrelated_ignore_pattern_errors() {
 
 #[test]
 fn explicit_paths_obey_excludes_gitignore_and_nearest_configuration() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(
         root,
@@ -337,7 +292,7 @@ fn explicit_paths_obey_excludes_gitignore_and_nearest_configuration() {
 
 #[test]
 fn stdin_replaces_content_uses_its_path_and_leaves_disk_unchanged() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "docs/a.md", "# Original\n");
     write(
@@ -385,7 +340,7 @@ fn stdin_replaces_content_uses_its_path_and_leaves_disk_unchanged() {
 
 #[test]
 fn new_stdin_documents_resolve_self_and_workspace_root_links() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "README.md", "---\nkind: readme\n---\n# Project\n");
     write(root, "space file.md", "# Target\n");
@@ -423,7 +378,7 @@ fn new_stdin_documents_resolve_self_and_workspace_root_links() {
 
 #[test]
 fn disabled_preview_rules_do_not_execute_or_stale_their_suppressions() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(
         root,
@@ -460,7 +415,7 @@ fn disabled_preview_rules_do_not_execute_or_stale_their_suppressions() {
 
 #[test]
 fn policy_paths_are_workspace_relative_and_independent_of_calling_directory() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "docs/nested/a.md", "---\nkind: howto\n---\n# Guide\n");
     write(
@@ -482,7 +437,7 @@ fn policy_paths_are_workspace_relative_and_independent_of_calling_directory() {
 
 #[test]
 fn malformed_arguments_and_outside_stdin_paths_return_tool_errors() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "a.md", "# A\n");
     for arguments in [
@@ -561,7 +516,7 @@ fn link_targets_that_differ_in_letter_case_are_reported_on_every_platform() {
 
 #[test]
 fn symlinked_external_directories_are_not_traversed_or_reported_as_missing() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     let external = TempDir::new().unwrap();
     write(external.path(), "outside.md", "# Missing kind\n");
@@ -601,7 +556,7 @@ fn symlinked_external_directories_are_not_traversed_or_reported_as_missing() {
 
 #[test]
 fn policy_exposes_effective_overrides_exclusions_generated_and_suppressions() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(
         root,
@@ -853,7 +808,7 @@ fn explicit_configuration_keeps_the_repository_root_and_applies_patterns_from_it
 
 #[test]
 fn unchecked_inputs_and_inactive_preview_selectors_explain_themselves() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "seiso.toml", "exclude = ['drafts/**']\n");
     write(root, ".gitignore", "vendor/\n");
@@ -925,7 +880,7 @@ fn unchecked_inputs_and_inactive_preview_selectors_explain_themselves() {
 
 #[test]
 fn unchecked_directories_name_git_ignored_markdown_as_the_cause() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, ".gitignore", "*.md\n");
     write(root, "docs/guide.md", "# Guide\n");
@@ -949,7 +904,7 @@ fn unchecked_directories_name_git_ignored_markdown_as_the_cause() {
 
 #[test]
 fn rule_documents_are_available_and_future_features_are_rejected() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     let output = run(root, &["rule", "KND001"], None);
     assert_eq!(output.status.code(), Some(0));
@@ -990,7 +945,7 @@ fn rule_documents_are_available_and_future_features_are_rejected() {
 
 #[test]
 fn rule_documents_link_into_this_versions_repository() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     let all = run(root, &["rule", "--all"], None);
     let all = String::from_utf8_lossy(&all.stdout);
@@ -1016,7 +971,7 @@ fn rule_documents_link_into_this_versions_repository() {
 
 #[test]
 fn hook_uses_event_cwd_converts_exit_codes_and_keeps_stdout_empty() {
-    let workspace = workspace();
+    let workspace = workspace("");
     let root = workspace.path();
     write(root, "a.md", "# Missing kind\n");
     let elsewhere = TempDir::new().unwrap();

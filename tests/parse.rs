@@ -1,15 +1,11 @@
+use common::write;
+mod common;
 use std::io::Write;
 use std::path::Path;
 use std::process::{Command, Output, Stdio};
 
 use serde_json::Value;
 use tempfile::TempDir;
-
-fn write(root: &Path, name: &str, text: &str) {
-    let path = root.join(name);
-    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
-    std::fs::write(path, text).unwrap();
-}
 
 fn parse(root: &Path, arguments: &[&str], stdin: Option<&str>) -> Output {
     let mut child = Command::new(env!("CARGO_BIN_EXE_seiso"))

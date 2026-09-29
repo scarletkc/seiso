@@ -117,6 +117,24 @@ pub enum Language {
     Ja,
 }
 
+impl Language {
+    pub const ALL: [Self; 3] = [Self::En, Self::Zh, Self::Ja];
+
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::En => "en",
+            Self::Zh => "zh",
+            Self::Ja => "ja",
+        }
+    }
+
+    pub fn from_name(name: &str) -> Option<Self> {
+        Self::ALL
+            .into_iter()
+            .find(|language| language.as_str() == name)
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Sentence {
     pub span: Span,

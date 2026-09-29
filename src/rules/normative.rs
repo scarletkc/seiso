@@ -4,7 +4,7 @@ use std::sync::LazyLock;
 
 use crate::config::{Config, Lexicon};
 use crate::diagnostics::{Diagnostic, Span};
-use crate::md::prose::{Run, marker, occurrences, runs};
+use crate::md::prose::{Run, marker, marker_if, occurrences, runs};
 use crate::md::{BlockKind, Document, Fragment, FragmentKind, Language};
 use crate::paths::{local_link_target, normalize};
 use regex::Regex;
@@ -167,21 +167,6 @@ fn end_user_behavior(before: &str, after: &str) -> bool {
             .any(|word| after.trim_start().starts_with(word))
 }
 
-fn conversation_marker(runs: &[Run<'_>], phrases: &[&str]) -> Option<Span> {
-    runs.iter()
-        .flat_map(|run| {
-            phrases.iter().flat_map(move |phrase| {
-                occurrences(&run.text, phrase)
-                    .into_iter()
-                    .filter(|range| {
-                        !end_user_behavior(&run.text[..range.start], &run.text[range.end..])
-                    })
-                    .filter_map(|range| run.span(range))
-            })
-        })
-        .min_by_key(|span| (span.start, span.end))
-}
-
 fn extensions(words: Words, lexicon: &Lexicon) -> &[String] {
     match words {
         Words::Stale => &lexicon.extend_stale_markers,
@@ -194,17 +179,9 @@ fn extensions(words: Words, lexicon: &Lexicon) -> &[String] {
     }
 }
 
-pub(crate) fn language_key(language: Language) -> &'static str {
-    match language {
-        Language::En => "en",
-        Language::Zh => "zh",
-        Language::Ja => "ja",
-    }
-}
-
 fn words(config: &Config, language: Language, kind: Words) -> Vec<&str> {
     let mut values = defaults(kind, language).to_vec();
-    if let Some(lexicon) = config.settings.lint.lexicon.get(language_key(language)) {
+    if let Some(lexicon) = config.settings.lint.lexicon.get(language.as_str()) {
         values.extend(extensions(kind, lexicon).iter().map(String::as_str));
     }
     values
@@ -257,6 +234,14 @@ pub fn check(
     config: &Config,
     enabled: &BTreeSet<String>,
 ) -> Vec<Diagnostic> {
+    let checks = NormativeChecks {
+        document,
+        filename,
+        path,
+        workspace_root,
+        config,
+        enabled,
+    };
     let mut diagnostics = Vec::new();
     for sentence in &document.sentences {
         if !config
@@ -264,32 +249,69 @@ pub fn check(
             .lint
             .languages
             .iter()
-            .any(|lang| lang == language_key(sentence.language))
+            .any(|lang| lang == sentence.language.as_str())
         {
             continue;
         }
         let prose = runs(sentence, false);
         let with_code = runs(sentence, true);
-        if enabled.contains("STL001") {
-            let stale = marker(&prose, &words(config, sentence.language, Words::Stale));
+        checks.check_stale_values(sentence, &prose, &with_code, &mut diagnostics);
+        checks.check_identifiers(sentence, &with_code, &mut diagnostics);
+        checks.check_root_pointers(sentence, &prose, &mut diagnostics);
+        checks.check_source_pointers(sentence, &prose, &mut diagnostics);
+        checks.check_rationale_headings(sentence, &prose, &mut diagnostics);
+        checks.check_conversation(sentence, &prose, &mut diagnostics);
+    }
+    let mut seen = BTreeSet::new();
+    diagnostics.retain(|diagnostic| seen.insert((diagnostic.code.clone(), diagnostic.byte_range)));
+    diagnostics
+}
+
+struct NormativeChecks<'a> {
+    document: &'a Document,
+    filename: &'a str,
+    path: &'a Path,
+    workspace_root: &'a Path,
+    config: &'a Config,
+    enabled: &'a BTreeSet<String>,
+}
+
+impl NormativeChecks<'_> {
+    fn check_stale_values(
+        &self,
+        sentence: &crate::md::Sentence,
+        prose: &[Run<'_>],
+        with_code: &[Run<'_>],
+        diagnostics: &mut Vec<Diagnostic>,
+    ) {
+        if self.enabled.contains("STL001") {
+            let stale = marker(prose, &words(self.config, sentence.language, Words::Stale));
             let constraint = marker(
-                &with_code,
-                &words(config, sentence.language, Words::Constraint),
+                with_code,
+                &words(self.config, sentence.language, Words::Constraint),
             );
             if stale.is_some()
                 && constraint.is_none()
                 && !with_code.iter().any(|run| BOUND.is_match(&run.text))
                 && let Some(span) = with_code.iter().find_map(volatile_value)
             {
-                diagnostics.push(emit(document, filename, "STL001", span,
+                diagnostics.push(emit(self.document, self.filename, "STL001", span,
                         "This sentence pairs a current-state marker with a value that can change.",
                         "Link to the source that owns the value, or state a lasting requirement with its constraint."));
             }
         }
-        if enabled.contains("STL003") {
-            for run in &with_code {
+    }
+
+    fn check_identifiers(
+        &self,
+        sentence: &crate::md::Sentence,
+        with_code: &[Run<'_>],
+        diagnostics: &mut Vec<Diagnostic>,
+    ) {
+        if self.enabled.contains("STL003") {
+            for run in with_code {
                 let mut seen = BTreeSet::new();
-                for context in words(config, sentence.language, Words::Commit) {
+                for context in words(self.config, sentence.language, Words::Commit) {
                     for occurrence in occurrences(&run.text, context) {
                         let tail = &run.text[occurrence.end..];
                         // Require a separator: `commitdeadbee` is one identifier, not a context and hash.
@@ -305,7 +327,7 @@ pub fn check(
                                 occurrence.end + hash.end(),
                             );
                             if let Some(span) = run.span(range).filter(|span| seen.insert(*span)) {
-                                diagnostics.push(emit(document, filename, "STL003", span,
+                                diagnostics.push(emit(self.document, self.filename, "STL003", span,
                                     "A commit or build identifier is embedded in a long-lived document.",
                                     "Point to the command or release record that provides the identifier."));
                             }
@@ -314,23 +336,35 @@ pub fn check(
                 }
             }
         }
-        if enabled.contains("PTR001")
-            && marker(&prose, &words(config, sentence.language, Words::Pointer)).is_some()
+    }
+
+    fn check_root_pointers(
+        &self,
+        sentence: &crate::md::Sentence,
+        prose: &[Run<'_>],
+        diagnostics: &mut Vec<Diagnostic>,
+    ) {
+        if self.enabled.contains("PTR001")
+            && marker(
+                prose,
+                &words(self.config, sentence.language, Words::Pointer),
+            )
+            .is_some()
         {
-            for link in document.links.iter().filter(|link| {
+            for link in self.document.links.iter().filter(|link| {
                 !link.image
                     && sentence.span.start < link.span.end
                     && link.span.start < sentence.span.end
             }) {
-                if repository_root(&link.destination, path, workspace_root) {
+                if repository_root(&link.destination, self.path, self.workspace_root) {
                     let span = if link.reference.is_some() {
                         link.span
                     } else {
                         link.destination_span
                     };
                     diagnostics.push(emit(
-                        document,
-                        filename,
+                        self.document,
+                        self.filename,
                         "PTR001",
                         span,
                         "This pointer links to a repository root.",
@@ -339,19 +373,36 @@ pub fn check(
                 }
             }
         }
-        if enabled.contains("PTR003")
-            && let Some(span) = marker(&prose, &words(config, sentence.language, Words::Source))
+    }
+
+    fn check_source_pointers(
+        &self,
+        sentence: &crate::md::Sentence,
+        prose: &[Run<'_>],
+        diagnostics: &mut Vec<Diagnostic>,
+    ) {
+        if self.enabled.contains("PTR003")
+            && let Some(span) = marker(prose, &words(self.config, sentence.language, Words::Source))
             && !sentence.fragments.iter().any(specific_target)
         {
-            diagnostics.push(emit(document, filename, "PTR003", span,
+            diagnostics.push(emit(self.document, self.filename, "PTR003", span,
                         "This source pointer names no file or symbol.",
                         "Name the source file and a searchable symbol, or link directly to the relevant definition."));
         }
-        if enabled.contains("RAT002") && document.blocks[sentence.block].kind == BlockKind::Heading
+    }
+
+    fn check_rationale_headings(
+        &self,
+        sentence: &crate::md::Sentence,
+        prose: &[Run<'_>],
+        diagnostics: &mut Vec<Diagnostic>,
+    ) {
+        if self.enabled.contains("RAT002")
+            && self.document.blocks[sentence.block].kind == BlockKind::Heading
         {
             let span = prose.iter().find_map(|run| {
                 let start = run.text.len() - run.text.trim_start().len();
-                words(config, sentence.language, Words::Rationale)
+                words(self.config, sentence.language, Words::Rationale)
                     .iter()
                     .find_map(|phrase| {
                         occurrences(&run.text, phrase)
@@ -367,20 +418,29 @@ pub fn check(
                     })
             });
             if let Some(span) = span {
-                diagnostics.push(emit(document, filename, "RAT002", span,
+                diagnostics.push(emit(self.document, self.filename, "RAT002", span,
                     "This heading introduces a design-choice rationale in a how-to or reference page.",
                     "Move the decision rationale to an ADR and keep the procedure or contract here."));
             }
         }
-        if enabled.contains("VOX001")
-            && let Some(span) = conversation_marker(
-                &prose,
-                &words(config, sentence.language, Words::Conversation),
+    }
+
+    fn check_conversation(
+        &self,
+        sentence: &crate::md::Sentence,
+        prose: &[Run<'_>],
+        diagnostics: &mut Vec<Diagnostic>,
+    ) {
+        if self.enabled.contains("VOX001")
+            && let Some(span) = marker_if(
+                prose,
+                &words(self.config, sentence.language, Words::Conversation),
+                |before, after| !end_user_behavior(before, after),
             )
         {
             diagnostics.push(emit(
-                document,
-                filename,
+                self.document,
+                self.filename,
                 "VOX001",
                 span,
                 "This phrase refers to the requester of an earlier conversation.",
@@ -388,9 +448,6 @@ pub fn check(
             ));
         }
     }
-    let mut seen = BTreeSet::new();
-    diagnostics.retain(|diagnostic| seen.insert((diagnostic.code.clone(), diagnostic.byte_range)));
-    diagnostics
 }
 
 fn specific_target(fragment: &Fragment) -> bool {

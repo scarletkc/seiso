@@ -22,6 +22,14 @@ impl Span {
         Self { start, end }
     }
 
+    pub const fn contains(self, other: Self) -> bool {
+        self.start <= other.start && other.end <= self.end
+    }
+
+    pub const fn contains_offset(self, offset: usize) -> bool {
+        self.start <= offset && offset < self.end
+    }
+
     pub const fn len(self) -> usize {
         self.end.saturating_sub(self.start)
     }

@@ -1,7 +1,8 @@
 //! Authored repair regressions; these are not an independent agent or human repair study.
+mod common;
+use common::{CheckContext, check};
 
 use seiso::config::{CliOverrides, Config};
-use seiso::rules::{CheckContext, check};
 
 #[test]
 fn suggested_repairs_clear_each_rule_and_preserve_unaffected_facts() {

@@ -1,6 +1,8 @@
+mod common;
+use common::{CheckContext, check};
 use seiso::config::{CliOverrides, Config};
 use seiso::diagnostics::Diagnostic;
-use seiso::rules::{CheckContext, check};
+
 use seiso::sections::{SectionType, classify};
 
 fn evaluate(source: &str, code: &str, kind: &str, extra: &str, preview: bool) -> Vec<Diagnostic> {

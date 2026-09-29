@@ -1,5 +1,7 @@
 //! Read-only workspace rules. Every comparison is between two observed blocks.
 
+use crate::rules::Kind;
+
 use std::collections::{BTreeMap, BTreeSet};
 
 use crate::diagnostics::{Diagnostic, RelatedLocation, Span, sorted_diagnostics};
@@ -76,14 +78,15 @@ pub fn check(index: &WorkspaceIndex) -> CrossReport {
 }
 
 fn enabled(file: &IndexedFile, code: &str) -> bool {
-    file.kind.as_deref() != Some("generated") && file.enabled_rules.iter().any(|item| item == code)
+    file.policy.kind_value() != Some(Kind::Generated)
+        && file.policy.enabled_rules.iter().any(|item| item == code)
 }
 
 fn mark_incomplete(report: &mut CrossReport, file: &IndexedFile, code: &str) {
     if enabled(file, code) {
         report
             .incomplete
-            .entry(file.filename.clone())
+            .entry(file.policy.filename.clone())
             .or_default()
             .insert(code.to_owned());
     }
@@ -94,7 +97,7 @@ fn check_links(index: &WorkspaceIndex, file: &IndexedFile, report: &mut CrossRep
         return;
     }
     for link in &file.document.links {
-        let resolution = index.resolve_link(&file.filename, &link.destination);
+        let resolution = index.resolve_link(&file.policy.filename, &link.destination);
         match resolution.status {
             LinkStatus::AnchorMissing if enabled(file, "LNK002") => {
                 let target = resolution
@@ -103,14 +106,14 @@ fn check_links(index: &WorkspaceIndex, file: &IndexedFile, report: &mut CrossRep
                     .and_then(|name| index.file(name));
                 if let Some(target) = target {
                     let mut diagnostic = Diagnostic::new(
-                        &file.filename,
+                        &file.policy.filename,
                         &file.document.source,
                         "LNK002",
                         link.span,
                         format!(
                             "Anchor {:?} does not exist in {}.",
                             resolution.anchor.as_deref().unwrap_or_default(),
-                            target.filename
+                            target.policy.filename
                         ),
                         "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
                     );
@@ -139,7 +142,7 @@ fn check_links(index: &WorkspaceIndex, file: &IndexedFile, report: &mut CrossRep
                     });
                 if !allowed {
                     let mut diagnostic = Diagnostic::new(
-                        &file.filename,
+                        &file.policy.filename,
                         &file.document.source,
                         "PTR002",
                         link.span,
@@ -167,7 +170,7 @@ fn check_links(index: &WorkspaceIndex, file: &IndexedFile, report: &mut CrossRep
                 mark_incomplete(report, file, "LNK002");
                 mark_incomplete(report, file, "PTR002");
                 if let Some(error) = resolution.error {
-                    report.errors.push((file.filename.clone(), error));
+                    report.errors.push((file.policy.filename.clone(), error));
                 }
             }
             _ => {}
@@ -185,15 +188,11 @@ struct Unit {
     whole_document: bool,
 }
 
-fn contains(outer: Span, inner: Span) -> bool {
-    outer.start <= inner.start && inner.end <= outer.end
-}
-
 fn identifiers(document: &Document, span: Span) -> BTreeSet<String> {
     document
         .identifiers
         .iter()
-        .filter(|id| contains(span, id.span))
+        .filter(|id| span.contains(id.span))
         .map(|id| id.text.clone())
         .collect()
 }
@@ -240,7 +239,7 @@ fn definition_units(index: &WorkspaceIndex) -> Vec<Unit> {
                         let Some(identifier) = document
                             .identifiers
                             .iter()
-                            .find(|id| contains(span, id.span))
+                            .find(|id| span.contains(id.span))
                         else {
                             continue;
                         };
@@ -410,7 +409,8 @@ fn language(language: Language) -> u8 {
 }
 
 fn same_domain(left: &IndexedFile, right: &IndexedFile) -> bool {
-    left.domain == right.domain && left.document.language == right.document.language
+    left.policy.domain.as_deref().unwrap_or("") == right.policy.domain.as_deref().unwrap_or("")
+        && left.document.language == right.document.language
 }
 
 type Edges = BTreeMap<usize, BTreeSet<usize>>;
@@ -426,7 +426,10 @@ fn similarity_edges(
     let mut minimum_threshold: BTreeMap<(&str, u8), f64> = BTreeMap::new();
     for unit in units {
         let file = &index.files()[unit.file];
-        let domain = (file.domain.as_str(), language(file.document.language));
+        let domain = (
+            file.policy.domain.as_deref().unwrap_or(""),
+            language(file.document.language),
+        );
         let settings = &file.config.settings.lint.dup;
         let threshold = if unit.paragraph {
             settings.min_paragraph_similarity
@@ -455,7 +458,10 @@ fn similarity_edges(
         } else {
             &unit.values
         };
-        let domain = (file.domain.as_str(), language(file.document.language));
+        let domain = (
+            file.policy.domain.as_deref().unwrap_or(""),
+            language(file.document.language),
+        );
         let threshold = minimum_threshold[&domain];
         // A qualifying Jaccard pair must intersect in these prefixes under one
         // shared token ordering. Rarest-first ordering avoids common prose shingles.
@@ -469,7 +475,7 @@ fn similarity_edges(
         let mut candidates = BTreeSet::new();
         for value in &prefix {
             let key = (
-                file.domain.as_str(),
+                file.policy.domain.as_deref().unwrap_or(""),
                 language(file.document.language),
                 *value,
             );
@@ -482,8 +488,8 @@ fn similarity_edges(
             let other_file = &index.files()[other.file];
             if unit.file == other.file
                 || (plan_only
-                    && file.kind.as_deref() != Some("plan")
-                    && other_file.kind.as_deref() != Some("plan"))
+                    && file.policy.kind_value() != Some(Kind::Plan)
+                    && other_file.policy.kind_value() != Some(Kind::Plan))
             {
                 continue;
             }
@@ -524,7 +530,7 @@ fn similarity_edges(
         for value in prefix {
             postings
                 .entry((
-                    file.domain.as_str(),
+                    file.policy.domain.as_deref().unwrap_or(""),
                     language(file.document.language),
                     value,
                 ))
@@ -549,7 +555,7 @@ fn restatement_edges(index: &WorkspaceIndex, units: &[Unit], report: &mut CrossR
             .document
             .links
             .iter()
-            .filter(|link| !link.image && contains(unit.span, link.span))
+            .filter(|link| !link.image && unit.span.contains(link.span))
             .max_by_key(|link| link.span.end)
         else {
             continue;
@@ -561,7 +567,7 @@ fn restatement_edges(index: &WorkspaceIndex, units: &[Unit], report: &mut CrossR
         {
             continue;
         }
-        let resolution = index.resolve_link(&file.filename, &link.destination);
+        let resolution = index.resolve_link(&file.policy.filename, &link.destination);
         if matches!(
             resolution.status,
             LinkStatus::AnchorUnknown
@@ -585,27 +591,28 @@ fn restatement_edges(index: &WorkspaceIndex, units: &[Unit], report: &mut CrossR
         else {
             continue;
         };
-        if file.filename == target.filename || !same_domain(file, target) {
+        if file.policy.filename == target.policy.filename || !same_domain(file, target) {
             continue;
         }
         let anchor_span = resolution
             .anchor
             .as_deref()
-            .and_then(|anchor| index.anchor_span(&target.filename, anchor));
+            .and_then(|anchor| index.anchor_span(&target.policy.filename, anchor));
         let target_section = if let Some(span) = anchor_span {
             units
                 .iter()
                 .enumerate()
                 .filter(|(_, unit)| {
                     !unit.whole_document
-                        && index.files()[unit.file].filename == target.filename
-                        && contains(unit.span, span)
+                        && index.files()[unit.file].policy.filename == target.policy.filename
+                        && unit.span.contains(span)
                 })
                 .min_by_key(|(_, unit)| unit.span.len())
         } else {
             // A link without a fragment addresses the complete target document.
             units.iter().enumerate().find(|(_, unit)| {
-                index.files()[unit.file].filename == target.filename && unit.whole_document
+                index.files()[unit.file].policy.filename == target.policy.filename
+                    && unit.whole_document
             })
         };
         let Some((target_index, target_unit)) = target_section else {
@@ -634,18 +641,18 @@ fn rank(file: &IndexedFile) -> u8 {
     {
         return 7;
     }
-    match file.kind.as_deref() {
-        Some("generated") => 6,
-        Some("reference") => 5,
-        Some("adr") => 4,
-        Some("howto") => 3,
-        Some("readme") => 2,
+    match file.policy.kind_value() {
+        Some(Kind::Generated) => 6,
+        Some(Kind::Reference) => 5,
+        Some(Kind::Adr) => 4,
+        Some(Kind::Howto) => 3,
+        Some(Kind::Readme) => 2,
         _ => 1,
     }
 }
 
 fn related(file: &IndexedFile, span: Span, message: &str) -> RelatedLocation {
-    RelatedLocation::new(&file.filename, &file.document.source, span, message)
+    RelatedLocation::new(&file.policy.filename, &file.document.source, span, message)
 }
 
 fn emit_owned(
@@ -702,7 +709,7 @@ fn emit_owned(
             continue;
         }
         let mut diagnostic = Diagnostic::new(
-            &file.filename,
+            &file.policy.filename,
             &file.document.source,
             rule,
             unit.span,
@@ -763,15 +770,18 @@ mod tests {
                     } else {
                         Language::En
                     };
-                    files.push(IndexedFile {
-                        path: root.path().join(&filename),
-                        filename,
-                        document: document.into(),
-                        kind: Some("reference".into()),
-                        domain: ((mask / 2) % 2).to_string(),
-                        enabled_rules: Vec::new(),
+                    let mut file = IndexedFile::new(
+                        filename.clone(),
+                        root.path().join(&filename),
+                        document.into(),
                         config,
-                    });
+                        &crate::config::CliOverrides::default(),
+                    )
+                    .unwrap();
+                    file.policy.kind = Some(crate::rules::KindOutcome::Mapped(Kind::Reference));
+                    file.policy.domain = Some(((mask / 2) % 2).to_string());
+                    file.policy.enabled_rules.clear();
+                    files.push(file);
                     units.push(Unit {
                         file: units.len(),
                         span: Span::new(0, 0),

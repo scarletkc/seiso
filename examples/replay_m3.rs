@@ -3,7 +3,7 @@
 use std::fs;
 
 use seiso::config::{CliOverrides, Config};
-use seiso::rules::{CheckContext, check_raw, finish_check};
+use seiso::rules::{CheckContext, LocalWorkspaceFiles, check};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 
@@ -30,19 +30,21 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let mut rows = Vec::new();
     for input in batch.documents {
         let document = seiso::md::parse(&input.source)?;
-        let raw = check_raw(&CheckContext {
-            document: &document,
-            filename: &input.path,
-            path: &workspace.path().join(&input.path),
-            workspace_root: workspace.path(),
-            config: &config,
-            overrides: &CliOverrides {
+        let path = workspace.path().join(&input.path);
+        let context = CheckContext::new(
+            &document,
+            &input.path,
+            &path,
+            workspace.path(),
+            &config,
+            &CliOverrides {
                 preview: true,
                 ..CliOverrides::default()
             },
-        })?;
+        )?;
+        let raw = check(&context, &LocalWorkspaceFiles::default());
         let incomplete_rules: Vec<_> = raw.incomplete_rules.iter().cloned().collect();
-        let result = finish_check(&document, &input.path, raw);
+        let result = raw.finish(&document, &input.path);
         if !result.errors.is_empty() {
             return Err(format!("input {}: {:?}", input.id, result.errors).into());
         }

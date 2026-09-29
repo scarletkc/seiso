@@ -1,5 +1,5 @@
 use std::collections::BTreeMap;
-use std::sync::OnceLock;
+use std::sync::LazyLock;
 
 use crate::diagnostics::Span;
 use markdown::mdast::Node;
@@ -7,6 +7,8 @@ use regex::Regex;
 use serde_yaml_ng::Value;
 
 use crate::md::{mapping, *};
+
+static LINE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\bat line (\d+)").unwrap());
 
 pub fn parse(source: &str) -> Result<Document, ParseError> {
     parse_with_options(source, ParseOptions::default())
@@ -25,110 +27,181 @@ pub fn parse_with_options(source: &str, options: ParseOptions) -> Result<Documen
     let tree = markdown::to_mdast(source, &markdown_options).map_err(|error| ParseError {
         message: error.to_string(),
     })?;
-    let mut document = Document {
-        source: source.to_owned(),
-        frontmatter: None,
-        sections: vec![Section {
-            parent: None,
-            children: Vec::new(),
-            depth: 0,
-            heading: None,
-            heading_span: None,
-            span: Span {
-                start: 0,
-                end: source.len(),
-            },
-            blocks: Vec::new(),
-        }],
-        blocks: Vec::new(),
-        sentences: Vec::new(),
-        links: Vec::new(),
-        comments: Vec::new(),
-        identifiers: Vec::new(),
-        language: Language::En,
-    };
-    let mut definitions = BTreeMap::new();
-    let mut stack = vec![&tree];
-    while let Some(node) = stack.pop() {
-        if let Node::Definition(definition) = node {
-            definitions
-                .entry(normalize_reference(&definition.identifier))
-                .or_insert_with(|| Definition {
-                    destination: definition.url.clone(),
-                    title: definition.title.clone(),
-                    span: destination_span(source, node, true),
-                });
-        }
-        if let Node::Yaml(yaml) = node {
-            let span = node_span(node);
-            // YAML locations count from the line after the opening fence.
-            let line_offset = source[..span.start].matches('\n').count() + 1;
-            document.frontmatter = Some(frontmatter(&yaml.value, span, line_offset));
-        }
-        if let Some(children) = node.children() {
-            stack.extend(children.iter().rev());
-        }
-    }
-    if document.frontmatter.is_none() && looks_like_unclosed_frontmatter(source) {
-        let span = Span {
-            start: 0,
-            end: source.len(),
-        };
-        document.frontmatter = Some(Frontmatter {
-            span,
-            raw: source.lines().skip(1).collect::<Vec<_>>().join("\n"),
-            kind: None,
-            lang: None,
-            canonical: None,
-            errors: vec![FrontmatterError {
-                span,
-                message: "YAML frontmatter has no closing fence".to_owned(),
+    let mut builder = DocumentBuilder::new(source);
+    builder.read_definitions(&tree);
+    builder.walk_blocks(&tree);
+    builder.detect_language();
+    Ok(builder.document)
+}
+
+struct DocumentBuilder<'a> {
+    source: &'a str,
+    document: Document,
+    definitions: BTreeMap<String, Definition>,
+    declared_language: Option<Language>,
+    section_stack: Vec<usize>,
+    section_floor: usize,
+    comment_scanner: CommentScanner,
+}
+
+impl<'a> DocumentBuilder<'a> {
+    fn new(source: &'a str) -> Self {
+        let document = Document {
+            source: source.to_owned(),
+            frontmatter: None,
+            sections: vec![Section {
+                parent: None,
+                children: Vec::new(),
+                depth: 0,
+                heading: None,
+                heading_span: None,
+                span: Span {
+                    start: 0,
+                    end: source.len(),
+                },
+                blocks: Vec::new(),
             }],
-        });
-    }
-    let declared_language = document
-        .frontmatter
-        .as_ref()
-        .and_then(|frontmatter| frontmatter.lang.as_deref())
-        .and_then(|language| match language {
-            "en" => Some(Language::En),
-            "zh" => Some(Language::Zh),
-            "ja" => Some(Language::Ja),
-            _ => None,
-        });
-    let mut section_stack = vec![0];
-    let mut section_floor = 1;
-    let mut comment_scanner = CommentScanner::default();
-    let mut pending = vec![Walk::Node(&tree, None)];
-    while let Some(event) = pending.pop() {
-        let (node, parent) = match event {
-            Walk::Node(node, parent) => (node, parent),
-            Walk::Exit {
-                sections,
-                floor,
-                end,
-            } => {
-                for section in &section_stack[sections.len()..] {
-                    document.sections[*section].span.end = end;
-                }
-                section_stack = sections;
-                section_floor = floor;
-                continue;
-            }
+            blocks: Vec::new(),
+            sentences: Vec::new(),
+            links: Vec::new(),
+            comments: Vec::new(),
+            identifiers: Vec::new(),
+            language: Language::En,
         };
+        Self {
+            source,
+            document,
+            definitions: BTreeMap::new(),
+            declared_language: None,
+            section_stack: vec![0],
+            section_floor: 1,
+            comment_scanner: CommentScanner::default(),
+        }
+    }
+
+    fn read_definitions(&mut self, tree: &Node) {
+        let mut stack = vec![tree];
+        while let Some(node) = stack.pop() {
+            if let Node::Definition(definition) = node {
+                self.definitions
+                    .entry(normalize_reference(&definition.identifier))
+                    .or_insert_with(|| Definition {
+                        destination: definition.url.clone(),
+                        title: definition.title.clone(),
+                        span: destination_span(self.source, node, true),
+                    });
+            }
+            if let Node::Yaml(yaml) = node {
+                let span = node_span(node);
+                // YAML locations count from the line after the opening fence.
+                let line_offset = self.source[..span.start].matches('\n').count() + 1;
+                self.document.frontmatter = Some(frontmatter(&yaml.value, span, line_offset));
+            }
+            if let Some(children) = node.children() {
+                stack.extend(children.iter().rev());
+            }
+        }
+        if self.document.frontmatter.is_none() && looks_like_unclosed_frontmatter(self.source) {
+            let span = Span {
+                start: 0,
+                end: self.source.len(),
+            };
+            self.document.frontmatter = Some(Frontmatter {
+                span,
+                raw: self.source.lines().skip(1).collect::<Vec<_>>().join("\n"),
+                kind: None,
+                lang: None,
+                canonical: None,
+                errors: vec![FrontmatterError {
+                    span,
+                    message: "YAML frontmatter has no closing fence".to_owned(),
+                }],
+            });
+        }
+        self.declared_language = self
+            .document
+            .frontmatter
+            .as_ref()
+            .and_then(|frontmatter| frontmatter.lang.as_deref())
+            .and_then(Language::from_name);
+    }
+
+    fn walk_blocks(&mut self, tree: &Node) {
+        let mut pending = vec![Walk::Node(tree, None)];
+        while let Some(event) = pending.pop() {
+            let (node, parent) = match event {
+                Walk::Node(node, parent) => (node, parent),
+                Walk::Exit {
+                    sections,
+                    floor,
+                    end,
+                } => {
+                    for section in &self.section_stack[sections.len()..] {
+                        self.document.sections[*section].span.end = end;
+                    }
+                    self.section_stack = sections;
+                    self.section_floor = floor;
+                    continue;
+                }
+            };
+            self.add_section(node);
+            let Some(kind) = block_kind(node) else {
+                if let Some(children) = node.children() {
+                    pending.extend(children.iter().rev().map(|child| Walk::Node(child, parent)));
+                }
+                continue;
+            };
+            let block = self.add_block(node, parent, kind);
+            if matches!(
+                kind,
+                BlockKind::Paragraph | BlockKind::Heading | BlockKind::TableCell
+            ) {
+                self.add_inline(node, block);
+            } else if matches!(kind, BlockKind::Html | BlockKind::HtmlComment) {
+                self.comment_scanner.extract(
+                    self.source,
+                    node_span(node),
+                    &mut self.document.comments,
+                );
+            } else if let Some(children) = node.children() {
+                if matches!(
+                    kind,
+                    BlockKind::Blockquote | BlockKind::ListItem | BlockKind::FootnoteDefinition
+                ) {
+                    pending.push(Walk::Exit {
+                        sections: self.section_stack.clone(),
+                        floor: self.section_floor,
+                        end: node_span(node).end,
+                    });
+                    self.section_floor = self.section_stack.len();
+                }
+                pending.extend(
+                    children
+                        .iter()
+                        .rev()
+                        .map(|child| Walk::Node(child, Some(block))),
+                );
+            }
+        }
+    }
+
+    fn add_section(&mut self, node: &Node) {
         if let Node::Heading(heading) = node {
             let span = node_span(node);
-            while section_stack.len() > section_floor
-                && document.sections[*section_stack.last().unwrap_or(&0)].depth >= heading.depth
+            while self.section_stack.len() > self.section_floor
+                && self.document.sections[*self.section_stack.last().unwrap_or(&0)].depth
+                    >= heading.depth
             {
-                if let Some(section) = section_stack.pop() {
-                    document.sections[section].span.end = span.start;
+                if let Some(section) = self.section_stack.pop() {
+                    self.document.sections[section].span.end = span.start;
                 }
             }
-            let parent_section = *section_stack.last().unwrap_or(&0);
-            let section = document.sections.len();
-            document.sections[parent_section].children.push(section);
-            document.sections.push(Section {
+            let parent_section = *self.section_stack.last().unwrap_or(&0);
+            let section = self.document.sections.len();
+            self.document.sections[parent_section]
+                .children
+                .push(section);
+            self.document.sections.push(Section {
                 parent: Some(parent_section),
                 children: Vec::new(),
                 depth: heading.depth,
@@ -136,21 +209,18 @@ pub fn parse_with_options(source: &str, options: ParseOptions) -> Result<Documen
                 heading_span: Some(span),
                 span: Span {
                     start: span.start,
-                    end: source.len(),
+                    end: self.source.len(),
                 },
                 blocks: Vec::new(),
             });
-            section_stack.push(section);
+            self.section_stack.push(section);
         }
-        let Some(kind) = block_kind(node) else {
-            if let Some(children) = node.children() {
-                pending.extend(children.iter().rev().map(|child| Walk::Node(child, parent)));
-            }
-            continue;
-        };
-        let section = *section_stack.last().unwrap_or(&0);
-        let block = document.blocks.len();
-        document.blocks.push(Block {
+    }
+
+    fn add_block(&mut self, node: &Node, parent: Option<usize>, kind: BlockKind) -> usize {
+        let section = *self.section_stack.last().unwrap_or(&0);
+        let block = self.document.blocks.len();
+        self.document.blocks.push(Block {
             kind,
             span: node_span(node),
             parent,
@@ -173,77 +243,63 @@ pub fn parse_with_options(source: &str, options: ParseOptions) -> Result<Documen
                 None
             },
         });
-        document.sections[section].blocks.push(block);
+        self.document.sections[section].blocks.push(block);
         if let Some(parent) = parent {
-            document.blocks[parent].children.push(block);
+            self.document.blocks[parent].children.push(block);
         }
-        if matches!(
-            kind,
-            BlockKind::Paragraph | BlockKind::Heading | BlockKind::TableCell
-        ) {
-            let fragments = inline(
-                source,
-                node,
-                &definitions,
-                &mut document,
-                &mut comment_scanner,
-            );
-            if kind == BlockKind::Heading {
-                document.sections[section].heading = Some(
-                    fragments
-                        .iter()
-                        .filter(|fragment| fragment.kind != FragmentKind::LinkDestination)
-                        .map(|fragment| fragment.text.as_str())
-                        .collect(),
-                );
-            }
-            for fragment in &fragments {
-                if fragment.kind == FragmentKind::InlineCode && is_identifier(&fragment.text) {
-                    document.identifiers.push(Identifier {
-                        text: fragment.text.clone(),
-                        span: fragment.span,
-                        block,
-                        section,
-                    });
-                }
-            }
-            for sentence in sentences(fragments, block, declared_language) {
-                document.blocks[block]
-                    .sentences
-                    .push(document.sentences.len());
-                document.sentences.push(sentence);
-            }
-        } else if matches!(kind, BlockKind::Html | BlockKind::HtmlComment) {
-            comment_scanner.extract(source, node_span(node), &mut document.comments);
-        } else if let Some(children) = node.children() {
-            if matches!(
-                kind,
-                BlockKind::Blockquote | BlockKind::ListItem | BlockKind::FootnoteDefinition
-            ) {
-                pending.push(Walk::Exit {
-                    sections: section_stack.clone(),
-                    floor: section_floor,
-                    end: node_span(node).end,
-                });
-                section_floor = section_stack.len();
-            }
-            pending.extend(
-                children
+        block
+    }
+
+    fn add_inline(&mut self, node: &Node, block: usize) {
+        let kind = self.document.blocks[block].kind;
+        let section = self.document.blocks[block].section;
+        let fragments = inline(
+            self.source,
+            node,
+            &self.definitions,
+            &mut self.document,
+            &mut self.comment_scanner,
+        );
+        if kind == BlockKind::Heading {
+            self.document.sections[section].heading = Some(
+                fragments
                     .iter()
-                    .rev()
-                    .map(|child| Walk::Node(child, Some(block))),
+                    .filter(|fragment| fragment.kind != FragmentKind::LinkDestination)
+                    .map(|fragment| fragment.text.as_str())
+                    .collect(),
             );
+        }
+        for fragment in &fragments {
+            if fragment.kind == FragmentKind::InlineCode && is_identifier(&fragment.text) {
+                self.document.identifiers.push(Identifier {
+                    text: fragment.text.clone(),
+                    span: fragment.span,
+                    block,
+                    section,
+                });
+            }
+        }
+        for sentence in sentences(fragments, block, self.declared_language) {
+            self.document.blocks[block]
+                .sentences
+                .push(self.document.sentences.len());
+            self.document.sentences.push(sentence);
         }
     }
-    let prose = document
-        .sentences
-        .iter()
-        .flat_map(|sentence| &sentence.fragments)
-        .filter(|fragment| is_language_evidence(fragment.kind))
-        .map(|fragment| fragment.text.as_str())
-        .collect::<String>();
-    document.language = declared_language.unwrap_or_else(|| detect_language(&prose));
-    Ok(document)
+
+    fn detect_language(&mut self) {
+        let prose = self
+            .document
+            .sentences
+            .iter()
+            .flat_map(|sentence| &sentence.fragments)
+            .filter(|fragment| is_language_evidence(fragment.kind))
+            .map(|fragment| fragment.text.as_str())
+            .collect::<String>();
+        self.document.language = self
+            .declared_language
+            .unwrap_or_else(|| detect_language(&prose));
+    }
 }
 
 enum Walk<'a> {
@@ -355,15 +411,13 @@ fn frontmatter(raw: &str, span: Span, line_offset: usize) -> Frontmatter {
 
 /// Report YAML locations as lines of the Markdown file.
 fn file_line_numbers(message: &str, offset: usize) -> String {
-    static LINE: OnceLock<Regex> = OnceLock::new();
-    LINE.get_or_init(|| Regex::new(r"\bat line (\d+)").unwrap())
-        .replace_all(message, |captures: &regex::Captures<'_>| {
-            captures[1].parse::<usize>().map_or_else(
-                |_| captures[0].to_owned(),
-                |line| format!("at line {}", line + offset),
-            )
-        })
-        .into_owned()
+    LINE.replace_all(message, |captures: &regex::Captures<'_>| {
+        captures[1].parse::<usize>().map_or_else(
+            |_| captures[0].to_owned(),
+            |line| format!("at line {}", line + offset),
+        )
+    })
+    .into_owned()
 }
 
 struct Definition {
@@ -420,45 +474,7 @@ fn inline(
             Node::Break(_) => fragments.push(mapping::fragment(source, context, "\n", span)),
             Node::Html(_) => comment_scanner.extract(source, span, &mut document.comments),
             Node::Link(_) | Node::Image(_) | Node::LinkReference(_) | Node::ImageReference(_) => {
-                let link = match node {
-                    Node::Link(link) => Some(RawLink {
-                        span,
-                        destination: link.url.clone(),
-                        destination_span: destination_span(source, node, false),
-                        title: link.title.clone(),
-                        reference: None,
-                        image: false,
-                    }),
-                    Node::Image(link) => Some(RawLink {
-                        span,
-                        destination: link.url.clone(),
-                        destination_span: destination_span(source, node, false),
-                        title: link.title.clone(),
-                        reference: None,
-                        image: true,
-                    }),
-                    Node::LinkReference(link) => definitions
-                        .get(&normalize_reference(&link.identifier))
-                        .map(|definition| RawLink {
-                            span,
-                            destination: definition.destination.clone(),
-                            destination_span: definition.span,
-                            title: definition.title.clone(),
-                            reference: Some(link.identifier.clone()),
-                            image: false,
-                        }),
-                    Node::ImageReference(link) => definitions
-                        .get(&normalize_reference(&link.identifier))
-                        .map(|definition| RawLink {
-                            span,
-                            destination: definition.destination.clone(),
-                            destination_span: definition.span,
-                            title: definition.title.clone(),
-                            reference: Some(link.identifier.clone()),
-                            image: true,
-                        }),
-                    _ => None,
-                };
+                let link = inline_link(source, node, definitions);
                 if let Some(link) = link {
                     pending.push(InlineEvent::Destination(mapping::fragment(
                         source,
@@ -468,24 +484,7 @@ fn inline(
                     )));
                     document.links.push(link);
                 }
-                if let Some(children) = node.children() {
-                    if children.is_empty() {
-                        fragments.push(mapping::fragment(source, FragmentKind::LinkText, "", span));
-                    }
-                    pending.extend(
-                        children
-                            .iter()
-                            .rev()
-                            .map(|child| InlineEvent::Node(child, FragmentKind::LinkText)),
-                    );
-                } else {
-                    let alt = match node {
-                        Node::Image(image) => &image.alt,
-                        Node::ImageReference(image) => &image.alt,
-                        _ => "",
-                    };
-                    fragments.push(mapping::fragment(source, FragmentKind::LinkText, alt, span));
-                }
+                inline_label(source, node, &mut pending, &mut fragments);
             }
             _ => {
                 if let Some(children) = node.children() {
@@ -500,6 +499,80 @@ fn inline(
         }
     }
     fragments
+}
+
+fn inline_label<'a>(
+    source: &str,
+    node: &'a Node,
+    pending: &mut Vec<InlineEvent<'a>>,
+    fragments: &mut Vec<Fragment>,
+) {
+    let span = node_span(node);
+    if let Some(children) = node.children() {
+        if children.is_empty() {
+            fragments.push(mapping::fragment(source, FragmentKind::LinkText, "", span));
+        }
+        pending.extend(
+            children
+                .iter()
+                .rev()
+                .map(|child| InlineEvent::Node(child, FragmentKind::LinkText)),
+        );
+    } else {
+        let alt = match node {
+            Node::Image(image) => &image.alt,
+            Node::ImageReference(image) => &image.alt,
+            _ => "",
+        };
+        fragments.push(mapping::fragment(source, FragmentKind::LinkText, alt, span));
+    }
+}
+
+fn reference_link(
+    identifier: &str,
+    span: Span,
+    image: bool,
+    definitions: &BTreeMap<String, Definition>,
+) -> Option<RawLink> {
+    definitions
+        .get(&normalize_reference(identifier))
+        .map(|definition| RawLink {
+            span,
+            destination: definition.destination.clone(),
+            destination_span: definition.span,
+            title: definition.title.clone(),
+            reference: Some(identifier.to_owned()),
+            image,
+        })
+}
+
+fn inline_link(
+    source: &str,
+    node: &Node,
+    definitions: &BTreeMap<String, Definition>,
+) -> Option<RawLink> {
+    let span = node_span(node);
+    match node {
+        Node::Link(link) => Some(RawLink {
+            span,
+            destination: link.url.clone(),
+            destination_span: destination_span(source, node, false),
+            title: link.title.clone(),
+            reference: None,
+            image: false,
+        }),
+        Node::Image(link) => Some(RawLink {
+            span,
+            destination: link.url.clone(),
+            destination_span: destination_span(source, node, false),
+            title: link.title.clone(),
+            reference: None,
+            image: true,
+        }),
+        Node::LinkReference(link) => reference_link(&link.identifier, span, false, definitions),
+        Node::ImageReference(link) => reference_link(&link.identifier, span, true, definitions),
+        _ => None,
+    }
 }
 
 fn destination_span(source: &str, node: &Node, definition: bool) -> Span {

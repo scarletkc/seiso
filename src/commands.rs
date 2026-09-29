@@ -1,9 +1,12 @@
+use seiso::md::Document;
+use seiso::rules::KindResolution;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::io::{self, Read, Write};
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use clap::{Args, Subcommand, ValueEnum};
 use seiso::analysis::{self, Analysis};
@@ -125,9 +128,7 @@ struct PolicyReport<'a> {
     errors: &'a [InputError],
 }
 
-type Evaluation = Analysis;
-
-fn render(evaluation: &Evaluation, format: CheckFormat) -> Result<String, String> {
+fn render(evaluation: &Analysis, format: CheckFormat) -> Result<String, String> {
     match format {
         CheckFormat::Text => {
             let filenames: BTreeSet<_> = evaluation
@@ -135,16 +136,15 @@ fn render(evaluation: &Evaluation, format: CheckFormat) -> Result<String, String
                 .iter()
                 .map(|diagnostic| diagnostic.filename.as_str())
                 .collect();
-            let sources = filenames
-                .into_iter()
-                .filter_map(|filename| {
-                    evaluation
-                        .snapshot
-                        .index
-                        .file(filename)
-                        .map(|file| (file.filename.clone(), file.document.source.clone()))
-                })
-                .collect();
+            let sources =
+                filenames
+                    .into_iter()
+                    .filter_map(|filename| {
+                        evaluation.snapshot.index.file(filename).map(|file| {
+                            (file.policy.filename.clone(), file.document.source.clone())
+                        })
+                    })
+                    .collect();
             Ok(render_text(&evaluation.diagnostics, &sources))
         }
         CheckFormat::Concise => Ok(render_concise(&evaluation.diagnostics)),
@@ -174,7 +174,7 @@ pub fn check(args: CheckArgs) -> Result<u8, String> {
     let replacement = args
         .stdin_filename
         .as_ref()
-        .map(|_| read_stdin())
+        .map(|_| read_stdin("Cannot read UTF-8 stdin"))
         .transpose()?;
     let mut evaluation = evaluate(&cwd, &args, replacement)?;
     if args.fix && evaluation.snapshot.errors.is_empty() && evaluation.has_fixes() {
@@ -197,11 +197,10 @@ pub fn check(args: CheckArgs) -> Result<u8, String> {
             evaluation.snapshot.sort_errors();
         }
     }
-    write_stdout(&render_evaluation(
-        &evaluation,
-        args.output_format,
-        args.statistics,
-    )?)?;
+    write_stdout(
+        &render_evaluation(&evaluation, args.output_format, args.statistics)?,
+        "Cannot write output",
+    )?;
     if args.statistics && matches!(args.output_format, CheckFormat::Github) {
         print_github_log(&statistics_text(&evaluation));
     }
@@ -279,17 +278,18 @@ pub fn policy(args: PolicyArgs) -> Result<u8, String> {
     };
     let mut snapshot = workspace::load(&current_dir()?, &options, LoadScope::Workspace)?;
     if args.evaluate {
-        snapshot = analysis::check(snapshot, &options.overrides)?.snapshot;
+        snapshot = analysis::check(snapshot)?.snapshot;
     } else {
         analysis::inspect_policy(&mut snapshot);
     }
     let report = PolicyReport {
         configurations: &snapshot.configurations,
-        files: snapshot.policies.values().collect(),
+        files: snapshot.policies().into_values().collect(),
         errors: &snapshot.errors,
     };
     write_stdout(
         &(serde_json::to_string_pretty(&report).map_err(|error| error.to_string())? + "\n"),
+        "Cannot write output",
     )?;
     print_errors(&snapshot, false);
     Ok(if snapshot.errors.is_empty() { 0 } else { 2 })
@@ -305,13 +305,14 @@ pub fn index(args: IndexArgs) -> Result<u8, String> {
     let result = serde_json::json!({"index":snapshot.index.dump(),"errors":snapshot.errors});
     write_stdout(
         &(serde_json::to_string_pretty(&result).map_err(|error| error.to_string())? + "\n"),
+        "Cannot write output",
     )?;
     print_errors(&snapshot, false);
     Ok(if snapshot.errors.is_empty() { 0 } else { 2 })
 }
 
-fn reported_policies(evaluation: &Evaluation) -> impl Iterator<Item = &FilePolicy> {
-    evaluation.snapshot.policies.values().filter(|file| {
+fn reported_policies(evaluation: &Analysis) -> impl Iterator<Item = &FilePolicy> {
+    evaluation.snapshot.policies().into_values().filter(|file| {
         evaluation.snapshot.selected.contains(&file.filename)
             || evaluation
                 .diagnostics
@@ -320,7 +321,7 @@ fn reported_policies(evaluation: &Evaluation) -> impl Iterator<Item = &FilePolic
     })
 }
 
-fn statistics(evaluation: &Evaluation) -> serde_json::Value {
+fn statistics(evaluation: &Analysis) -> serde_json::Value {
     let mut counts = BTreeMap::<&str, usize>::new();
     for diagnostic in &evaluation.diagnostics {
         *counts.entry(&diagnostic.code).or_default() += 1;
@@ -335,7 +336,7 @@ fn statistics(evaluation: &Evaluation) -> serde_json::Value {
     serde_json::json!({"rules":counts,"suppressions":suppressions})
 }
 
-fn statistics_text(evaluation: &Evaluation) -> String {
+fn statistics_text(evaluation: &Analysis) -> String {
     let stats = statistics(evaluation);
     let mut text = String::from("Rule counts:\n");
     for (code, count) in stats["rules"].as_object().into_iter().flatten() {
@@ -357,7 +358,7 @@ fn statistics_text(evaluation: &Evaluation) -> String {
     text
 }
 
-fn print_github_log(text: &str) {
+pub(crate) fn print_github_log(text: &str) {
     // The runner also parses stderr, including legacy commands embedded within
     // a line. Prefix every line and break that legacy delimiter in log content.
     for line in text.lines() {
@@ -369,7 +370,7 @@ fn print_github_log(text: &str) {
 }
 
 fn render_evaluation(
-    evaluation: &Evaluation,
+    evaluation: &Analysis,
     format: CheckFormat,
     include_statistics: bool,
 ) -> Result<String, String> {
@@ -377,19 +378,30 @@ fn render_evaluation(
         return render(evaluation, format);
     }
     match format {
-        CheckFormat::Json => serde_json::to_string_pretty(&serde_json::json!({"diagnostics":evaluation.diagnostics,"statistics":statistics(evaluation)}))
-            .map(|text|text+"\n").map_err(|error|error.to_string()),
+        CheckFormat::Json => {
+            let report = serde_json::json!({
+                "diagnostics": evaluation.diagnostics,
+                "statistics": statistics(evaluation),
+            });
+            serde_json::to_string_pretty(&report)
+                .map(|text| text + "\n")
+                .map_err(|error| error.to_string())
+        }
         CheckFormat::Sarif => {
-            let mut sarif: serde_json::Value = serde_json::from_str(&render(evaluation, format)?).map_err(|error|error.to_string())?;
-            sarif["runs"][0]["properties"] = serde_json::json!({"statistics":statistics(evaluation)});
-            serde_json::to_string_pretty(&sarif).map(|text|text+"\n").map_err(|error|error.to_string())
+            let mut sarif: serde_json::Value = serde_json::from_str(&render(evaluation, format)?)
+                .map_err(|error| error.to_string())?;
+            sarif["runs"][0]["properties"] =
+                serde_json::json!({"statistics":statistics(evaluation)});
+            serde_json::to_string_pretty(&sarif)
+                .map(|text| text + "\n")
+                .map_err(|error| error.to_string())
         }
         CheckFormat::Github => render(evaluation, format),
-        _ => Ok(render(evaluation, format)?+&statistics_text(evaluation)),
+        _ => Ok(render(evaluation, format)? + &statistics_text(evaluation)),
     }
 }
 
-fn apply_safe_fixes(evaluation: &Evaluation) -> (usize, Vec<InputError>) {
+fn apply_safe_fixes(evaluation: &Analysis) -> (usize, Vec<InputError>) {
     let mut errors = Vec::new();
     let mut changed = 0;
     let index = &evaluation.snapshot.index;
@@ -397,46 +409,16 @@ fn apply_safe_fixes(evaluation: &Evaluation) -> (usize, Vec<InputError>) {
         let diagnostics = evaluation
             .diagnostics
             .iter()
-            .filter(|diagnostic| diagnostic.filename == file.filename)
+            .filter(|diagnostic| diagnostic.filename == file.policy.filename)
             .cloned()
             .collect::<Vec<_>>();
-        let outcome = (|| -> Result<(), String> {
-            let Some(updated) =
-                seiso::rules::fixes::apply_fixes(&file.document.source, &diagnostics)?
-            else {
-                return Ok(());
-            };
-            let metadata = fs::symlink_metadata(&file.path).map_err(|error| error.to_string())?;
-            if metadata.file_type().is_symlink()
-                || !metadata.is_file()
-                || metadata.permissions().readonly()
-            {
-                return Err("Cannot apply fixes to a symlink, non-file, or read-only file.".into());
-            }
-            let mut temporary = tempfile::NamedTempFile::new_in(
-                file.path.parent().ok_or("Missing parent directory.")?,
-            )
-            .map_err(|e| e.to_string())?;
-            temporary
-                .as_file()
-                .set_permissions(metadata.permissions())
-                .map_err(|e| e.to_string())?;
-            temporary
-                .write_all(updated.as_bytes())
-                .map_err(|e| e.to_string())?;
-            temporary.flush().map_err(|e| e.to_string())?;
-            if fs::read(&file.path).map_err(|e| e.to_string())? != file.document.source.as_bytes() {
-                return Err(
-                    "Source changed before the fix could be written; rerun the check.".into(),
-                );
-            }
-            temporary.persist(&file.path).map_err(|e| e.to_string())?;
+        let outcome = write_safe_fixes(file, &diagnostics);
+        if matches!(outcome, Ok(true)) {
             changed += 1;
-            Ok(())
-        })();
+        }
         if let Err(message) = outcome {
             errors.push(InputError {
-                filename: file.filename.clone(),
+                filename: file.policy.filename.clone(),
                 message,
             });
         }
@@ -444,11 +426,38 @@ fn apply_safe_fixes(evaluation: &Evaluation) -> (usize, Vec<InputError>) {
     (changed, errors)
 }
 
-fn evaluate(
-    cwd: &Path,
-    args: &CheckArgs,
-    replacement: Option<String>,
-) -> Result<Evaluation, String> {
+fn write_safe_fixes(
+    file: &seiso::index::IndexedFile,
+    diagnostics: &[seiso::diagnostics::Diagnostic],
+) -> Result<bool, String> {
+    let Some(updated) = seiso::rules::fixes::apply_fixes(&file.document.source, diagnostics)?
+    else {
+        return Ok(false);
+    };
+    let metadata = fs::symlink_metadata(&file.path).map_err(|error| error.to_string())?;
+    if metadata.file_type().is_symlink() || !metadata.is_file() || metadata.permissions().readonly()
+    {
+        return Err("Cannot apply fixes to a symlink, non-file, or read-only file.".into());
+    }
+    let mut temporary =
+        tempfile::NamedTempFile::new_in(file.path.parent().ok_or("Missing parent directory.")?)
+            .map_err(|e| e.to_string())?;
+    temporary
+        .as_file()
+        .set_permissions(metadata.permissions())
+        .map_err(|e| e.to_string())?;
+    temporary
+        .write_all(updated.as_bytes())
+        .map_err(|e| e.to_string())?;
+    temporary.flush().map_err(|e| e.to_string())?;
+    if fs::read(&file.path).map_err(|e| e.to_string())? != file.document.source.as_bytes() {
+        return Err("Source changed before the fix could be written; rerun the check.".into());
+    }
+    temporary.persist(&file.path).map_err(|e| e.to_string())?;
+    Ok(true)
+}
+
+fn evaluate(cwd: &Path, args: &CheckArgs, replacement: Option<String>) -> Result<Analysis, String> {
     let options = LoadOptions {
         paths: args.paths.clone(),
         config: args.config.clone(),
@@ -457,7 +466,7 @@ fn evaluate(
         no_cache: args.no_cache,
     };
     let snapshot = workspace::load(cwd, &options, LoadScope::Check)?;
-    analysis::check(snapshot, &options.overrides)
+    analysis::check(snapshot)
 }
 
 pub fn rule(args: RuleArgs) -> Result<u8, String> {
@@ -479,7 +488,7 @@ pub fn rule(args: RuleArgs) -> Result<u8, String> {
         })?;
         render_rule(rule)
     };
-    write_stdout(&(docs + "\n"))?;
+    write_stdout(&(docs + "\n"), "Cannot write output")?;
     Ok(0)
 }
 
@@ -518,8 +527,36 @@ pub fn init() -> Result<u8, String> {
     }
     // Without a configuration, discovery stops at the repository root.
     let root = workspace.root;
-    let quote = |value: &str| toml::Value::String(value.to_owned()).to_string();
-    let mut contents = String::from("include = [\"**/*.md\", \"**/*.markdown\"]\n");
+    let suggested = suggest_configuration(&root);
+    let contents = suggested.render();
+    let path = write_configuration(&root, &contents)?;
+    let created = if root == seiso::paths::normalize(&cwd) {
+        "seiso.toml".to_owned()
+    } else {
+        path.display().to_string()
+    };
+    let suggestions = if suggested.sites.is_empty() {
+        "exclusions and kind mappings"
+    } else {
+        "exclusions, kind mappings, and site entries"
+    };
+    write_stdout(
+        &format!(
+            "Created {created}. Review the suggested {suggestions}, then run `seiso check`.\n"
+        ),
+        "Cannot write output",
+    )?;
+    Ok(0)
+}
+
+#[derive(Debug)]
+struct SuggestedConfig {
+    excludes: Vec<String>,
+    kinds: Vec<(String, &'static str)>,
+    sites: Vec<SiteSuggestion>,
+}
+
+fn suggest_configuration(root: &Path) -> SuggestedConfig {
     let mut excludes: Vec<String> = [
         ".github/ISSUE_TEMPLATE",
         ".github/DISCUSSION_TEMPLATE",
@@ -532,20 +569,8 @@ pub fn init() -> Result<u8, String> {
     .filter(|directory| root.join(directory).is_dir())
     .map(|directory| format!("{directory}/**"))
     .collect();
-    excludes.extend(community_files(&root, "PULL_REQUEST_TEMPLATE.md"));
-    excludes.extend(community_files(&root, "CODE_OF_CONDUCT.md"));
-    if !excludes.is_empty() {
-        contents.push_str(
-            "# Templates, dependencies, and adopted texts are not project documentation.\nexclude = [\n",
-        );
-        for pattern in &excludes {
-            contents.push_str(&format!("  {},\n", quote(pattern)));
-        }
-        contents.push_str("]\n");
-    }
-    contents.push_str(
-        "preview = false\n\n# Review these path mappings and declare other kinds in document frontmatter.\n",
-    );
+    excludes.extend(community_files(root, "PULL_REQUEST_TEMPLATE.md"));
+    excludes.extend(community_files(root, "CODE_OF_CONDUCT.md"));
     let mut kinds: Vec<(String, &str)> = [
         ("**/README.md", "readme", root.join("README.md").is_file()),
         (
@@ -574,39 +599,72 @@ pub fn init() -> Result<u8, String> {
     .collect();
     for name in ["CONTRIBUTING.md", "SECURITY.md", "SUPPORT.md"] {
         kinds.extend(
-            community_files(&root, name)
+            community_files(root, name)
                 .into_iter()
                 .map(|path| (path, "howto")),
         );
     }
-    for (path, kind) in kinds {
-        contents.push_str(&format!(
-            "\n[[kinds]]\npath = {}\nkind = \"{kind}\"\n",
-            quote(&path)
-        ));
+    let sites = site_suggestions(root);
+    SuggestedConfig {
+        excludes,
+        kinds,
+        sites,
     }
-    let sites = site_suggestions(&root);
-    if !sites.is_empty() {
+}
+
+impl SuggestedConfig {
+    fn render(&self) -> String {
+        let Self {
+            excludes,
+            kinds,
+            sites,
+        } = self;
+        let quote = |value: &str| toml::Value::String(value.to_owned()).to_string();
+        let mut contents = String::from("include = [\"**/*.md\", \"**/*.markdown\"]\n");
+        if !excludes.is_empty() {
+            contents.push_str(
+            "# Templates, dependencies, and adopted texts are not project documentation.\nexclude = [\n",
+        );
+            for pattern in excludes {
+                contents.push_str(&format!("  {},\n", quote(pattern)));
+            }
+            contents.push_str("]\n");
+        }
         contents.push_str(
+        "preview = false\n\n# Review these path mappings and declare other kinds in document frontmatter.\n",
+    );
+        for (path, kind) in kinds {
+            contents.push_str(&format!(
+                "\n[[kinds]]\npath = {}\nkind = \"{kind}\"\n",
+                quote(path)
+            ));
+        }
+        if !sites.is_empty() {
+            contents.push_str(
             "\n# Links in documents that a site generator renders resolve as site routes; review these entries.\n",
         );
-    }
-    for site in &sites {
-        let path = if site.root == "." {
-            "**".to_owned()
-        } else {
-            format!("{}/**", site.root)
-        };
-        contents.push_str(&format!(
-            "\n[[sites]] # {}\npath = {}\nroot = {}\n",
-            site.found,
-            quote(&path),
-            quote(&site.root)
-        ));
-        if let Some(public) = &site.public {
-            contents.push_str(&format!("public = {}\n", quote(public)));
         }
+        for site in sites {
+            let path = if site.root == "." {
+                "**".to_owned()
+            } else {
+                format!("{}/**", site.root)
+            };
+            contents.push_str(&format!(
+                "\n[[sites]] # {}\npath = {}\nroot = {}\n",
+                site.found,
+                quote(&path),
+                quote(&site.root)
+            ));
+            if let Some(public) = &site.public {
+                contents.push_str(&format!("public = {}\n", quote(public)));
+            }
+        }
+        contents
     }
+}
+
+fn write_configuration(root: &Path, contents: &str) -> Result<PathBuf, String> {
     let path = root.join("seiso.toml");
     let builder = tempfile::Builder::new();
     #[cfg(unix)]
@@ -615,7 +673,7 @@ pub fn init() -> Result<u8, String> {
         builder.permissions(std::fs::Permissions::from_mode(0o666));
         builder
     };
-    let mut temporary = builder.tempfile_in(&root).map_err(|error| {
+    let mut temporary = builder.tempfile_in(root).map_err(|error| {
         format!(
             "Cannot create {}: {error}; preserve or edit the existing configuration.",
             path.display()
@@ -632,22 +690,10 @@ pub fn init() -> Result<u8, String> {
             error.error
         )
     })?;
-    let created = if root == seiso::paths::normalize(&cwd) {
-        "seiso.toml".to_owned()
-    } else {
-        path.display().to_string()
-    };
-    let suggestions = if sites.is_empty() {
-        "exclusions and kind mappings"
-    } else {
-        "exclusions, kind mappings, and site entries"
-    };
-    write_stdout(&format!(
-        "Created {created}. Review the suggested {suggestions}, then run `seiso check`.\n"
-    ))?;
-    Ok(0)
+    Ok(path)
 }
 
+#[derive(Debug)]
 struct SiteSuggestion {
     /// Generator and configuration file that suggested this site.
     found: String,
@@ -785,7 +831,7 @@ pub fn hook(command: HookCommand) -> u8 {
 
 fn run_hook(command: HookCommand) -> Result<u8, String> {
     let HookCommand::ClaudeCode { config, selection } = command;
-    let input: serde_json::Value = serde_json::from_str(&read_stdin()?).map_err(|error| {
+    let input: serde_json::Value = serde_json::from_str(&read_stdin("Cannot read UTF-8 stdin")?).map_err(|error| {
         format!(
             "Cannot read Claude Code hook JSON: {error}; configure a PostToolUse Write|Edit hook."
         )
@@ -818,23 +864,19 @@ fn run_hook(command: HookCommand) -> Result<u8, String> {
         statistics: false,
     };
     let evaluation = evaluate(&cwd, &args, None)?;
-    match evaluation.exit_code(false) {
-        0 => Ok(0),
-        1 => {
-            io::stderr()
-                .lock()
-                .write_all(render(&evaluation, CheckFormat::Concise)?.as_bytes())
-                .map_err(|error| format!("Cannot write hook diagnostics: {error}"))?;
-            Ok(2)
-        }
-        _ => {
-            io::stderr()
-                .lock()
-                .write_all(render(&evaluation, CheckFormat::Concise)?.as_bytes())
-                .map_err(|error| format!("Cannot write hook diagnostics: {error}"))?;
-            print_errors(&evaluation.snapshot, false);
-            Ok(1)
-        }
+    let code = evaluation.exit_code(false);
+    if code == 0 {
+        return Ok(0);
+    }
+    io::stderr()
+        .lock()
+        .write_all(render(&evaluation, CheckFormat::Concise)?.as_bytes())
+        .map_err(|error| format!("Cannot write hook diagnostics: {error}"))?;
+    if code == 1 {
+        Ok(2)
+    } else {
+        print_errors(&evaluation.snapshot, false);
+        Ok(1)
     }
 }
 
@@ -843,17 +885,172 @@ fn current_dir() -> Result<PathBuf, String> {
         .map_err(|error| format!("Cannot determine the current directory: {error}"))
 }
 
-fn read_stdin() -> Result<String, String> {
+fn read_stdin(description: &str) -> Result<String, String> {
     let mut input = String::new();
     io::stdin()
         .read_to_string(&mut input)
-        .map_err(|error| format!("Cannot read UTF-8 stdin: {error}"))?;
+        .map_err(|error| format!("{description}: {error}"))?;
     Ok(input)
 }
 
-fn write_stdout(text: &str) -> Result<(), String> {
+fn write_stdout(text: &str, description: &str) -> Result<(), String> {
     io::stdout()
         .lock()
         .write_all(text.as_bytes())
-        .map_err(|error| format!("Cannot write output: {error}"))
+        .map_err(|error| format!("{description}: {error}"))
+}
+
+#[derive(clap::Args)]
+pub struct ParseArgs {
+    /// Files or directories to inspect; defaults to the workspace.
+    paths: Vec<PathBuf>,
+    /// Use this configuration for every selected file.
+    #[arg(long, value_name = "PATH")]
+    config: Option<PathBuf>,
+    /// Output format. JSON contains the document model and heuristic section annotations.
+    #[arg(long, value_enum, default_value_t = OutputFormat::Text)]
+    output_format: OutputFormat,
+    /// Read stdin in place of this workspace file; never writes to disk.
+    #[arg(long, value_name = "PATH", conflicts_with = "paths")]
+    stdin_filename: Option<PathBuf>,
+}
+
+#[derive(Clone, Copy, ValueEnum)]
+enum OutputFormat {
+    Text,
+    Json,
+}
+
+#[derive(Serialize)]
+struct ParsedFile {
+    filename: String,
+    configuration: Option<String>,
+    kind: KindResolution,
+    domain: Option<String>,
+    section_annotations: Vec<seiso::sections::SectionAnnotation>,
+    document: Document,
+}
+
+#[derive(Default, Serialize)]
+struct ParseReport {
+    files: Vec<ParsedFile>,
+    errors: Vec<InputError>,
+}
+
+pub fn parse(args: ParseArgs) -> Result<u8, String> {
+    let cwd = current_dir()?;
+    let stdin = args
+        .stdin_filename
+        .map(|path| {
+            read_stdin("Cannot read UTF-8 Markdown from stdin").map(|source| (path, source))
+        })
+        .transpose()?;
+    let snapshot = workspace::load(
+        &cwd,
+        &LoadOptions {
+            paths: args.paths,
+            config: args.config,
+            stdin,
+            no_cache: true,
+            ..LoadOptions::default()
+        },
+        LoadScope::Selected,
+    )?;
+    let root = snapshot.index.root.clone();
+    let report = ParseReport {
+        files: snapshot
+            .index
+            .into_files()
+            .into_iter()
+            .map(|file| ParsedFile {
+                filename: file.policy.filename,
+                configuration: file
+                    .config
+                    .source
+                    .as_ref()
+                    .map(|path| workspace::relative(&root, path)),
+                kind: file
+                    .policy
+                    .kind
+                    .as_ref()
+                    .expect("included document policy")
+                    .resolution(),
+                domain: file.policy.domain,
+                section_annotations: seiso::sections::classify(&file.document),
+                document: Arc::unwrap_or_clone(file.document),
+            })
+            .collect(),
+        errors: snapshot.errors,
+    };
+    let rendered = match args.output_format {
+        OutputFormat::Json => {
+            serde_json::to_string_pretty(&report)
+                .map_err(|error| format!("Cannot encode the parse report: {error}"))?
+                + "\n"
+        }
+        OutputFormat::Text => render_summary(&report),
+    };
+    write_stdout(&rendered, "Cannot write the parse report")?;
+    for error in &report.errors {
+        eprintln!("{}: {}", error.filename, error.message);
+    }
+    Ok(if report.errors.is_empty() { 0 } else { 2 })
+}
+
+fn render_summary(report: &ParseReport) -> String {
+    use std::fmt::Write as _;
+    let mut output = String::new();
+    for file in &report.files {
+        let _ = writeln!(
+            output,
+            "{}: kind={} ({}), sections={}, blocks={}, sentences={}",
+            file.filename,
+            file.kind
+                .value
+                .map(seiso::rules::Kind::as_str)
+                .unwrap_or("unknown"),
+            file.kind.source,
+            file.document.sections.len().saturating_sub(1),
+            file.document.blocks.len(),
+            file.document.sentences.len()
+        );
+        if let Some(problem) = &file.kind.problem {
+            let _ = writeln!(output, "  {problem}");
+        }
+    }
+    let _ = writeln!(
+        output,
+        "Parsed {} file(s). No lint rules were run.",
+        report.files.len()
+    );
+    output
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn init_suggestions_are_values_before_rendering_or_writing() {
+        let directory = tempfile::tempdir().unwrap();
+        let root = directory.path();
+        fs::create_dir_all(root.join("docs/guides")).unwrap();
+        fs::create_dir_all(root.join(".github/ISSUE_TEMPLATE")).unwrap();
+        fs::write(root.join("README.md"), "# Project").unwrap();
+        fs::write(root.join("CONTRIBUTING.md"), "# Contribute").unwrap();
+        fs::write(root.join("mkdocs.yml"), "site_name: Project\n").unwrap();
+        let suggested = suggest_configuration(root);
+        assert_eq!(suggested.excludes, [".github/ISSUE_TEMPLATE/**"]);
+        assert_eq!(
+            suggested.kinds,
+            [
+                ("**/README.md".into(), "readme"),
+                ("docs/guides/**".into(), "howto"),
+                ("CONTRIBUTING.md".into(), "howto"),
+            ]
+        );
+        assert_eq!(suggested.sites.len(), 1);
+        assert_eq!(suggested.sites[0].root, "docs");
+        assert!(!root.join("seiso.toml").exists());
+    }
 }

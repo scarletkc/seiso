@@ -3,10 +3,12 @@
 pub mod cross_file;
 pub mod fixes;
 pub mod heuristic;
+mod kind;
 mod links;
 pub mod normative;
 pub mod suppression;
 
+use std::borrow::Cow;
 use std::collections::BTreeSet;
 use std::path::Path;
 
@@ -15,74 +17,10 @@ use crate::diagnostics::{Diagnostic, Span, sorted_diagnostics};
 use crate::md::{Document, FragmentKind};
 use serde::Serialize;
 
-pub use links::{LocalWorkspaceFiles, PathStatus, WorkspaceFiles};
+use crate::workspace::FilePolicy;
+pub use kind::{Kind, KindOutcome, KindResolution, resolve_kind};
+pub use links::{LocalWorkspaceFiles, WorkspaceFiles};
 pub use suppression::SuppressionRecord;
-
-#[derive(Clone, Debug, Serialize)]
-pub struct KindResolution {
-    pub value: Option<String>,
-    pub source: &'static str,
-    pub problem: Option<String>,
-}
-
-pub fn resolve_kind(document: &Document, mapped: Option<&str>) -> KindResolution {
-    if let Some(frontmatter) = &document.frontmatter {
-        if !frontmatter.errors.is_empty() {
-            return KindResolution {
-                value: None,
-                source: "frontmatter",
-                problem: Some(
-                    "Frontmatter is invalid; inspect document.frontmatter.errors.".into(),
-                ),
-            };
-        }
-        if let Some(kind) = &frontmatter.kind {
-            return if kind != "generated" && crate::config::KINDS.contains(&kind.as_str()) {
-                KindResolution {
-                    value: Some(kind.clone()),
-                    source: "frontmatter",
-                    problem: None,
-                }
-            } else {
-                KindResolution {
-                    value: None,
-                    source: "frontmatter",
-                    problem: Some(if kind == "generated" {
-                        "The generated kind can only be assigned in configuration.".into()
-                    } else {
-                        format!(
-                            "Unknown kind {kind:?}; use one of the lowercase kinds {}.",
-                            declarable_kinds()
-                        )
-                    }),
-                }
-            };
-        }
-    }
-    KindResolution {
-        value: mapped.map(str::to_owned),
-        source: if mapped.is_some() {
-            "configuration"
-        } else {
-            "unknown"
-        },
-        problem: mapped.is_none().then(|| {
-            "Declare kind in frontmatter or add a matching [[kinds]] configuration entry.".into()
-        }),
-    }
-}
-
-/// Kinds that frontmatter can declare, listed for diagnostic text.
-fn declarable_kinds() -> String {
-    let kinds: Vec<_> = crate::config::KINDS
-        .into_iter()
-        .filter(|kind| *kind != "generated")
-        .collect();
-    match kinds.split_last() {
-        Some((last, rest)) => format!("{}, or {last}", rest.join(", ")),
-        None => String::new(),
-    }
-}
 
 pub struct CheckContext<'a> {
     pub document: &'a Document,
@@ -90,7 +28,32 @@ pub struct CheckContext<'a> {
     pub path: &'a Path,
     pub workspace_root: &'a Path,
     pub config: &'a Config,
-    pub overrides: &'a CliOverrides,
+    pub policy: Cow<'a, FilePolicy>,
+}
+
+impl<'a> CheckContext<'a> {
+    pub fn new(
+        document: &'a Document,
+        filename: &'a str,
+        path: &'a Path,
+        workspace_root: &'a Path,
+        config: &'a Config,
+        overrides: &CliOverrides,
+    ) -> Result<Self, ConfigError> {
+        let mut policy =
+            FilePolicy::resolve(filename.to_owned(), path, document, config, overrides)?;
+        policy
+            .enabled_rules
+            .retain(|code| rule(code).is_some_and(|rule| !rule.requires_index));
+        Ok(Self {
+            document,
+            filename,
+            path,
+            workspace_root,
+            config,
+            policy: Cow::Owned(policy),
+        })
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -110,39 +73,19 @@ pub struct RawCheckResult {
     pub errors: Vec<String>,
 }
 
-pub fn check_raw(context: &CheckContext<'_>) -> Result<RawCheckResult, ConfigError> {
-    check_raw_with_files(context, &LocalWorkspaceFiles::default())
-}
-
-pub fn check(context: &CheckContext<'_>) -> Result<CheckResult, ConfigError> {
-    check_with_files(context, &LocalWorkspaceFiles::default())
-}
-
-/// Use a frozen file inventory while preserving the production link resolver.
-pub fn check_with_files(
-    context: &CheckContext<'_>,
-    files: &dyn WorkspaceFiles,
-) -> Result<CheckResult, ConfigError> {
-    Ok(finish_check(
-        context.document,
-        context.filename,
-        check_raw_with_files(context, files)?,
-    ))
-}
-
-pub fn check_raw_with_files(
-    context: &CheckContext<'_>,
-    files: &dyn WorkspaceFiles,
-) -> Result<RawCheckResult, ConfigError> {
-    let kind = resolve_kind(context.document, context.config.kind_for(context.path));
-    let enabled: BTreeSet<String> = context
-        .config
-        .enabled_rules(context.path, kind.value.as_deref(), context.overrides)?
+/// Run single-document rules using the policy resolved by the caller.
+pub fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> RawCheckResult {
+    let kind = context
+        .policy
+        .kind
+        .as_ref()
+        .expect("included document policy");
+    let enabled: BTreeSet<String> = context.policy.enabled_rules.iter().cloned().collect();
+    let mut diagnostics: Vec<_> = kind
+        .diagnostic(context.document, context.filename)
+        .filter(|diagnostic| enabled.contains(&diagnostic.code))
         .into_iter()
-        .filter(|code| rule(code).is_some_and(|rule| !rule.requires_index))
-        .map(str::to_owned)
         .collect();
-    let mut diagnostics = kind_diagnostics(context, &enabled);
     if enabled
         .iter()
         .any(|code| rule(code).is_some_and(|rule| rule.phase == RulePhase::Normative))
@@ -185,93 +128,41 @@ pub fn check_raw_with_files(
             incomplete.insert("LNK001".to_owned());
         }
     }
-    Ok(RawCheckResult {
-        kind,
+    RawCheckResult {
+        kind: kind.resolution(),
         enabled_rules: enabled,
         diagnostics,
         incomplete_rules: incomplete,
         errors,
-    })
-}
-
-pub fn finish_check(document: &Document, filename: &str, raw: RawCheckResult) -> CheckResult {
-    let RawCheckResult {
-        kind,
-        enabled_rules: enabled,
-        diagnostics,
-        incomplete_rules: incomplete,
-        errors,
-    } = raw;
-    let mut result = if kind.value.as_deref() == Some("generated") {
-        suppression::SuppressionResult {
-            diagnostics: Vec::new(),
-            suppressions: Vec::new(),
-        }
-    } else {
-        suppression::apply(document, filename, diagnostics, &enabled, &incomplete)
-    };
-    fixes::attach_fixes(document, &result.suppressions, &mut result.diagnostics);
-    let diagnostics = sorted_diagnostics(&result.diagnostics);
-    CheckResult {
-        kind,
-        enabled_rules: enabled.into_iter().collect(),
-        diagnostics,
-        suppressions: result.suppressions,
-        errors,
     }
 }
 
-fn kind_diagnostics(context: &CheckContext<'_>, enabled: &BTreeSet<String>) -> Vec<Diagnostic> {
-    let document = context.document;
-    let mut code = "KND001";
-    let mut span = Span::new(0, 0);
-    let mut message =
-        "Document kind is not declared and no kind mapping matches this file.".to_owned();
-    let mut suggestion = format!(
-        "Declare kind as {} in YAML frontmatter, or add a matching [[kinds]] configuration entry.",
-        declarable_kinds()
-    );
-    if let Some(frontmatter) = &document.frontmatter {
-        span = frontmatter.span;
-        if let Some(error) = frontmatter.errors.first() {
-            span = error.span;
-            message = format!(
-                "Document kind cannot be resolved because the frontmatter is invalid: {}.",
-                error.message.trim_end_matches('.')
-            );
-            suggestion = "Correct the YAML frontmatter so its kind declaration can be read.".into();
-        } else if let Some(kind) = &frontmatter.kind {
-            if kind != "generated" && crate::config::KINDS.contains(&kind.as_str()) {
-                return Vec::new();
+impl RawCheckResult {
+    pub fn finish(self, document: &Document, filename: &str) -> CheckResult {
+        let RawCheckResult {
+            kind,
+            enabled_rules: enabled,
+            diagnostics,
+            incomplete_rules: incomplete,
+            errors,
+        } = self;
+        let mut result = if kind.value == Some(Kind::Generated) {
+            suppression::SuppressionResult {
+                diagnostics: Vec::new(),
+                suppressions: Vec::new(),
             }
-            code = "KND002";
-            if kind == "generated" {
-                message = "The generated kind is declared in frontmatter; it can only be assigned in configuration.".into();
-                suggestion = "Remove this declaration and assign generated with a [[kinds]] path mapping if a tool generates this file.".into();
-            } else {
-                message = format!("Unknown document kind {kind:?}.");
-                suggestion = format!(
-                    "Use one of the lowercase kinds {} in frontmatter.",
-                    declarable_kinds()
-                );
-            }
-        } else if context.config.kind_for(context.path).is_some() {
-            return Vec::new();
+        } else {
+            suppression::apply(document, filename, diagnostics, &enabled, &incomplete)
+        };
+        fixes::attach_fixes(document, &result.suppressions, &mut result.diagnostics);
+        let diagnostics = sorted_diagnostics(&result.diagnostics);
+        CheckResult {
+            kind,
+            enabled_rules: enabled.into_iter().collect(),
+            diagnostics,
+            suppressions: result.suppressions,
+            errors,
         }
-    } else if context.config.kind_for(context.path).is_some() {
-        return Vec::new();
-    }
-    if enabled.contains(code) {
-        vec![Diagnostic::new(
-            context.filename,
-            &document.source,
-            code,
-            span,
-            message,
-            suggestion,
-        )]
-    } else {
-        Vec::new()
     }
 }
 
@@ -301,20 +192,22 @@ impl Rule {
         self.stable
     }
 
-    pub fn applies_to_kind(&self, kind: Option<&str>) -> bool {
-        if kind == Some("generated") {
+    pub fn applies_to_kind(&self, kind: Option<Kind>) -> bool {
+        if kind == Some(Kind::Generated) {
             return false;
         }
-        let Some(kind) = kind.filter(|kind| crate::config::KINDS.contains(kind)) else {
+        let Some(kind) = kind else {
             return self.kinds == KindScope::Any;
         };
         match self.kinds {
             KindScope::Any | KindScope::Declared => true,
-            KindScope::LongLived => ["readme", "howto", "reference", "runbook"].contains(&kind),
-            KindScope::ExceptChangelog => kind != "changelog",
-            KindScope::HowtoOrReference => ["howto", "reference"].contains(&kind),
-            KindScope::HowtoOrRunbook => ["howto", "runbook"].contains(&kind),
-            KindScope::Procedural => ["howto", "reference", "runbook"].contains(&kind),
+            KindScope::LongLived => {
+                [Kind::Readme, Kind::Howto, Kind::Reference, Kind::Runbook].contains(&kind)
+            }
+            KindScope::ExceptChangelog => kind != Kind::Changelog,
+            KindScope::HowtoOrReference => [Kind::Howto, Kind::Reference].contains(&kind),
+            KindScope::HowtoOrRunbook => [Kind::Howto, Kind::Runbook].contains(&kind),
+            KindScope::Procedural => [Kind::Howto, Kind::Reference, Kind::Runbook].contains(&kind),
         }
     }
 

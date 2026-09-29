@@ -1,53 +1,9 @@
-use std::io::Write;
-use std::path::Path;
-use std::process::{Command, Output, Stdio};
-
-use serde_json::{Value, json};
+use common::{run, value, workspace, write};
+mod common;
+use std::process::Output;
 use tempfile::TempDir;
 
-fn write(root: &Path, path: &str, source: &str) {
-    let path = root.join(path);
-    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
-    std::fs::write(path, source).unwrap();
-}
-
-fn workspace(config: &str) -> TempDir {
-    let root = TempDir::new().unwrap();
-    write(root.path(), "seiso.toml", config);
-    root
-}
-
-fn run(root: &Path, args: &[&str], source: Option<&str>) -> Output {
-    let mut child = Command::new(env!("CARGO_BIN_EXE_seiso"))
-        .current_dir(root)
-        .args(args)
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .spawn()
-        .unwrap();
-    if let Some(source) = source {
-        child
-            .stdin
-            .take()
-            .unwrap()
-            .write_all(source.as_bytes())
-            .unwrap();
-    } else {
-        drop(child.stdin.take());
-    }
-    child.wait_with_output().unwrap()
-}
-
-fn value(output: &Output) -> Value {
-    serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
-        panic!(
-            "{error}; stdout={} stderr={}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
-        )
-    })
-}
+use serde_json::json;
 
 fn status(output: &Output, expected: i32) {
     assert_eq!(

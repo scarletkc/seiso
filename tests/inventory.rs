@@ -1,8 +1,9 @@
+use seiso::paths::TargetStatus;
+mod common;
+use common::{CheckContext, check};
 use seiso::config::{CliOverrides, Config};
 use seiso::index::{IndexedFile, InventoryEntryKind, LinkStatus, WorkspaceIndex};
-use seiso::rules::{
-    CheckContext, PathStatus, WorkspaceFiles, check, check_raw_with_files, check_with_files,
-};
+use seiso::rules::WorkspaceFiles;
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
@@ -10,11 +11,11 @@ struct Inventory {
     paths: BTreeSet<PathBuf>,
 }
 impl WorkspaceFiles for Inventory {
-    fn status(&self, _root: &Path, target: &Path) -> PathStatus {
+    fn status(&self, _root: &Path, target: &Path) -> TargetStatus {
         if self.paths.contains(target) {
-            PathStatus::Exists
+            TargetStatus::File
         } else {
-            PathStatus::Missing
+            TargetStatus::Missing
         }
     }
 }
@@ -39,7 +40,11 @@ fn frozen_inventory_uses_the_same_path_resolution_as_the_filesystem() {
     };
     assert_eq!(
         check(&context).unwrap().diagnostics,
-        check_with_files(&context, &inventory).unwrap().diagnostics
+        context
+            .check(&inventory)
+            .unwrap()
+            .finish(context.document, context.filename)
+            .diagnostics
     );
     assert_eq!(check(&context).unwrap().diagnostics.len(), 1);
 }
@@ -53,15 +58,16 @@ fn index_inventory_supplies_file_checks_without_a_materialized_workspace() {
     let path = root.join("docs/new.md");
     let index = WorkspaceIndex::new(
         root.clone(),
-        vec![IndexedFile {
-            filename: "docs/new.md".into(),
-            path: path.clone(),
-            document: document.clone().into(),
-            kind: None,
-            domain: String::new(),
-            enabled_rules: vec!["LNK001".into()],
-            config: config.clone(),
-        }],
+        vec![
+            IndexedFile::new(
+                "docs/new.md".into(),
+                path.clone(),
+                document.clone().into(),
+                config.clone(),
+                &CliOverrides::default(),
+            )
+            .unwrap(),
+        ],
         true,
     )
     .with_inventory(BTreeMap::from([
@@ -77,7 +83,7 @@ fn index_inventory_supplies_file_checks_without_a_materialized_workspace() {
         config: &config,
         overrides: &CliOverrides::default(),
     };
-    let result = check_raw_with_files(&context, &index).unwrap();
+    let result = context.check(&index).unwrap();
     assert!(result.errors.is_empty());
     assert_eq!(result.diagnostics.len(), 1);
     assert!(result.diagnostics[0].message.contains("missing.md#%ZZ"));
@@ -109,15 +115,16 @@ fn frozen_inventories_compare_letter_case_like_the_filesystem() {
     let path = root.join("docs/new.md");
     let index = WorkspaceIndex::new(
         root.clone(),
-        vec![IndexedFile {
-            filename: "docs/new.md".into(),
-            path: path.clone(),
-            document: document.clone().into(),
-            kind: None,
-            domain: String::new(),
-            enabled_rules: vec!["LNK001".into()],
-            config: config.clone(),
-        }],
+        vec![
+            IndexedFile::new(
+                "docs/new.md".into(),
+                path.clone(),
+                document.clone().into(),
+                config.clone(),
+                &CliOverrides::default(),
+            )
+            .unwrap(),
+        ],
         true,
     )
     .with_inventory(BTreeMap::from([
@@ -133,7 +140,8 @@ fn frozen_inventories_compare_letter_case_like_the_filesystem() {
         config: &config,
         overrides: &CliOverrides::default(),
     };
-    let messages: Vec<_> = check_raw_with_files(&context, &index)
+    let messages: Vec<_> = context
+        .check(&index)
         .unwrap()
         .diagnostics
         .into_iter()
@@ -190,4 +198,28 @@ fn file_existence_ignores_unresolved_fragments_and_queries() {
             "{destination}"
         );
     }
+}
+
+#[test]
+fn workspace_file_status_preserves_directories_and_outside_paths() {
+    let root = tempfile::tempdir().unwrap();
+    std::fs::create_dir(root.path().join("docs")).unwrap();
+    let index = WorkspaceIndex::new(root.path().to_path_buf(), Vec::new(), true);
+    assert_eq!(
+        index.status(root.path(), &root.path().join("docs")),
+        TargetStatus::Directory
+    );
+    assert_eq!(
+        index.status(root.path(), root.path().parent().unwrap()),
+        TargetStatus::OutsideWorkspace
+    );
+    let local = seiso::rules::LocalWorkspaceFiles::default();
+    assert_eq!(
+        local.status(root.path(), &root.path().join("docs")),
+        TargetStatus::Directory
+    );
+    assert_eq!(
+        local.status(root.path(), root.path().parent().unwrap()),
+        TargetStatus::OutsideWorkspace
+    );
 }

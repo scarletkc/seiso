@@ -8,19 +8,9 @@ use globset::{GlobBuilder, GlobMatcher};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+use crate::md::Language;
 use crate::paths::{SiteRoutes, normalize};
-use crate::rules::{rule, rules};
-
-pub const KINDS: [&str; 8] = [
-    "readme",
-    "howto",
-    "reference",
-    "runbook",
-    "adr",
-    "plan",
-    "changelog",
-    "generated",
-];
+use crate::rules::{Kind, rule, rules};
 
 #[derive(Debug, Error)]
 pub enum ConfigError {
@@ -116,7 +106,9 @@ impl Default for LintSettings {
         Self {
             select: vec!["ALL".into()],
             ignore: Vec::new(),
-            languages: vec!["en".into(), "zh".into(), "ja".into()],
+            languages: Language::ALL
+                .map(|language| language.as_str().to_owned())
+                .to_vec(),
             per_file_ignores: BTreeMap::new(),
             dup: DupSettings::default(),
             ptr: PtrSettings::default(),
@@ -380,27 +372,26 @@ impl Config {
     }
 
     /// Resolve the matching site's directories from this configuration's directory.
-    pub(crate) fn site_routes(&self, path: &Path) -> Option<SiteRoutes> {
-        let site = self.site_for(path)?;
+    pub(crate) fn site_routes(&self, site: &SiteMapping) -> SiteRoutes {
         let mut base = site.base.clone();
         if !base.ends_with('/') {
             base.push('/');
         }
-        Some(SiteRoutes {
+        SiteRoutes {
             root: normalize(self.directory.join(&site.root)),
             public: site
                 .public
                 .as_ref()
                 .map(|public| normalize(self.directory.join(public))),
             base,
-        })
+        }
     }
 
     /// Apply selection and applicability before exposing accepted or opt-in rules.
     pub fn enabled_rules(
         &self,
         path: &Path,
-        kind: Option<&str>,
+        kind: Option<Kind>,
         overrides: &CliOverrides,
     ) -> Result<Vec<&'static str>, ConfigError> {
         Ok(self
@@ -555,23 +546,43 @@ fn specificity(selector: &str, code: &str) -> Option<u8> {
 }
 
 fn validate_settings(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
+    validate_kinds(settings, path)?;
+    validate_domains(settings, path)?;
+    validate_sites(settings, path)?;
+    validate_selectors(settings, path)?;
+    validate_languages(settings, path)?;
+    validate_dup(settings, path)?;
+    validate_ptr(settings, path)?;
+    validate_lexicons(settings, path)?;
+    Ok(())
+}
+
+fn validate_kinds(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
     for mapping in &settings.kinds {
-        if !KINDS.contains(&mapping.kind.as_str()) {
+        if Kind::from_name(&mapping.kind).is_none() {
             return Err(invalid(
                 path,
                 format!(
                     "unknown kind {:?}; expected {}",
                     mapping.kind,
-                    KINDS.join(", ")
+                    Kind::ALL.map(Kind::as_str).join(", ")
                 ),
             ));
         }
     }
+    Ok(())
+}
+
+fn validate_domains(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
     for mapping in &settings.domains {
         if mapping.name.trim().is_empty() {
             return Err(invalid(path, "domains.name must not be empty"));
         }
     }
+    Ok(())
+}
+
+fn validate_sites(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
     for site in &settings.sites {
         for (field, value) in [
             ("sites.root", Some(&site.root)),
@@ -600,6 +611,10 @@ fn validate_settings(settings: &Settings, path: &Path) -> Result<(), ConfigError
             ));
         }
     }
+    Ok(())
+}
+
+fn validate_selectors(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
     for selector in settings
         .lint
         .select
@@ -609,19 +624,27 @@ fn validate_settings(settings: &Settings, path: &Path) -> Result<(), ConfigError
     {
         validate_selector(selector).map_err(|e| invalid(path, e))?;
     }
+    Ok(())
+}
+
+fn validate_languages(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
     for lang in settings
         .lint
         .languages
         .iter()
         .chain(settings.lint.lexicon.keys())
     {
-        if !["en", "zh", "ja"].contains(&lang.as_str()) {
+        if Language::from_name(lang).is_none() {
             return Err(invalid(
                 path,
                 format!("unsupported language {lang:?}; expected en, zh, or ja"),
             ));
         }
     }
+    Ok(())
+}
+
+fn validate_dup(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
     if settings.lint.dup.min_identifiers == 0 {
         return Err(invalid(path, "lint.dup.min-identifiers must be at least 1"));
     }
@@ -648,6 +671,10 @@ fn validate_settings(settings: &Settings, path: &Path) -> Result<(), ConfigError
             "lint.dup.min-paragraph-chars and shingle-size must be positive",
         ));
     }
+    Ok(())
+}
+
+fn validate_ptr(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
     for dir in &settings.lint.ptr.catalog_dirs {
         if dir.trim().is_empty() {
             return Err(invalid(
@@ -656,6 +683,10 @@ fn validate_settings(settings: &Settings, path: &Path) -> Result<(), ConfigError
             ));
         }
     }
+    Ok(())
+}
+
+fn validate_lexicons(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
     for lexicon in settings.lint.lexicon.values() {
         for (name, entries) in [
             ("extend-stale-markers", &lexicon.extend_stale_markers),

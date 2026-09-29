@@ -1,6 +1,8 @@
+mod common;
+use common::{CheckContext, check};
 use seiso::config::{CliOverrides, Config};
 use seiso::md::parse;
-use seiso::rules::{CheckContext, CheckResult, check};
+use seiso::rules::CheckResult;
 use seiso::sections::{SectionType, classify};
 
 fn evaluate(source: &str, code: &str, kind: &str) -> CheckResult {

@@ -264,7 +264,7 @@ fn next_block(document: &Document, comment: Span) -> Option<Span> {
     let parent = document
         .blocks
         .iter()
-        .filter(|block| block.kind == BlockKind::HtmlComment && contains_span(block.span, comment))
+        .filter(|block| block.kind == BlockKind::HtmlComment && block.span.contains(comment))
         .min_by_key(|block| block.span.len())
         .and_then(|block| block.parent);
     let next = document
@@ -291,7 +291,7 @@ fn inline_block(document: &Document, comment: Span) -> Option<Span> {
     let containing: Vec<_> = document
         .blocks
         .iter()
-        .filter(|block| contains_span(block.span, comment))
+        .filter(|block| block.span.contains(comment))
         .collect();
     containing
         .iter()
@@ -304,10 +304,6 @@ fn inline_block(document: &Document, comment: Span) -> Option<Span> {
                 .min_by_key(|block| block.span.len())
         })
         .map(|block| block.span)
-}
-
-fn contains_span(outer: Span, inner: Span) -> bool {
-    outer.start <= inner.start && inner.end <= outer.end
 }
 
 fn suppress(
@@ -335,8 +331,7 @@ fn suppress(
         .filter_map(|(index, record)| match record.scope {
             Some(SuppressionScope::File) => Some((index, (1, usize::MAX, record.span.start))),
             Some(SuppressionScope::Block { span })
-                if span.start <= diagnostic.byte_range.start
-                    && diagnostic.byte_range.start < span.end =>
+                if span.contains_offset(diagnostic.byte_range.start) =>
             {
                 Some((index, (0, span.len(), record.span.start)))
             }

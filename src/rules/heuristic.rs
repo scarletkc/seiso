@@ -3,7 +3,7 @@ use std::sync::LazyLock;
 
 use regex::Regex;
 
-use super::normative::{constrained, language_key};
+use super::normative::constrained;
 use crate::config::Config;
 use crate::diagnostics::{Diagnostic, RelatedLocation, Span};
 use crate::md::prose::{assertions, marker, runs};
@@ -227,7 +227,7 @@ fn enabled_language(config: &Config, language: Language) -> bool {
         .lint
         .languages
         .iter()
-        .any(|value| value == language_key(language))
+        .any(|value| value == language.as_str())
 }
 
 fn enumerated_term(document: &Document, span: Span) -> bool {
@@ -293,43 +293,42 @@ fn has_evidence(document: &Document, sentence: &Sentence, recommendation: bool) 
             {
                 return true;
             }
-            document.links.iter().any(|link| {
-                !link.image
-                    && candidate.span.start <= link.span.start
-                    && link.span.end <= candidate.span.end
-            }) || document
-                .sentences
+            document
+                .links
                 .iter()
-                .filter(|value| {
-                    candidate.span.start <= value.span.start
-                        && value.span.end <= candidate.span.end
-                        && !is_quoted(document, &document.blocks[value.block])
-                })
-                .any(|sentence| {
-                    let text = runs(sentence, true)
-                        .iter()
-                        .map(|run| run.text.as_str())
-                        .collect::<Vec<_>>()
-                        .join(" ");
-                    MEASUREMENT.is_match(&text)
-                        || contains(
-                            &text,
-                            &[
-                                "measured",
-                                "benchmark",
-                                "benchmarks",
-                                "measurement",
-                                "测试结果",
-                                "基准测试",
-                                "实测",
-                                "ベンチマーク",
-                                "測定結果",
-                            ],
-                        )
-                        || sentence.fragments.iter().any(|fragment| {
-                            fragment.kind == FragmentKind::Text && fragment.text.contains("[^")
-                        })
-                })
+                .any(|link| !link.image && candidate.span.contains(link.span))
+                || document
+                    .sentences
+                    .iter()
+                    .filter(|value| {
+                        candidate.span.contains(value.span)
+                            && !is_quoted(document, &document.blocks[value.block])
+                    })
+                    .any(|sentence| {
+                        let text = runs(sentence, true)
+                            .iter()
+                            .map(|run| run.text.as_str())
+                            .collect::<Vec<_>>()
+                            .join(" ");
+                        MEASUREMENT.is_match(&text)
+                            || contains(
+                                &text,
+                                &[
+                                    "measured",
+                                    "benchmark",
+                                    "benchmarks",
+                                    "measurement",
+                                    "测试结果",
+                                    "基准测试",
+                                    "实测",
+                                    "ベンチマーク",
+                                    "測定結果",
+                                ],
+                            )
+                            || sentence.fragments.iter().any(|fragment| {
+                                fragment.kind == FragmentKind::Text && fragment.text.contains("[^")
+                            })
+                    })
         })
 }
 
@@ -345,63 +344,102 @@ pub fn check(
     config: &Config,
     enabled: &BTreeSet<String>,
 ) -> HeuristicResult {
-    let mut result = HeuristicResult::default();
+    let mut findings = Findings {
+        document,
+        filename,
+        config,
+        enabled,
+        result: HeuristicResult::default(),
+    };
     if ["STL002", "STL004", "VOX002", "VOX003", "EVD001"]
         .iter()
         .any(|code| enabled.contains(*code))
     {
-        result = check_sentences(document, filename, config, enabled);
+        findings.check_sentences();
     }
     if enabled_language(config, document.language)
         && ["RAT001", "ORD001", "ORD002", "MIX001"]
             .iter()
             .any(|code| enabled.contains(*code))
     {
-        let structure = check_structure(document, filename, config, enabled);
-        result.diagnostics.extend(structure.diagnostics);
-        result.incomplete_rules.extend(structure.incomplete_rules);
+        findings.check_structure();
     }
-    result
+    findings.result
 }
 
-fn check_sentences(
-    document: &Document,
-    filename: &str,
-    config: &Config,
-    enabled: &BTreeSet<String>,
-) -> HeuristicResult {
-    let mut diagnostics = Vec::new();
-    let mut incomplete_rules = BTreeSet::new();
-    let mut emit = |code: &str, span: Span, message: &str, suggestion: &str| {
-        if enabled.contains(code) {
-            diagnostics.push(Diagnostic::new(
-                filename,
-                &document.source,
-                code,
-                span,
-                message,
-                suggestion,
-            ));
+struct Findings<'a> {
+    document: &'a Document,
+    filename: &'a str,
+    config: &'a Config,
+    enabled: &'a BTreeSet<String>,
+    result: HeuristicResult,
+}
+
+impl Findings<'_> {
+    fn emit(&mut self, code: &str, span: Span, message: &str, suggestion: &str) -> &mut Diagnostic {
+        self.result.diagnostics.push(Diagnostic::new(
+            self.filename,
+            &self.document.source,
+            code,
+            span,
+            message,
+            suggestion,
+        ));
+        self.result.diagnostics.last_mut().unwrap()
+    }
+
+    fn emit_before_flow(
+        &mut self,
+        code: &str,
+        span: Span,
+        message: &str,
+        suggestion: &str,
+        first: Span,
+    ) {
+        let related = RelatedLocation::new(
+            self.filename,
+            &self.document.source,
+            first,
+            "The main flow starts here.",
+        );
+        self.emit(code, span, message, suggestion)
+            .related
+            .push(related);
+    }
+
+    fn check_sentences(&mut self) {
+        for sentence in &self.document.sentences {
+            let block = &self.document.blocks[sentence.block];
+            if !enabled_language(self.config, sentence.language)
+                || is_quoted(self.document, block)
+                || sections::example_section(self.document, block.section)
+            {
+                continue;
+            }
+            let prose = assertions(sentence, false);
+            let text = prose
+                .iter()
+                .map(|run| run.text.as_str())
+                .collect::<Vec<_>>()
+                .join(" ");
+            let heading = block.kind == BlockKind::Heading;
+            self.check_deployment(sentence, &prose, &text);
+            self.check_versions(sentence, &text);
+            self.check_excluded_scope(sentence, &prose, heading);
+            self.check_narration(sentence, &prose, heading);
+            self.check_evidence(sentence, &prose, &text, heading);
         }
-    };
-    for sentence in &document.sentences {
-        let block = &document.blocks[sentence.block];
-        if !enabled_language(config, sentence.language)
-            || is_quoted(document, block)
-            || sections::example_section(document, block.section)
-        {
-            continue;
-        }
-        let prose = assertions(sentence, false);
-        let text = prose
-            .iter()
-            .map(|run| run.text.as_str())
-            .collect::<Vec<_>>()
-            .join(" ");
-        let heading = block.kind == BlockKind::Heading;
-        if enabled.contains("STL002")
-            && !conditional(&text)
-            && let Some(span) = marker(&prose, deployment(sentence.language))
+    }
+
+    fn check_deployment(
+        &mut self,
+        sentence: &Sentence,
+        prose: &[crate::md::prose::Run<'_>],
+        text: &str,
+    ) {
+        if self.enabled.contains("STL002")
+            && !conditional(text)
+            && let Some(span) = marker(prose, deployment(sentence.language))
         {
             let state_text = assertions(sentence, true)
                 .iter()
@@ -424,11 +462,11 @@ fn check_sentences(
                         "to production",
                     ],
                 );
-            if !state && enabled.contains("STL002") {
-                incomplete_rules.insert("STL002".into());
+            if !state && self.enabled.contains("STL002") {
+                self.result.incomplete_rules.insert("STL002".into());
             }
             if state {
-                emit(
+                self.emit(
                     "STL002",
                     span,
                     "This sentence asserts a deployment state in a long-lived page.",
@@ -436,11 +474,14 @@ fn check_sentences(
                 );
             }
         }
-        if enabled.contains("STL004")
-            && !constrained(sentence, config)
-            && !conditional(&text)
+    }
+
+    fn check_versions(&mut self, sentence: &Sentence, text: &str) {
+        if self.enabled.contains("STL004")
+            && !constrained(sentence, self.config)
+            && !conditional(text)
             && !contains(
-                &text,
+                text,
                 &[
                     "versioned",
                     "compatibility",
@@ -486,7 +527,7 @@ fn check_sentences(
                 let label = VERSION_LABEL.is_match(&run.text);
                 let snapshot = label
                     || contains(
-                        &text,
+                        text,
                         &[
                             "version is",
                             "version:",
@@ -518,13 +559,13 @@ fn check_sentences(
                         continue;
                     }
                     // Require an explicit version label, avoiding decimals, IPs and model names.
-                    if !contains(&text, &["version", "release", "版本", "バージョン"])
+                    if !contains(text, &["version", "release", "版本", "バージョン"])
                         && !value.as_str().starts_with(['v', 'V'])
                     {
                         continue;
                     }
                     if let Some(span) = run.span(Span::new(value.start(), value.end())) {
-                        emit(
+                        self.emit(
                             "STL004",
                             span,
                             "This version has no lasting constraint or historical context.",
@@ -534,20 +575,36 @@ fn check_sentences(
                 }
             }
         }
-        if enabled.contains("VOX002")
+    }
+
+    fn check_excluded_scope(
+        &mut self,
+        sentence: &Sentence,
+        prose: &[crate::md::prose::Run<'_>],
+        heading: bool,
+    ) {
+        if self.enabled.contains("VOX002")
             && heading
-            && let Some(span) = marker(&prose, excluded_heading(sentence.language))
+            && let Some(span) = marker(prose, excluded_heading(sentence.language))
         {
-            emit(
+            self.emit(
                 "VOX002",
                 span,
                 "This heading frames the section around excluded scope.",
                 "Name the capability or boundary readers need; keep project non-goals in a plan or ADR.",
             );
         }
-        if enabled.contains("VOX003")
+    }
+
+    fn check_narration(
+        &mut self,
+        sentence: &Sentence,
+        prose: &[crate::md::prose::Run<'_>],
+        heading: bool,
+    ) {
+        if self.enabled.contains("VOX003")
             && let Some(span) = marker(
-                &prose,
+                prose,
                 if heading {
                     production_heading(sentence.language)
                 } else {
@@ -555,24 +612,33 @@ fn check_sentences(
                 },
             )
         {
-            emit(
+            self.emit(
                 "VOX003",
                 span,
                 "This text narrates how the deliverable was produced.",
                 "Describe the resulting behavior or procedure; move implementation history to an ADR, plan, or change record.",
             );
         }
-        if enabled.contains("EVD001")
+    }
+
+    fn check_evidence(
+        &mut self,
+        sentence: &Sentence,
+        prose: &[crate::md::prose::Run<'_>],
+        text: &str,
+        heading: bool,
+    ) {
+        if self.enabled.contains("EVD001")
             && !heading
-            && !conditional(&text)
-            && let Some(span) = marker(&prose, evaluation(sentence.language))
-            && !enumerated_term(document, span)
+            && !conditional(text)
+            && let Some(span) = marker(prose, evaluation(sentence.language))
+            && !enumerated_term(self.document, span)
             && !has_evidence(
-                document,
+                self.document,
                 sentence,
-                contains(&text, &["recommend", "recommended", "推荐", "推奨"])
+                contains(text, &["recommend", "recommended", "推荐", "推奨"])
                     && !contains(
-                        &text,
+                        text,
                         &[
                             "faster",
                             "fastest",
@@ -589,9 +655,9 @@ fn check_sentences(
             )
         {
             let generic_recommendation =
-                contains(&text, &["recommend", "recommended", "推荐", "推奨"])
+                contains(text, &["recommend", "recommended", "推荐", "推奨"])
                     && !contains(
-                        &text,
+                        text,
                         &[
                             "faster",
                             "fastest",
@@ -609,9 +675,9 @@ fn check_sentences(
                         ],
                     );
             if generic_recommendation {
-                incomplete_rules.insert("EVD001".into());
+                self.result.incomplete_rules.insert("EVD001".into());
             } else {
-                emit(
+                self.emit(
                     "EVD001",
                     span,
                     "This evaluative claim has no nearby measurement or source.",
@@ -620,122 +686,98 @@ fn check_sentences(
             }
         }
     }
-    HeuristicResult {
-        diagnostics,
-        incomplete_rules,
-    }
-}
 
-fn check_structure(
-    document: &Document,
-    filename: &str,
-    config: &Config,
-    enabled: &BTreeSet<String>,
-) -> HeuristicResult {
-    let mut diagnostics = Vec::new();
-    let mut incomplete_rules = BTreeSet::new();
-    let annotations = sections::classify(document);
-    let opaque = sections::opaque_flow(document);
-    if enabled.contains("MIX001") {
-        check_mixed_sections(document, filename, config, &annotations, &mut diagnostics);
-        if opaque.is_some() {
-            incomplete_rules.insert("MIX001".into());
-        }
-    }
-    if !["RAT001", "ORD001", "ORD002"]
-        .iter()
-        .any(|code| enabled.contains(*code))
-    {
-        return HeuristicResult {
-            diagnostics,
-            incomplete_rules,
-        };
-    }
-    let in_recovery = |mut id: usize| {
-        loop {
-            if annotations[id].section_type == SectionType::Troubleshooting {
-                return true;
+    fn check_structure(&mut self) {
+        let annotations = sections::classify(self.document);
+        let opaque = sections::opaque_flow(self.document);
+        if self.enabled.contains("MIX001") {
+            self.check_mixed_sections(&annotations);
+            if opaque.is_some() {
+                self.result.incomplete_rules.insert("MIX001".into());
             }
-            let Some(parent) = document.sections[id].parent else {
-                return false;
-            };
-            id = parent;
         }
-    };
-    let first = document
-        .blocks
-        .iter()
-        .find(|block| main_flow(document, block) && !in_recovery(block.section));
-    let uncertain_order = first.is_none()
-        || opaque.is_some_and(|span| first.is_none_or(|first| span.start < first.span.start))
-        || document.blocks.iter().any(|block| {
-            first.is_none_or(|first| block.span.start < first.span.start)
-                && !in_recovery(block.section)
-                && sections::unclassified_example(document, block)
-        });
-    if uncertain_order {
-        incomplete_rules.extend(
-            ["ORD001", "ORD002", "RAT001"]
-                .into_iter()
-                .filter(|code| enabled.contains(*code))
-                .map(str::to_owned),
-        );
-    }
-    if let Some(first) = first.filter(|_| !uncertain_order) {
-        let preceding: Vec<_> = document
-            .blocks
+        if !["RAT001", "ORD001", "ORD002"]
             .iter()
-            .filter(|block| block.span.end <= first.span.start && !is_quoted(document, block))
-            .collect();
-        if enabled.contains("RAT001") {
-            let rationale_blocks: Vec<_> = preceding
+            .any(|code| self.enabled.contains(*code))
+        {
+            return;
+        }
+        let first = self.document.blocks.iter().find(|block| {
+            main_flow(self.document, block)
+                && !in_recovery(self.document, &annotations, block.section)
+        });
+        let uncertain_order = first.is_none()
+            || opaque.is_some_and(|span| first.is_none_or(|first| span.start < first.span.start))
+            || self.document.blocks.iter().any(|block| {
+                first.is_none_or(|first| block.span.start < first.span.start)
+                    && !in_recovery(self.document, &annotations, block.section)
+                    && sections::unclassified_example(self.document, block)
+            });
+        if uncertain_order {
+            self.result.incomplete_rules.extend(
+                ["ORD001", "ORD002", "RAT001"]
+                    .into_iter()
+                    .filter(|code| self.enabled.contains(*code))
+                    .map(str::to_owned),
+            );
+        }
+        if let Some(first) = first.filter(|_| !uncertain_order) {
+            let preceding: Vec<_> = self
+                .document
+                .blocks
                 .iter()
                 .filter(|block| {
-                    block.kind == BlockKind::Paragraph
-                        && block.sentences.iter().any(|&id| {
-                            let sentence = &document.sentences[id];
-                            enabled_language(config, sentence.language)
-                                && rationale(&prose_text(sentence), sentence.language)
-                        })
+                    block.span.end <= first.span.start && !is_quoted(self.document, block)
                 })
+                .collect();
+            self.check_rationale_preamble(first, &preceding);
+            self.check_long_preamble(first, &preceding);
+            self.check_recovery_order(first, &annotations);
+        }
+    }
+
+    fn check_rationale_preamble(
+        &mut self,
+        first: &crate::md::Block,
+        preceding: &[&crate::md::Block],
+    ) {
+        if self.enabled.contains("RAT001") {
+            let rationale_blocks: Vec<_> = preceding
+                .iter()
+                .filter(|block| rationale_paragraph(self.document, block, self.config))
                 .collect();
             let chars: usize = rationale_blocks
                 .iter()
                 .flat_map(|block| &block.sentences)
-                .map(|&id| prose_text(&document.sentences[id]).chars().count())
+                .map(|&id| prose_text(&self.document.sentences[id]).chars().count())
                 .sum();
             if rationale_blocks.len() >= RATIONALE_PARAGRAPHS && chars >= RATIONALE_CHARS {
-                let mut diagnostic = Diagnostic::new(
-                    filename,
-                    &document.source,
+                self.emit_before_flow(
                     "RAT001",
                     rationale_blocks[0].span,
                     "Design-choice arguments precede the first procedure or runnable example.",
                     "Move the extended rationale to an ADR and link to it after the main steps.",
-                );
-                diagnostic.related.push(RelatedLocation::new(
-                    filename,
-                    &document.source,
                     first.span,
-                    "The main flow starts here.",
-                ));
-                diagnostics.push(diagnostic);
+                );
             }
         }
-        if enabled.contains("ORD001") {
+    }
+
+    fn check_long_preamble(&mut self, first: &crate::md::Block, preceding: &[&crate::md::Block]) {
+        if self.enabled.contains("ORD001") {
             // Count occupied content lines, not YAML, blank lines, comments, headings or fenced examples.
             let mut lines = BTreeSet::new();
             let mut long_table = None;
-            for block in &preceding {
+            for block in preceding {
                 if !matches!(block.kind, BlockKind::Paragraph | BlockKind::Table) {
                     continue;
                 }
-                let text = &document.source[block.span.start..block.span.end];
+                let text = &self.document.source[block.span.start..block.span.end];
                 let count = text.lines().filter(|line| !line.trim().is_empty()).count();
                 if block.kind == BlockKind::Table && count > PREAMBLE_TABLE_LINES {
                     long_table = Some(block.span);
                 }
-                let start = document.source[..block.span.start]
+                let start = self.document.source[..block.span.start]
                     .bytes()
                     .filter(|&b| b == b'\n')
                     .count();
@@ -754,97 +796,87 @@ fn check_structure(
                             .map(|block| block.span)
                     })
                     .unwrap_or(first.span);
-                let mut diagnostic = Diagnostic::new(
-                    filename,
-                    &document.source,
-                    "ORD001",
-                    span,
-                    "A long preamble delays the first procedure or runnable example.",
-                    "Put the runnable example or ordered procedure before extended background and reference tables.",
-                );
-                diagnostic.related.push(RelatedLocation::new(
-                    filename,
-                    &document.source,
-                    first.span,
-                    "The main flow starts here.",
-                ));
-                diagnostics.push(diagnostic);
+                self.emit_before_flow("ORD001", span, "A long preamble delays the first procedure or runnable example.", "Put the runnable example or ordered procedure before extended background and reference tables.", first.span);
             }
         }
-        if enabled.contains("ORD002") {
-            for annotation in &annotations {
-                let section = &document.sections[annotation.section];
+    }
+
+    fn check_recovery_order(
+        &mut self,
+        first: &crate::md::Block,
+        annotations: &[sections::SectionAnnotation],
+    ) {
+        if self.enabled.contains("ORD002") {
+            for annotation in annotations {
+                let section = &self.document.sections[annotation.section];
                 if annotation.section_type == SectionType::Troubleshooting
                     && section
                         .heading_span
                         .is_some_and(|span| span.start < first.span.start)
-                    && section.parent.is_none_or(|parent| !in_recovery(parent))
+                    && section
+                        .parent
+                        .is_none_or(|parent| !in_recovery(self.document, annotations, parent))
                 {
-                    let mut diagnostic = Diagnostic::new(
-                        filename,
-                        &document.source,
-                        "ORD002",
-                        section.heading_span.unwrap(),
-                        "Troubleshooting or exceptions appear before the main flow.",
-                        "Move this section after the main procedure so readers can reach the common path first.",
-                    );
-                    diagnostic.related.push(RelatedLocation::new(
-                        filename,
-                        &document.source,
-                        first.span,
-                        "The main flow starts here.",
-                    ));
-                    diagnostics.push(diagnostic);
+                    self.emit_before_flow("ORD002", section.heading_span.unwrap(), "Troubleshooting or exceptions appear before the main flow.", "Move this section after the main procedure so readers can reach the common path first.", first.span);
                 }
             }
         }
     }
-    HeuristicResult {
-        diagnostics,
-        incomplete_rules,
+    fn check_mixed_sections(&mut self, annotations: &[sections::SectionAnnotation]) {
+        for annotation in annotations {
+            let section = &self.document.sections[annotation.section];
+            if annotation.section_type != SectionType::Rationale || section.heading_span.is_none() {
+                continue;
+            }
+            if !section
+                .heading
+                .as_deref()
+                .is_some_and(sections::decision_heading)
+                && !section.blocks.iter().any(|&id| {
+                    let block = &self.document.blocks[id];
+                    rationale_paragraph(self.document, block, self.config)
+                })
+            {
+                continue;
+            }
+            let paragraphs = section
+                .blocks
+                .iter()
+                .filter(|&&id| {
+                    self.document.blocks[id].kind == BlockKind::Paragraph
+                        && !is_quoted(self.document, &self.document.blocks[id])
+                })
+                .count();
+            if paragraphs >= RATIONALE_PARAGRAPHS {
+                self.emit("MIX001", section.heading_span.unwrap(),
+                    "An extended rationale section conflicts with this procedure or reference page.",
+                    "Move the decision rationale to an ADR and keep a link beside the procedure or contract it explains.");
+            }
+        }
     }
 }
 
-fn check_mixed_sections(
+fn in_recovery(
     document: &Document,
-    filename: &str,
-    config: &Config,
     annotations: &[sections::SectionAnnotation],
-    diagnostics: &mut Vec<Diagnostic>,
-) {
-    for annotation in annotations {
-        let section = &document.sections[annotation.section];
-        if annotation.section_type != SectionType::Rationale || section.heading_span.is_none() {
-            continue;
+    mut id: usize,
+) -> bool {
+    loop {
+        if annotations[id].section_type == SectionType::Troubleshooting {
+            return true;
         }
-        if !section
-            .heading
-            .as_deref()
-            .is_some_and(sections::decision_heading)
-            && !section.blocks.iter().any(|&id| {
-                let block = &document.blocks[id];
-                block.kind == BlockKind::Paragraph
-                    && block.sentences.iter().any(|&id| {
-                        let sentence = &document.sentences[id];
-                        enabled_language(config, sentence.language)
-                            && rationale(&prose_text(sentence), sentence.language)
-                    })
-            })
-        {
-            continue;
-        }
-        let paragraphs = section
-            .blocks
-            .iter()
-            .filter(|&&id| {
-                document.blocks[id].kind == BlockKind::Paragraph
-                    && !is_quoted(document, &document.blocks[id])
-            })
-            .count();
-        if paragraphs >= RATIONALE_PARAGRAPHS {
-            diagnostics.push(Diagnostic::new(filename, &document.source, "MIX001", section.heading_span.unwrap(),
-                    "An extended rationale section conflicts with this procedure or reference page.",
-                    "Move the decision rationale to an ADR and keep a link beside the procedure or contract it explains."));
-        }
+        let Some(parent) = document.sections[id].parent else {
+            return false;
+        };
+        id = parent;
     }
+}
+
+fn rationale_paragraph(document: &Document, block: &crate::md::Block, config: &Config) -> bool {
+    block.kind == BlockKind::Paragraph
+        && block.sentences.iter().any(|&id| {
+            let sentence = &document.sentences[id];
+            enabled_language(config, sentence.language)
+                && rationale(&prose_text(sentence), sentence.language)
+        })
 }

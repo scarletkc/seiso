@@ -66,13 +66,7 @@ pub(crate) fn runs(sentence: &Sentence, include_code: bool) -> Vec<Run<'_>> {
     if !run.text.is_empty() {
         result.push(run);
     }
-    for run in &mut result {
-        let ranges: Vec<_> = URL.find_iter(&run.text).map(|m| m.range()).collect();
-        for range in ranges.into_iter().rev() {
-            run.text
-                .replace_range(range.clone(), &" ".repeat(range.len()));
-        }
-    }
+    mask(&mut result, &URL);
     result
 }
 
@@ -80,17 +74,21 @@ pub(crate) fn runs(sentence: &Sentence, include_code: bool) -> Vec<Run<'_>> {
 /// rather than deleting text so source mappings retain their offsets.
 pub(crate) fn assertions(sentence: &Sentence, include_code: bool) -> Vec<Run<'_>> {
     let mut result = runs(sentence, include_code);
-    for run in &mut result {
-        let ranges: Vec<_> = QUOTATION
+    mask(&mut result, &QUOTATION);
+    result
+}
+
+fn mask(runs: &mut [Run<'_>], pattern: &Regex) {
+    for run in runs {
+        let ranges: Vec<_> = pattern
             .find_iter(&run.text)
-            .map(|value| value.range())
+            .map(|matched| matched.range())
             .collect();
         for range in ranges.into_iter().rev() {
             run.text
                 .replace_range(range.clone(), &" ".repeat(range.len()));
         }
     }
-    result
 }
 
 fn word_char(ch: char) -> bool {
@@ -117,11 +115,22 @@ pub(crate) fn occurrences(text: &str, phrase: &str) -> Vec<Span> {
 }
 
 pub(crate) fn marker(runs: &[Run<'_>], phrases: &[&str]) -> Option<Span> {
+    marker_if(runs, phrases, |_, _| true)
+}
+
+pub(crate) fn marker_if(
+    runs: &[Run<'_>],
+    phrases: &[&str],
+    predicate: impl Fn(&str, &str) -> bool + Copy,
+) -> Option<Span> {
     runs.iter()
         .flat_map(|run| {
             phrases.iter().flat_map(move |phrase| {
                 occurrences(&run.text, phrase)
                     .into_iter()
+                    .filter(move |range| {
+                        predicate(&run.text[..range.start], &run.text[range.end..])
+                    })
                     .filter_map(|range| run.span(range))
             })
         })

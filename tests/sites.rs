@@ -1,14 +1,10 @@
+use common::{value, write};
+mod common;
 use std::path::Path;
 use std::process::{Command, Output};
 
 use serde_json::{Value, json};
 use tempfile::TempDir;
-
-fn write(root: &Path, name: &str, text: &str) {
-    let path = root.join(name);
-    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
-    std::fs::write(path, text).unwrap();
-}
 
 fn run(root: &Path, arguments: &[&str]) -> Output {
     Command::new(env!("CARGO_BIN_EXE_seiso"))
@@ -16,16 +12,6 @@ fn run(root: &Path, arguments: &[&str]) -> Output {
         .args(arguments)
         .output()
         .unwrap()
-}
-
-fn value(output: &Output) -> Value {
-    serde_json::from_slice(&output.stdout).unwrap_or_else(|error| {
-        panic!(
-            "{error}; stdout={} stderr={}",
-            String::from_utf8_lossy(&output.stdout),
-            String::from_utf8_lossy(&output.stderr)
-        )
-    })
 }
 
 const LINKS: &str = "preview = true\n\n[lint]\nselect = ['LNK001', 'LNK002']\n";

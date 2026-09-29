@@ -1,5 +1,7 @@
 //! Robustness checks on unmodified pinned inputs, without precision labels.
 //! The synthetic howto mapping exercises convention rules; it is not a genre annotation.
+mod common;
+use common::{CheckContext, check};
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -7,8 +9,8 @@ use std::path::{Component, Path};
 
 use seiso::config::{CliOverrides, Config};
 use seiso::diagnostics::{Diagnostic, SourceMap, Span};
+use seiso::rules::rule_codes;
 use seiso::rules::suppression::SuppressionScope;
-use seiso::rules::{CheckContext, check, rule_codes};
 use serde::Deserialize;
 use sha2::{Digest, Sha256};
 

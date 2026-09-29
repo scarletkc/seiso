@@ -317,7 +317,7 @@ fn percent_decode(value: &str) -> Option<String> {
 }
 
 #[derive(Debug, Eq, PartialEq)]
-pub(crate) enum TargetStatus {
+pub enum TargetStatus {
     File,
     Directory,
     /// Exists under this workspace-relative spelling, which differs in letter case.
@@ -458,6 +458,14 @@ impl Listings {
 mod tests {
     use super::*;
 
+    fn target(target: &str, kind: TargetKind) -> LocalTarget {
+        LocalTarget {
+            path: PathBuf::from(target),
+            target: target.into(),
+            kind,
+        }
+    }
+
     #[test]
     fn normalization_preserves_unresolved_relative_parents() {
         assert_eq!(normalize("../../a/../b"), PathBuf::from("../../b"));
@@ -532,11 +540,6 @@ mod tests {
 
     #[test]
     fn route_directories_yield_to_later_page_sources() {
-        let target = |target: &str, kind| LocalTarget {
-            path: PathBuf::from(target),
-            target: target.into(),
-            kind,
-        };
         let status = |target: &LocalTarget| match target.target.as_str() {
             "guide" | "physical" => TargetStatus::Directory,
             "guide/index.md" => TargetStatus::File,
@@ -575,11 +578,6 @@ mod tests {
 
     #[test]
     fn only_lowercase_page_routes_reach_entries_with_capitals() {
-        let target = |target: &str, kind| LocalTarget {
-            path: PathBuf::from(target),
-            target: target.into(),
-            kind,
-        };
         let status = |target: &LocalTarget| match target.target.as_str() {
             "Guide.md" => TargetStatus::CaseMismatch("guide.md".into()),
             "site/contributing.md" => TargetStatus::CaseMismatch("site/CONTRIBUTING.md".into()),

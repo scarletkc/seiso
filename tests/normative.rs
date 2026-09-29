@@ -1,3 +1,5 @@
+mod common;
+
 use std::collections::BTreeSet;
 
 use seiso::config::Config;
@@ -168,7 +170,7 @@ fn reference_root_pointer_uses_its_paragraph_for_block_suppression() {
     let config =
         Config::parse("preview = true\n[lint]\nselect = ['PTR001', 'SUP']", &root).unwrap();
     let document = seiso::md::parse(source).unwrap();
-    let result = seiso::rules::check(&seiso::rules::CheckContext {
+    let result = common::check(&common::CheckContext {
         document: &document,
         filename: "docs/example.md",
         path: &path,

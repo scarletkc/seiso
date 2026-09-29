@@ -1,10 +1,11 @@
+use seiso::paths::TargetStatus;
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
 use seiso::config::{CliOverrides, Config};
 use seiso::md::Language;
-use seiso::rules::{CheckContext, PathStatus, WorkspaceFiles, check_with_files};
+use seiso::rules::{CheckContext, WorkspaceFiles, check};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
@@ -43,12 +44,12 @@ struct Inventory {
     entries: BTreeMap<String, String>,
 }
 impl WorkspaceFiles for Inventory {
-    fn status(&self, root: &Path, target: &Path) -> PathStatus {
+    fn status(&self, root: &Path, target: &Path) -> TargetStatus {
         let Ok(relative) = target.strip_prefix(root) else {
-            return PathStatus::Unknown;
+            return TargetStatus::Unknown;
         };
         if relative.as_os_str().is_empty() {
-            return PathStatus::Exists;
+            return TargetStatus::File;
         }
         for ancestor in relative.ancestors() {
             let key = ancestor.to_string_lossy().replace('\\', "/");
@@ -57,14 +58,14 @@ impl WorkspaceFiles for Inventory {
                 .get(&key)
                 .is_some_and(|mode| mode == "120000" || mode == "160000")
             {
-                return PathStatus::Unknown;
+                return TargetStatus::Unknown;
             }
         }
         let key = relative.to_string_lossy().replace('\\', "/");
         if self.entries.contains_key(&key) {
-            PathStatus::Exists
+            TargetStatus::File
         } else {
-            PathStatus::Missing
+            TargetStatus::Missing
         }
     }
 }
@@ -95,18 +96,18 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             let text = String::from_utf8(raw)?;
             let document = seiso::md::parse(&text)?;
             let path = root.join(&input.path);
-            let context = CheckContext {
-                document: &document,
-                filename: &input.path,
-                path: &path,
-                workspace_root: &root,
-                config: &config,
-                overrides: &CliOverrides {
+            let context = CheckContext::new(
+                &document,
+                &input.path,
+                &path,
+                &root,
+                &config,
+                &CliOverrides {
                     preview: true,
                     ..CliOverrides::default()
                 },
-            };
-            let result = check_with_files(&context, &inventory)?;
+            )?;
+            let result = check(&context, &inventory).finish(&document, &input.path);
             if !result.errors.is_empty() {
                 return Err(format!("incomplete file: {}: {:?}", input.path, result.errors).into());
             }

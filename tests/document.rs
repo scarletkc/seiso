@@ -505,3 +505,15 @@ fn html_attributes_and_nested_raw_text_do_not_create_suppression_comments() {
     );
     assert_source_ranges(&document);
 }
+
+#[test]
+fn span_containment_preserves_half_open_boundaries() {
+    let span = seiso::diagnostics::Span::new(2, 5);
+    assert!(span.contains(seiso::diagnostics::Span::new(2, 5)));
+    assert!(span.contains(seiso::diagnostics::Span::new(5, 5)));
+    assert!(!span.contains(seiso::diagnostics::Span::new(1, 5)));
+    assert!(!span.contains(seiso::diagnostics::Span::new(2, 6)));
+    assert!(span.contains_offset(2));
+    assert!(!span.contains_offset(5));
+    assert!(!seiso::diagnostics::Span::new(2, 2).contains_offset(2));
+}

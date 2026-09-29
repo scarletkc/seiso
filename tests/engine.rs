@@ -1,8 +1,10 @@
+mod common;
+use common::{CheckContext, check};
 use std::fs;
 use std::path::Path;
 
 use seiso::config::{CliOverrides, Config};
-use seiso::rules::{CheckContext, CheckResult, check};
+use seiso::rules::CheckResult;
 
 fn evaluate(root: &Path, source: &str, configuration: &str, preview: bool) -> CheckResult {
     let document = seiso::md::parse(source).unwrap();
@@ -66,7 +68,10 @@ fn kind_errors_do_not_fall_back_to_a_configured_exemption() {
         mapping,
         true,
     );
-    assert_eq!(result.kind.value.as_deref(), Some("generated"));
+    assert_eq!(
+        result.kind.value.map(seiso::rules::Kind::as_str),
+        Some("generated")
+    );
     assert!(result.diagnostics.is_empty());
     assert!(result.enabled_rules.is_empty());
     assert!(result.suppressions.is_empty());
@@ -77,14 +82,20 @@ fn frontmatter_overrides_mapping_and_last_path_mapping_wins() {
     let root = tempfile::tempdir().unwrap();
     let config = "[[kinds]]\npath='**/*.md'\nkind='generated'\n[[kinds]]\npath='docs/**'\nkind='reference'\n";
     let result = evaluate(root.path(), "# Guide", config, true);
-    assert_eq!(result.kind.value.as_deref(), Some("reference"));
+    assert_eq!(
+        result.kind.value.map(seiso::rules::Kind::as_str),
+        Some("reference")
+    );
     let result = evaluate(
         root.path(),
         "---\nkind: changelog\n---\n# Release",
         config,
         true,
     );
-    assert_eq!(result.kind.value.as_deref(), Some("changelog"));
+    assert_eq!(
+        result.kind.value.map(seiso::rules::Kind::as_str),
+        Some("changelog")
+    );
     assert!(!result.enabled_rules.contains(&"STL001".into()));
 }
 

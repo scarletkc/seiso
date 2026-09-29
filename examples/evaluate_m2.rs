@@ -7,7 +7,7 @@ use std::path::PathBuf;
 use seiso::config::{CliOverrides, Config};
 use seiso::index::{IndexedFile, InventoryEntryKind, WorkspaceIndex};
 use seiso::md::Language;
-use seiso::rules::{CheckContext, check_raw_with_files, finish_check};
+use seiso::rules::{CheckContext, check};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
@@ -80,28 +80,16 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
             let document = seiso::md::parse(&String::from_utf8(raw)?)?;
             let path = root.join(&input.path);
-            let kind = seiso::rules::resolve_kind(&document, config.kind_for(&path)).value;
-            let enabled_rules = config
-                .enabled_rules(
-                    &path,
-                    kind.as_deref(),
-                    &CliOverrides {
-                        preview: true,
-                        ..CliOverrides::default()
-                    },
-                )?
-                .into_iter()
-                .map(str::to_owned)
-                .collect();
-            files.push(IndexedFile {
-                filename: input.path.clone(),
-                path: path.clone(),
-                document: document.into(),
-                kind,
-                domain: config.domain_for(&path).unwrap_or("").to_owned(),
-                enabled_rules,
-                config: config.clone(),
-            });
+            files.push(IndexedFile::new(
+                input.path.clone(),
+                path,
+                document.into(),
+                config.clone(),
+                &CliOverrides {
+                    preview: true,
+                    ..CliOverrides::default()
+                },
+            )?);
             if inputs.insert(input.path, input.sha256).is_some() {
                 return Err("duplicate input path".into());
             }
@@ -114,35 +102,37 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         for file in index.files() {
             let context = CheckContext {
                 document: &file.document,
-                filename: &file.filename,
+                filename: &file.policy.filename,
                 path: &file.path,
                 workspace_root: &root,
                 config: &file.config,
-                overrides: &CliOverrides {
-                    preview: true,
-                    ..CliOverrides::default()
-                },
+                policy: std::borrow::Cow::Borrowed(&file.policy),
             };
-            let mut raw = check_raw_with_files(&context, &index)?;
-            raw.enabled_rules.extend(file.enabled_rules.iter().cloned());
+            let mut raw = check(&context, &index);
             raw.diagnostics.extend(
                 cross
                     .diagnostics
                     .iter()
-                    .filter(|diagnostic| diagnostic.filename == file.filename)
+                    .filter(|diagnostic| diagnostic.filename == file.policy.filename)
                     .cloned(),
             );
-            raw.incomplete_rules
-                .extend(cross.incomplete.remove(&file.filename).unwrap_or_default());
+            raw.incomplete_rules.extend(
+                cross
+                    .incomplete
+                    .remove(&file.policy.filename)
+                    .unwrap_or_default(),
+            );
             let incomplete_rules = raw.incomplete_rules.iter().cloned().collect();
-            let result = finish_check(&file.document, &file.filename, raw);
+            let result = raw.finish(&file.document, &file.policy.filename);
             if !result.errors.is_empty() {
-                return Err(format!("file errors: {}: {:?}", file.filename, result.errors).into());
+                return Err(
+                    format!("file errors: {}: {:?}", file.policy.filename, result.errors).into(),
+                );
             }
             output.push(Output {
                 source: source.id.clone(),
-                path: file.filename.clone(),
-                sha256: inputs[&file.filename].clone(),
+                path: file.policy.filename.clone(),
+                sha256: inputs[&file.policy.filename].clone(),
                 language: file.document.language,
                 links: file.document.links.clone(),
                 incomplete_rules,

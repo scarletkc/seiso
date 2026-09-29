@@ -1,12 +1,14 @@
 //! Constructed protocol cases; these are not natural precision samples.
+mod common;
+use common::{CheckContext, check};
 
 use std::collections::BTreeSet;
 use std::path::Path;
 
 use seiso::config::{CliOverrides, Config};
 use seiso::diagnostics::{Applicability, Diagnostic, Location, Span};
+use seiso::rules::CheckResult;
 use seiso::rules::suppression::{SuppressionScope, SuppressionState, apply};
-use seiso::rules::{CheckContext, CheckResult, check};
 
 fn evaluate(source: &str, configuration: &str) -> CheckResult {
     let root = Path::new("/contract");
@@ -57,7 +59,10 @@ fn kind_vocabulary_and_invalid_yaml_have_distinct_outcomes() {
         let source = format!("---\nkind: {kind}\n---\n\n# 文档 / Guide / ガイド\n");
         let result = evaluate(&source, config);
         assert!(result.diagnostics.is_empty(), "{kind}");
-        assert_eq!(result.kind.value.as_deref(), Some(kind));
+        assert_eq!(
+            result.kind.value.map(seiso::rules::Kind::as_str),
+            Some(kind)
+        );
     }
     for kind in ["guide", "generated", "HOWTO", "''", "手順"] {
         let source = format!("---\nkind: {kind}\n---\n\n# Guide\n");
