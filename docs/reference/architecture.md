@@ -12,7 +12,7 @@ input loading, analysis, and command rendering.
 | [`main`](../../src/main.rs), [`commands`](../../src/commands.rs) | CLI arguments, command orchestration, rendering and writes |
 | [`workspace`](../../src/workspace.rs) | Shared discovery, policy resolution, scoped reads, parsing, and input errors |
 | [`analysis`](../../src/analysis.rs) | Check execution, suppression application, report selection, and fix proposals |
-| [`config`](../../src/config/mod.rs) | Configuration discovery, explicit inheritance, and path policy |
+| [`config`](../../src/config/mod.rs), [`config/frame`](../../src/config/frame.rs) | Configuration discovery, source-bound inheritance, environment frames, and path policy |
 | [`md`](../../src/md/mod.rs) | Content-derived document model and original source mappings |
 | [`paths`](../../src/paths.rs) | Path normalization, local destination parsing, and filesystem target status |
 | [`index`](../../src/index/mod.rs) | Workspace facts, anchors, comparison domains, and resolved links |
@@ -23,23 +23,70 @@ input loading, analysis, and command rendering.
 
 ## Loading and command scope
 
+Configuration loading resembles a compiler front end. Discovery establishes
+the selected configuration and invocation workspace. Each source unit is parsed
+in an environment frame recording its source file, policy base, extending
+frame, and inheritance-edge relationship. A governing ancestor retains its
+directory as base; a shared template inherits the extending frame's base.
+Source-tagged values are then overlaid, preserving ordinary array replacement
+and additive `extend-*` ordering. Only after overlay are surviving values
+validated and path-bearing fields compiled or resolved in their own frames.
+This also means an overridden, malformed ancestor field does not become a
+new load error solely because frames are tracked. `extend` paths themselves
+always resolve from the declaring source file.
+
+Compiled configurations are reused within a workspace snapshot for files
+selecting the same nested configuration. During matching, a candidate file's
+relative name is computed once per distinct frame base, rather than once per
+pattern. The common single-frame case takes a direct matching path; ordered
+mapping lists retain last-match precedence. The cache is invocation-local,
+not a persistent cache of potentially stale configuration or discovery state.
+`policy` adds environment and effective-entry provenance to its JSON without
+changing the existing effective settings field shapes.
+
+The selection root controls an unqualified command's selected files and
+user-facing filenames. Explicit governing-ancestor chains of the invoking
+configuration **or selected nested configurations** can establish a wider
+project/index root. Preflight of selected files discovers that scope before
+loading project-wide dependencies; dependency files do not widen it in turn.
+Shared templates do not widen the project. Configuration resolution outside
+the selected child subtree still uses each file's nearest configuration. Each
+source's authorized root combines the invocation project's **pre-widening**
+root with that source configuration's own governing-frame root, choosing the
+wider ancestor when they are nested. Thus a repository-root invocation retains
+access to root files through a standalone `docs/` config; a `docs/` invocation
+does not grant its standalone neighbor root access merely because `docs/sub/`
+extends the root. The global index may be wider, but one source cannot borrow
+another's additional scope. Link resolution and cross-file comparisons enforce
+this per-source boundary. The root for a written leading `/` link is a separate
+concept: the selection root for documents in the selected subtree, or the
+source's own authorized root for a dependency outside it. This describes
+ancestor-chain expansion, not arbitrary disjoint project mounts.
+
 `workspace::load` supplies the shared snapshot. Its loading scope is independent
 of rule execution:
 
 | Command | Inputs read | Rule execution |
 | --- | --- | --- |
 | `parse` | Selected documents | None |
-| `check` and editor hooks | Selected documents, plus workspace documents when an included policy can enable an index-dependent rule | Selected single-file checks and required cross-file checks |
+| `check` and editor hooks | Selected documents, plus project documents when an included selected policy can enable an index-dependent rule | Selected single-file checks and required cross-file checks |
 | `policy` | Included workspace documents | None; declarations and policy are inspected |
-| `policy --evaluate` | Included workspace documents | Checks run to establish suppression outcomes |
-| `index --dump` | Included workspace documents | None |
+| `policy --evaluate` | Included selected documents plus project dependencies | Checks run to establish suppression outcomes |
+| `index --dump` | Included project documents | None |
 
-An unqualified check selects every included document. A path check with only
-single-file rules reads the requested sources; an unrelated invalid UTF-8 file
-does not invalidate it. Discovery still considers included policies before
-deciding whether an index is needed. An enabled cross-file rule elsewhere may
-produce an incoming diagnosis related to the selected file, so dependency
-scope cannot be inferred from the selected files alone.
+An unqualified check selects every included document under the selection root.
+An explicit parent or sibling path inside the declared project can be checked
+without selecting the rest of the project. A path check with only single-file
+rules reads the requested sources; an unrelated invalid UTF-8 file does not
+invalidate it. Discovery still considers included selected policies before
+deciding whether an index is needed. When a selected policy enables an
+index-dependent rule, loading can expand to the admitted project: a child
+check may need a sibling page's anchors or other cross-file facts without
+selecting that sibling for diagnostic reporting. An enabled cross-file rule
+elsewhere may produce an incoming diagnosis related to the selected file, so
+dependency scope cannot be inferred from the selected files alone. The wider
+index is a pool of facts, not a shared authorization: duplicate and ownership
+comparisons consider only files admitted by each source's own root.
 
 Single-file rules run on selected files. Cross-file diagnostics are reported
 when either their primary or related location is selected. For complete inputs,
@@ -48,7 +95,8 @@ Read, configuration, or ignore errors in required inputs make the check
 incomplete; unrelated errors outside a local check's required scope do not.
 
 Stdin replaces one named document for that invocation and can supply a new
-path within the workspace. It participates in analysis without writing a file.
+path within the declared project. It participates in analysis without writing
+a file.
 
 ## Document and index data
 
@@ -81,9 +129,15 @@ its roles, evidence, and boundaries.
 written path, then, for a document a `[[sites]]` entry matches, the page
 sources of its route. `paths::select_target` picks the first that exists, and
 `paths::local_link` also parses the anchor. Percent decoding, scheme detection,
-workspace containment, normalization, and route candidates are shared by
+project containment, normalization, and route candidates are shared by
 file-existence and index rules. A relative path starts at the source directory;
-a leading slash starts at the workspace root. Local filesystem inspection and frozen Git
+a written leading slash starts at the selection root for a document in the
+selected subtree, or at that source's authorized root for an outside-subtree
+dependency. A matching site's
+`root` and `public` use their declaring frame, independently of the written
+slash base. Parent and sibling site targets within the source's authorized
+root can be resolved; a symlink outside that root remains excluded. Local filesystem
+inspection and frozen Git
 inventories supply physical existence through their respective adapters. Both
 compare letter case with entry names, which `paths::Listings` reads from
 directories and an inventory lists as Git paths, so a case-insensitive
