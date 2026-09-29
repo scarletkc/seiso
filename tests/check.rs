@@ -2,6 +2,8 @@ use common::{run, value, workspace, write};
 mod common;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
+#[cfg(unix)]
+use std::process::{Command, Stdio};
 
 use serde_json::{Value, json};
 use tempfile::TempDir;
