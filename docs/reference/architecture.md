@@ -48,7 +48,10 @@ The selection root controls an unqualified command's selected files and
 user-facing filenames. Explicit governing-ancestor chains of the invoking
 configuration **or selected nested configurations** can establish a wider
 project/index root. Preflight of selected files discovers that scope before
-loading project-wide dependencies; dependency files do not widen it in turn.
+loading project-wide dependencies. Explicit parent/sibling paths admitted by
+another selected file are added and preflighted until no new ancestor root is
+admitted, independently of argument order. Incidental dependency files do not
+widen it in turn.
 Shared templates do not widen the project. Configuration resolution outside
 the selected child subtree still uses each file's nearest configuration. Each
 source's authorized root combines the invocation project's **pre-widening**

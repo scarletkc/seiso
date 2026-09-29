@@ -51,8 +51,11 @@ admitted by that invocation.
 Within a source's admitted scope, site routes and cross-file dependencies can
 resolve parent and sibling targets; symlinks outside that scope remain
 excluded. An explicit `../sibling/page.md` argument may select a file within
-the admitted project, using that file's own nearest configuration. When a
-selected policy enables index-dependent rules, a child check may load a wider
+the admitted project, using that file's own nearest configuration. If its
+scope comes from a nested selected file, include that importing file in the
+same request; a lone outside path is still rejected, and argument order does
+not matter. When a selected policy enables index-dependent rules, a child
+check may load a wider
 dependency pool without reporting unrelated parent or sibling diagnostics.
 Written leading `/` links in selected child documents continue to use the
 child selection root; a site's `root`/`public` routing bases are independent.

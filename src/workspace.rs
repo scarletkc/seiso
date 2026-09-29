@@ -194,6 +194,38 @@ fn walk_markdown(
     }
 }
 
+/// Expand only from selected files' governing frames, caching each directory.
+///
+/// Repeated calls are needed only when an explicit outside path is admitted by
+/// an earlier selected frame; ordinary child invocations make one pass.
+fn expand_selected_scope(
+    workspace: &Workspace,
+    selection_root: &Path,
+    requested: &BTreeSet<PathBuf>,
+    all_selected: bool,
+    inputs: &BTreeMap<PathBuf, Option<String>>,
+    project_root: &mut PathBuf,
+    config_cache: &mut BTreeMap<PathBuf, Result<Config, String>>,
+) {
+    for path in inputs.keys().filter(|path| {
+        (all_selected && path.starts_with(selection_root))
+            || requested.iter().any(|selected| path.starts_with(selected))
+    }) {
+        let directory = path.parent().unwrap_or(selection_root).to_path_buf();
+        let config = config_cache.entry(directory).or_insert_with(|| {
+            workspace
+                .config_for_within(path, project_root)
+                .map_err(|error| error.to_string())
+        });
+        if let Ok(config) = config {
+            let admitted = config.project_root_for_source();
+            if project_root.starts_with(&admitted) {
+                *project_root = admitted;
+            }
+        }
+    }
+}
+
 /// Resolve file policies before deciding which sources a check needs to read.
 pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snapshot, String> {
     options
@@ -206,7 +238,9 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
     let mut project_root = normalize(&workspace.project_root);
     let invocation_project_root = project_root.clone();
     let mut errors = Vec::new();
+    let mut path_errors = Vec::new();
     let mut requested = BTreeSet::new();
+    let mut deferred_requests = Vec::new();
     let mut inputs = BTreeMap::new();
     let overlay = if let Some((path, source)) = &options.stdin {
         let path = workspace_path(&project_root, &absolute(cwd, path))?;
@@ -223,28 +257,29 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
         Some((path, source.clone()))
     } else {
         for path in &options.paths {
-            let path = workspace_path(&project_root, &absolute(cwd, path))?;
+            let absolute = absolute(cwd, path);
+            let path = match workspace_path(&project_root, &absolute) {
+                Ok(path) => path,
+                Err(_) if !absolute.starts_with(&project_root) => {
+                    deferred_requests.push(absolute);
+                    continue;
+                }
+                Err(error) => return Err(error),
+            };
             match path.try_exists() {
                 Ok(true) => {
                     requested.insert(path);
                 }
-                Ok(false) => errors.push(InputError {
-                    filename: relative(&project_root, &path),
-                    message: "Path does not exist; provide an existing file or directory.".into(),
-                }),
-                Err(error) => errors.push(InputError {
-                    filename: relative(&project_root, &path),
-                    message: format!("Cannot access this path: {error}"),
-                }),
+                Ok(false) => path_errors.push((
+                    path,
+                    "Path does not exist; provide an existing file or directory.".to_owned(),
+                )),
+                Err(error) => path_errors.push((path, format!("Cannot access this path: {error}"))),
             }
         }
         None
     };
     let all_selected = options.paths.is_empty() && options.stdin.is_none();
-    let selected_path = |path: &Path| {
-        (all_selected && path.starts_with(&root))
-            || requested.iter().any(|selected| path.starts_with(selected))
-    };
     let mut discovery_errors = Vec::new();
     walk_markdown(&root, &mut inputs, &mut discovery_errors, &project_root);
     for target in requested.iter().filter(|path| !path.starts_with(&root)) {
@@ -259,24 +294,78 @@ pub fn load(cwd: &Path, options: &LoadOptions, scope: LoadScope) -> Result<Snaps
     if let Some((path, source)) = overlay {
         inputs.insert(path, Some(source));
     }
-    // Nested selected configurations can explicitly inherit an ancestor that
-    // the invoking configuration did not. Discover their scope before the
-    // dependency index is built; dependency files never widen it in turn.
     let mut config_cache = BTreeMap::new();
-    for path in inputs.keys().filter(|path| selected_path(path)) {
-        let directory = path.parent().unwrap_or(&root).to_path_buf();
-        let config = config_cache.entry(directory).or_insert_with(|| {
-            workspace
-                .config_for_within(path, &project_root)
-                .map_err(|error| error.to_string())
-        });
-        if let Ok(config) = config {
-            let admitted = config.project_root_for_source();
-            if project_root.starts_with(&admitted) {
-                project_root = admitted;
+    // Selected frames, never incidental dependency files, can widen scope.
+    expand_selected_scope(
+        &workspace,
+        &root,
+        &requested,
+        all_selected,
+        &inputs,
+        &mut project_root,
+        &mut config_cache,
+    );
+    // An explicit parent/sibling request may become legal because another
+    // selected file's nested frame has just admitted its governing ancestor.
+    // Do not let the outside request itself promote an unrelated workspace.
+    let mut deferred = deferred_requests;
+    while !deferred.is_empty() {
+        let mut unresolved = Vec::new();
+        let mut admitted_any = false;
+        for absolute in deferred {
+            let path = match workspace_path(&project_root, &absolute) {
+                Ok(path) => path,
+                Err(error) => {
+                    unresolved.push((absolute, error));
+                    continue;
+                }
+            };
+            admitted_any = true;
+            match path.try_exists() {
+                Ok(true) => {
+                    requested.insert(path.clone());
+                    if path.is_file() && is_markdown(&path) {
+                        if !ignored_by_git(&project_root, &path, false)? {
+                            inputs.entry(path).or_insert(None);
+                        }
+                    } else if path.is_dir() {
+                        walk_markdown(&path, &mut inputs, &mut discovery_errors, &project_root);
+                    }
+                }
+                Ok(false) => path_errors.push((
+                    path,
+                    "Path does not exist; provide an existing file or directory.".to_owned(),
+                )),
+                Err(error) => path_errors.push((path, format!("Cannot access this path: {error}"))),
             }
         }
+        if !admitted_any {
+            return Err(unresolved.remove(0).1);
+        }
+        expand_selected_scope(
+            &workspace,
+            &root,
+            &requested,
+            all_selected,
+            &inputs,
+            &mut project_root,
+            &mut config_cache,
+        );
+        deferred = unresolved.into_iter().map(|(path, _)| path).collect();
     }
+    errors.extend(path_errors.into_iter().map(|(path, message)| InputError {
+        filename: relative(&project_root, &path),
+        message,
+    }));
+    for (path, error) in &mut discovery_errors {
+        if let Some(path) = path {
+            error.filename = relative(&project_root, path);
+        }
+    }
+    let selected_path = |path: &Path| {
+        (all_selected && path.starts_with(&root))
+            || requested.iter().any(|selected| path.starts_with(selected))
+    };
     // The old single-root path needs no preflight: its first walk already
     // discovered every possible dependency. Skip duplicate policy resolution.
     let selected_requires_index = project_root != root

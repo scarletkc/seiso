@@ -68,8 +68,11 @@ With `--config PATH`, the selection and project roots both use the nearest
 `.git` ancestor, otherwise the calling directory. Paths given on the command
 line are relative to the caller. An explicit `../sibling/page.md` can be
 selected if it stays inside the admitted project; it uses the sibling's own
-nearest configuration, not the child's. Paths outside the admitted project
-remain invalid. Explicit paths still respect include, exclude, and Git ignore
+nearest configuration, not the child's. If the path is initially outside the
+invocation scope, another selected file in the same request must explicitly
+admit it through a governing frame; selected paths are then resolved to a
+stable scope regardless of argument order. A lone outside path remains
+invalid. Explicit paths still respect include, exclude, and Git ignore
 policy. Unknown fields and unsupported selectors are errors. A standalone
 `docs/seiso.toml` can coexist with `docs/sub/seiso.toml` extending the repository
 root: preflight of selected files widens the dependency index to that ancestor,

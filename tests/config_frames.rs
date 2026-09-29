@@ -464,6 +464,81 @@ fn nested_explicit_parent_extends_site_resolution_beyond_invocation_policy() {
 }
 
 #[test]
+fn explicit_nested_importer_admits_parent_path_only_in_the_same_request() {
+    let dir = nested_project_scope_fixture();
+    let child = dir.path().join("docs");
+    let admitted = run(
+        &child,
+        &[
+            "check",
+            "sub/a.md",
+            "../README.md",
+            "--output-format",
+            "json",
+        ],
+    );
+    assert!(
+        admitted.status.success(),
+        "status={:?} stdout={} stderr={}",
+        admitted.status.code(),
+        String::from_utf8_lossy(&admitted.stdout),
+        String::from_utf8_lossy(&admitted.stderr)
+    );
+    let diagnostics: serde_json::Value = serde_json::from_slice(&admitted.stdout).unwrap();
+    assert_eq!(diagnostics, serde_json::json!([]));
+
+    let parsed = run(
+        &child,
+        &[
+            "parse",
+            "sub/a.md",
+            "../README.md",
+            "--output-format",
+            "json",
+        ],
+    );
+    assert!(
+        parsed.status.success(),
+        "status={:?} stdout={} stderr={}",
+        parsed.status.code(),
+        String::from_utf8_lossy(&parsed.stdout),
+        String::from_utf8_lossy(&parsed.stderr)
+    );
+    let parsed: serde_json::Value = serde_json::from_slice(&parsed.stdout).unwrap();
+    let names: Vec<_> = parsed["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|file| file["filename"].as_str().unwrap())
+        .collect();
+    assert_eq!(
+        names,
+        ["../README.md", "sub/a.md"],
+        "explicit parent and child names remain invocation-relative"
+    );
+
+    let missing = run(
+        &child,
+        &["parse", "sub/a.md", "missing.md", "--output-format", "json"],
+    );
+    assert_eq!(missing.status.code(), Some(2));
+    let missing: serde_json::Value = serde_json::from_slice(&missing.stdout).unwrap();
+    assert_eq!(missing["errors"][0]["filename"], "missing.md");
+
+    let unadmitted = run(
+        &child,
+        &["check", "../README.md", "--output-format", "json"],
+    );
+    assert_eq!(
+        unadmitted.status.code(),
+        Some(2),
+        "parent path must remain outside scope without a selected importer; stdout={} stderr={}",
+        String::from_utf8_lossy(&unadmitted.stdout),
+        String::from_utf8_lossy(&unadmitted.stderr)
+    );
+}
+
+#[test]
 fn nested_parent_scope_does_not_admit_parent_link_for_standalone_neighbor() {
     let dir = nested_project_scope_fixture();
     let dump = run(&dir.path().join("docs"), &["index", "--dump"]);
@@ -625,6 +700,57 @@ fn root_invocation_keeps_cross_file_and_link_scope_across_standalone_child_confi
         .unwrap();
     assert_eq!(neighbor["links"][0]["resolution"]["status"], "file");
     assert_eq!(neighbor["links"][0]["resolution"]["target"], "README.md");
+}
+
+#[test]
+fn explicit_admission_closure_is_independent_of_argument_order() {
+    let dir = fixture();
+    let outer = dir.path();
+    write(outer, "seiso.toml", "");
+    write(outer, "OUTER.md", "# Outer\n");
+    write(outer, "repo/seiso.toml", "");
+    write(outer, "repo/docs/seiso.toml", "");
+    write(
+        outer,
+        "repo/docs/sub/seiso.toml",
+        "extend = '../../seiso.toml'\n",
+    );
+    write(outer, "repo/docs/sub/a.md", "# Child\n");
+    write(
+        outer,
+        "repo/peer/seiso.toml",
+        "extend = '../../seiso.toml'\n",
+    );
+    write(outer, "repo/peer/a.md", "# Peer\n");
+    let docs = outer.join("repo/docs");
+    let arguments = ["sub/a.md", "../peer/a.md", "../../OUTER.md"];
+    for order in [arguments, [arguments[2], arguments[1], arguments[0]]] {
+        let parsed = run(
+            &docs,
+            &[
+                "parse",
+                order[0],
+                order[1],
+                order[2],
+                "--output-format",
+                "json",
+            ],
+        );
+        assert!(
+            parsed.status.success(),
+            "order={order:?} stderr={} stdout={}",
+            String::from_utf8_lossy(&parsed.stderr),
+            String::from_utf8_lossy(&parsed.stdout)
+        );
+        let report: serde_json::Value = serde_json::from_slice(&parsed.stdout).unwrap();
+        let filenames: Vec<_> = report["files"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|file| file["filename"].as_str().unwrap())
+            .collect();
+        assert_eq!(filenames, ["../../OUTER.md", "sub/a.md", "../peer/a.md"]);
+    }
 }
 
 #[test]
