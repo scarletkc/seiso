@@ -171,17 +171,20 @@ Build jobs require no registry credentials. Environment deployment rules must
 permit the selected release ref.
 
 On npm, `@scarletkc/seiso` and every platform package need their own Trusted
-Publisher configuration, and npm offers one only for a package that already
+Publisher configuration, and npm accepts one only for a package that already
 exists. Before the first release that includes a new platform package, publish
-its archive from a validation run once by hand, then configure its Trusted
-Publisher:
+its archive from the release commit's validation run once by hand, then
+configure its Trusted Publisher with npm 11.15.0 or later:
 
 ```sh
 npm publish scarletkc-seiso-PLATFORM-VERSION.tgz --access public --tag TAG
+npm trust github @scarletkc/seiso-PLATFORM --file publish.yml --repo scarletkc/seiso --env npm --allow-publish
 ```
 
-Use the release's dist-tag as `TAG` (`latest` for a stable version). The
-workflow then skips that existing version and publishes the rest.
+Use the release's dist-tag as `TAG` (`latest` for a stable version). `npm trust`
+requires two-factor authentication on the account; the package's settings page
+on npmjs.com offers the same configuration. The workflow then skips the
+hand-published version and publishes the rest.
 
 crates.io authentication uses a temporary token from
 `rust-lang/crates-io-auth-action`. No stored registry publishing token is needed.
