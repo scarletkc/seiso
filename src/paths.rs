@@ -273,11 +273,13 @@ pub(crate) fn select_target(
 }
 
 /// Each written component that differs from the entry's is its lowercase form.
+/// Generators find pages by their exact `.md` or `.mdx` extension.
 fn lowercase_route(written: &str, actual: &str) -> bool {
-    written
-        .split('/')
-        .zip(actual.split('/'))
-        .all(|(written, actual)| written == actual || written == actual.to_lowercase())
+    Path::new(written).extension() == Path::new(actual).extension()
+        && written
+            .split('/')
+            .zip(actual.split('/'))
+            .all(|(written, actual)| written == actual || written == actual.to_lowercase())
 }
 
 fn is_template(value: &str) -> bool {
@@ -584,8 +586,9 @@ mod tests {
             "site/intro" => TargetStatus::CaseMismatch("site/Intro".into()),
             "site/intro/index.md" => TargetStatus::CaseMismatch("site/Intro/index.md".into()),
             "site/public/logo.png" => TargetStatus::CaseMismatch("site/public/Logo.png".into()),
+            "site/setup.md" => TargetStatus::CaseMismatch("site/SETUP.MD".into()),
             "site/guide.md" | "site/CONTRIBUTING.md" | "site/Intro/index.md" => TargetStatus::File,
-            "site/public/Logo.png" => TargetStatus::File,
+            "site/public/Logo.png" | "site/SETUP.MD" => TargetStatus::File,
             "site/Intro" => TargetStatus::Directory,
             _ => TargetStatus::Missing,
         };
@@ -612,6 +615,10 @@ mod tests {
         assert_eq!(
             select(&[target("site/Contributing.md", TargetKind::Page)]),
             mismatch("site/Contributing.md", "site/contributing.md")
+        );
+        assert_eq!(
+            select(&[target("site/setup.md", TargetKind::Page)]),
+            mismatch("site/setup.md", "site/SETUP.MD")
         );
         assert_eq!(
             select(&[target("site/public/logo.png", TargetKind::Route)]),
