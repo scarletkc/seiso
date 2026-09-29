@@ -508,43 +508,15 @@ fn link_targets_that_differ_in_letter_case_are_reported_on_every_platform() {
     write(
         root,
         "seiso.toml",
-        "preview = true
-
-[lint]
-select = ['LNK001', 'LNK002']
-",
+        "preview = true\n\n[lint]\nselect = ['LNK001', 'LNK002']\n",
     );
-    write(
-        root,
-        ".gitignore",
-        "build/
-",
-    );
-    write(
-        root,
-        "docs/setup.md",
-        "# Setup
-",
-    );
+    write(root, ".gitignore", "build/\n");
+    write(root, "docs/setup.md", "# Setup\n");
     write(root, "build/Report.txt", "report");
     write(
         root,
         "README.md",
-        "---
-kind: readme
----
-# Project
-
-[exact](docs/setup.md#setup)
-
-[file](DOCS/setup.md)
-
-[anchor](docs/Setup.md#removed)
-
-[directory](Docs/)
-
-[ignored](build/report.txt)
-",
+        "---\nkind: readme\n---\n# Project\n\n[exact](docs/setup.md#setup)\n\n[file](DOCS/setup.md)\n\n[anchor](docs/Setup.md#removed)\n\n[directory](Docs/)\n\n[ignored](build/report.txt)\n",
     );
     let output = run(root, &["check", "--output-format", "json"], None);
     assert_eq!(

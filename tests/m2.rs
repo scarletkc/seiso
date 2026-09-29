@@ -281,18 +281,8 @@ fn excluded_target_anchors_remain_unknown_and_do_not_stale_suppressions() {
 #[test]
 fn targets_that_differ_in_letter_case_leave_anchors_to_lnk001() {
     let root = workspace(LINKS);
-    write(
-        root.path(),
-        "target.md",
-        "# Target
-",
-    );
-    write(
-        root.path(),
-        "guide.md",
-        "[Missing](TARGET.md#missing)
-",
-    );
+    write(root.path(), "target.md", "# Target\n");
+    write(root.path(), "guide.md", "[Missing](TARGET.md#missing)\n");
     let full = run(root.path(), &["check", "--output-format", "json"], None);
     status(&full, 1);
     let report = value(&full);

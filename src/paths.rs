@@ -57,8 +57,18 @@ impl SiteRoutes {
 pub(crate) struct LocalTarget {
     pub path: PathBuf,
     pub target: String,
-    /// Reached as a site route rather than as the written repository path.
-    pub route: bool,
+    pub kind: TargetKind,
+}
+
+/// How a candidate relates to the destination a link wrote.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum TargetKind {
+    /// The repository path as written.
+    Written,
+    /// A file a site serves under its own name at the route, from `root` or `public`.
+    Route,
+    /// A Markdown source that a site generator renders at the route.
+    Page,
 }
 
 pub(crate) struct LocalLink {
@@ -138,7 +148,7 @@ pub(crate) fn local_link_targets(
     let mut targets = vec![LocalTarget {
         target: relative(&physical).ok_or(LinkPathError::OutsideWorkspace)?,
         path: physical.clone(),
-        route: false,
+        kind: TargetKind::Written,
     }];
     let Some(site) = site.filter(|_| !path.is_empty()) else {
         return Ok(targets);
@@ -146,34 +156,35 @@ pub(crate) fn local_link_targets(
     // Normalization drops a trailing slash, which addresses the route's directory.
     let directory = path.ends_with('/');
     let rest = path.starts_with('/').then(|| site.route(&path));
+    let pages = |route: &Path| {
+        page_sources(route, directory)
+            .into_iter()
+            .map(|path| (path, TargetKind::Page))
+    };
     let mut routes = Vec::new();
     match rest {
-        None => routes.extend(page_sources(&physical, directory)),
+        None => routes.extend(pages(&physical)),
         Some(Some(rest)) => {
             let page = normalize(site.root.join(rest));
-            routes.push(page.clone());
-            routes.extend(page_sources(&page, directory));
+            routes.push((page.clone(), TargetKind::Route));
+            routes.extend(pages(&page));
         }
         Some(None) => {}
     }
-    routes.retain(|route| route.starts_with(&site.root));
+    routes.retain(|(route, _)| route.starts_with(&site.root));
     if let (Some(public), Some(Some(rest))) = (&site.public, rest)
         && !rest.is_empty()
     {
         let file = normalize(public.join(rest));
         if file.starts_with(public) {
-            routes.push(file);
+            routes.push((file, TargetKind::Route));
         }
     }
-    for path in routes {
+    for (path, kind) in routes {
         if let Some(target) = relative(&path)
             && targets.iter().all(|existing| existing.path != path)
         {
-            targets.push(LocalTarget {
-                path,
-                target,
-                route: true,
-            });
+            targets.push(LocalTarget { path, target, kind });
         }
     }
     Ok(targets)
@@ -216,9 +227,10 @@ fn page_sources(route: &Path, directory: bool) -> Vec<PathBuf> {
 
 /// Choose the first candidate that exists. A directory reached only as a route
 /// serves no page itself, so a later page source takes precedence over it.
-/// A route written in lowercase reaches a page whose name has capitals, as
-/// generators that lowercase routes serve it; any other letter-case mismatch
-/// is the result only when no candidate exists.
+/// A route written in lowercase reaches a page source whose name has capitals,
+/// as generators that lowercase page routes serve it; files served under their
+/// own names keep their case. Any other letter-case mismatch is the result
+/// only when no candidate exists.
 pub(crate) fn select_target(
     root: &Path,
     targets: &[LocalTarget],
@@ -230,19 +242,19 @@ pub(crate) fn select_target(
         let mut target = Cow::Borrowed(candidate);
         let mut found = status(candidate);
         if let TargetStatus::CaseMismatch(actual) = &found
-            && candidate.route
+            && candidate.kind == TargetKind::Page
             && lowercase_route(&candidate.target, actual)
         {
             target = Cow::Owned(LocalTarget {
                 path: normalize(root.join(actual)),
                 target: actual.clone(),
-                route: true,
+                kind: TargetKind::Page,
             });
             found = status(&target);
         }
         match found {
             TargetStatus::Missing => {}
-            TargetStatus::Directory if target.route => {
+            TargetStatus::Directory if target.kind != TargetKind::Written => {
                 directory.get_or_insert_with(|| target.into_owned());
             }
             TargetStatus::CaseMismatch(actual) => {
@@ -467,58 +479,60 @@ mod tests {
             )
             .unwrap()
             .into_iter()
-            .map(|target| (target.target, target.route))
+            .map(|target| (target.target, target.kind))
             .collect::<Vec<_>>()
         };
-        let route = |target: &str| (target.to_owned(), true);
+        let written = |target: &str| (target.to_owned(), TargetKind::Written);
+        let route = |target: &str| (target.to_owned(), TargetKind::Route);
+        let page = |target: &str| (target.to_owned(), TargetKind::Page);
         assert_eq!(
             targets("/docs/intro#x"),
             [
-                ("docs/intro".to_owned(), false),
+                written("docs/intro"),
                 route("site/intro"),
-                route("site/intro.md"),
-                route("site/intro.mdx"),
-                route("site/intro/index.md"),
-                route("site/intro/index.mdx"),
-                route("site/intro/README.md"),
-                route("site/intro/README.mdx"),
+                page("site/intro.md"),
+                page("site/intro.mdx"),
+                page("site/intro/index.md"),
+                page("site/intro/index.mdx"),
+                page("site/intro/README.md"),
+                page("site/intro/README.mdx"),
                 route("site/public/intro"),
             ]
         );
         assert_eq!(
             targets("/docs/intro/#x"),
             [
-                ("docs/intro".to_owned(), false),
+                written("docs/intro"),
                 route("site/intro"),
-                route("site/intro/index.md"),
-                route("site/intro/index.mdx"),
-                route("site/intro/README.md"),
-                route("site/intro/README.mdx"),
-                route("site/intro.md"),
-                route("site/intro.mdx"),
+                page("site/intro/index.md"),
+                page("site/intro/index.mdx"),
+                page("site/intro/README.md"),
+                page("site/intro/README.mdx"),
+                page("site/intro.md"),
+                page("site/intro.mdx"),
                 route("site/public/intro"),
             ]
         );
         assert_eq!(
             targets("../cli/index.html"),
             [
-                ("site/cli/index.html".to_owned(), false),
-                route("site/cli/index.md"),
-                route("site/cli/README.md"),
+                written("site/cli/index.html"),
+                page("site/cli/index.md"),
+                page("site/cli/README.md"),
             ]
         );
-        assert_eq!(targets("/intro"), [("intro".to_owned(), false)]);
-        assert_eq!(targets("../../outside"), [("outside".to_owned(), false)]);
-        assert_eq!(targets("/docs/../x"), [("x".to_owned(), false)]);
-        assert_eq!(targets("#anchor"), [("site/guide/a.md".to_owned(), false)]);
+        assert_eq!(targets("/intro"), [written("intro")]);
+        assert_eq!(targets("../../outside"), [written("outside")]);
+        assert_eq!(targets("/docs/../x"), [written("x")]);
+        assert_eq!(targets("#anchor"), [written("site/guide/a.md")]);
     }
 
     #[test]
     fn route_directories_yield_to_later_page_sources() {
-        let target = |target: &str, route| LocalTarget {
+        let target = |target: &str, kind| LocalTarget {
             path: PathBuf::from(target),
             target: target.into(),
-            route,
+            kind,
         };
         let status = |target: &LocalTarget| match target.target.as_str() {
             "guide" | "physical" => TargetStatus::Directory,
@@ -530,10 +544,10 @@ mod tests {
             (target.target, status)
         };
         let candidates = [
-            target("missing", false),
-            target("guide", true),
-            target("guide.md", true),
-            target("guide/index.md", true),
+            target("missing", TargetKind::Written),
+            target("guide", TargetKind::Route),
+            target("guide.md", TargetKind::Page),
+            target("guide/index.md", TargetKind::Page),
         ];
         assert_eq!(
             select(&candidates),
@@ -544,7 +558,10 @@ mod tests {
             ("guide".into(), TargetStatus::Directory)
         );
         assert_eq!(
-            select(&[target("physical", false), target("guide/index.md", true)]),
+            select(&[
+                target("physical", TargetKind::Written),
+                target("guide/index.md", TargetKind::Page)
+            ]),
             ("physical".into(), TargetStatus::Directory)
         );
         assert_eq!(
@@ -554,11 +571,11 @@ mod tests {
     }
 
     #[test]
-    fn only_lowercase_routes_reach_entries_with_capitals() {
-        let target = |target: &str, route| LocalTarget {
+    fn only_lowercase_page_routes_reach_entries_with_capitals() {
+        let target = |target: &str, kind| LocalTarget {
             path: PathBuf::from(target),
             target: target.into(),
-            route,
+            kind,
         };
         let status = |target: &LocalTarget| match target.target.as_str() {
             "Guide.md" => TargetStatus::CaseMismatch("guide.md".into()),
@@ -566,7 +583,9 @@ mod tests {
             "site/Contributing.md" => TargetStatus::CaseMismatch("site/contributing.md".into()),
             "site/intro" => TargetStatus::CaseMismatch("site/Intro".into()),
             "site/intro/index.md" => TargetStatus::CaseMismatch("site/Intro/index.md".into()),
+            "site/public/logo.png" => TargetStatus::CaseMismatch("site/public/Logo.png".into()),
             "site/guide.md" | "site/CONTRIBUTING.md" | "site/Intro/index.md" => TargetStatus::File,
+            "site/public/Logo.png" => TargetStatus::File,
             "site/Intro" => TargetStatus::Directory,
             _ => TargetStatus::Missing,
         };
@@ -574,37 +593,38 @@ mod tests {
             let (target, status) = select_target(Path::new(""), candidates, status);
             (target.target, status)
         };
-        let written = target("Guide.md", false);
+        let mismatch = |target: &str, actual: &str| {
+            (target.to_owned(), TargetStatus::CaseMismatch(actual.into()))
+        };
+        let written = target("Guide.md", TargetKind::Written);
         assert_eq!(
             select(std::slice::from_ref(&written)),
-            (
-                "Guide.md".into(),
-                TargetStatus::CaseMismatch("guide.md".into())
-            )
+            mismatch("Guide.md", "guide.md")
         );
         assert_eq!(
-            select(&[written.clone(), target("site/guide.md", true)]),
+            select(&[written.clone(), target("site/guide.md", TargetKind::Page)]),
             ("site/guide.md".into(), TargetStatus::File)
         );
         assert_eq!(
-            select(&[target("site/contributing.md", true)]),
+            select(&[target("site/contributing.md", TargetKind::Page)]),
             ("site/CONTRIBUTING.md".into(), TargetStatus::File)
         );
         assert_eq!(
-            select(&[target("site/Contributing.md", true)]),
-            (
-                "site/Contributing.md".into(),
-                TargetStatus::CaseMismatch("site/contributing.md".into())
-            )
+            select(&[target("site/Contributing.md", TargetKind::Page)]),
+            mismatch("site/Contributing.md", "site/contributing.md")
         );
         assert_eq!(
-            select(&[written, target("site/intro", true)]),
-            ("site/Intro".into(), TargetStatus::Directory)
+            select(&[target("site/public/logo.png", TargetKind::Route)]),
+            mismatch("site/public/logo.png", "site/public/Logo.png")
+        );
+        assert_eq!(
+            select(&[written, target("site/intro", TargetKind::Route)]),
+            mismatch("Guide.md", "guide.md")
         );
         assert_eq!(
             select(&[
-                target("site/intro", true),
-                target("site/intro/index.md", true)
+                target("site/intro", TargetKind::Route),
+                target("site/intro/index.md", TargetKind::Page)
             ]),
             ("site/Intro/index.md".into(), TargetStatus::File)
         );

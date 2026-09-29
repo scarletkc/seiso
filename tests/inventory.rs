@@ -98,22 +98,11 @@ fn frozen_inventories_compare_letter_case_like_the_filesystem() {
     let directory = tempfile::tempdir().unwrap();
     let root = directory.path().join("snapshot");
     let document = seiso::md::parse(
-        "[path](Setup.md#install)
-
-[route](/docs/contributing#setup)
-
-[route case](/docs/Setup)
-",
+        "[path](Setup.md#install)\n\n[route](/docs/contributing#setup)\n\n[route case](/docs/Setup)\n",
     )
     .unwrap();
     let config = Config::parse(
-        "[lint]
-select=['LNK001']
-[[sites]]
-path='docs/**'
-root='docs'
-base='/docs/'
-",
+        "[lint]\nselect=['LNK001']\n[[sites]]\npath='docs/**'\nroot='docs'\nbase='/docs/'\n",
         &root,
     )
     .unwrap();

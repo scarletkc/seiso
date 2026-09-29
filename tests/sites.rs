@@ -246,8 +246,9 @@ fn the_written_path_wins_over_a_route_and_the_dump_shows_resolved_targets() {
     assert_eq!(outside["links"][0]["resolution"]["status"], "missing");
 }
 
-/// Some generators lowercase routes, so `/guide/contributing` can serve
-/// `CONTRIBUTING.md`; no generator serves `/guide/Setup` for `setup.md`.
+/// Some generators lowercase page routes, so `/guide/contributing` can serve
+/// `CONTRIBUTING.md`; no generator serves `/guide/Setup` for `setup.md`, and
+/// files served under their own names keep their case.
 #[test]
 fn only_a_lowercase_route_reaches_a_page_whose_name_differs_in_letter_case() {
     let workspace = site_workspace(SITE);
@@ -255,25 +256,14 @@ fn only_a_lowercase_route_reaches_a_page_whose_name_differs_in_letter_case() {
     write(
         root,
         "site/guide/CONTRIBUTING.md",
-        "# Contributing
-
-## Setup
-",
+        "# Contributing\n\n## Setup\n",
     );
+    write(root, "site/public/Banner.png", "image");
+    write(root, "site/assets/Diagram.svg", "image");
     write(
         root,
         "site/guide/start.md",
-        "---
-kind: howto
----
-# Start
-
-[route](/guide/contributing#setup) [anchor](/guide/contributing#removed)
-
-[route case](/guide/Setup)
-
-[path case](Setup.md)
-",
+        "---\nkind: howto\n---\n# Start\n\n[route](/guide/contributing#setup) [anchor](/guide/contributing#removed)\n\n[route case](/guide/Setup)\n\n[path case](Setup.md)\n\n![public](/banner.png) ![root](/assets/diagram.svg)\n",
     );
     let found = diagnostics(root);
     let summary: Vec<_> = found
@@ -294,6 +284,14 @@ kind: howto
             (
                 "LNK001",
                 "Local link target \"Setup.md\" differs in letter case from \"site/guide/setup.md\"."
+            ),
+            (
+                "LNK001",
+                "Local link target \"/banner.png\" differs in letter case from \"site/public/Banner.png\"."
+            ),
+            (
+                "LNK001",
+                "Local link target \"/assets/diagram.svg\" differs in letter case from \"site/assets/Diagram.svg\"."
             ),
         ]
     );
