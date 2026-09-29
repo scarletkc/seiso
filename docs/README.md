@@ -52,3 +52,9 @@ fresh evidence and historical replay. Dated records preserve their results:
 The [design history](design/history.md) records the original motivation and
 links to the original proposal. The [roadmap](design/roadmap.md) links milestone results and describes planned
 integrations, classification experiments, and their acceptance criteria.
+The [configuration-frame model](design/research/config-frame-model.md) records
+the design and compatibility reasoning behind issues #39 and #40; the
+[pre-implementation review](design/research/config-inheritance-issues-39-40.md)
+preserves the original problem analysis. The
+[performance investigation](design/research/config-frame-performance.md)
+records reproducible long-tail comparisons and their limits.
