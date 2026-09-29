@@ -180,7 +180,7 @@ pub struct Config {
     pub settings: Settings,
     include: Vec<GlobMatcher>,
     exclude: Vec<GlobMatcher>,
-    kinds: Vec<GlobMatcher>,
+    kinds: Vec<(GlobMatcher, Kind)>,
     domains: Vec<GlobMatcher>,
     sites: Vec<GlobMatcher>,
     per_file_ignores: Vec<(GlobMatcher, Vec<String>)>,
@@ -248,14 +248,16 @@ impl Config {
         settings.exclude.extend(extend_exclude);
         settings.lint.select.extend(extend_select);
         settings.lint.ignore.extend(extend_ignore);
+        let mapped_kinds = parse_kinds(&settings, &label)?;
         validate_settings(&settings, &label)?;
         let include = compile_patterns(&settings.include, &label, "include")?;
         let exclude = compile_patterns(&settings.exclude, &label, "exclude")?;
         let kinds = settings
             .kinds
             .iter()
-            .map(|m| compile_pattern(&m.path, &label, "kinds.path"))
-            .collect::<Result<_, _>>()?;
+            .zip(mapped_kinds)
+            .map(|(m, kind)| Ok((compile_pattern(&m.path, &label, "kinds.path")?, kind)))
+            .collect::<Result<_, ConfigError>>()?;
         let domains = settings
             .domains
             .iter()
@@ -311,14 +313,13 @@ impl Config {
             .is_some_and(|p| self.exclude.iter().any(|m| m.is_match(&p)))
     }
 
-    pub fn kind_for(&self, path: &Path) -> Option<&str> {
+    pub fn kind_for(&self, path: &Path) -> Option<Kind> {
         let path = self.relative_path(path)?;
         self.kinds
             .iter()
-            .zip(&self.settings.kinds)
             .rev()
             .find(|(m, _)| m.is_match(&path))
-            .map(|(_, entry)| entry.kind.as_str())
+            .map(|(_, kind)| *kind)
     }
 
     pub fn domain_for(&self, path: &Path) -> Option<&str> {
@@ -546,7 +547,6 @@ fn specificity(selector: &str, code: &str) -> Option<u8> {
 }
 
 fn validate_settings(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
-    validate_kinds(settings, path)?;
     validate_domains(settings, path)?;
     validate_sites(settings, path)?;
     validate_selectors(settings, path)?;
@@ -557,20 +557,23 @@ fn validate_settings(settings: &Settings, path: &Path) -> Result<(), ConfigError
     Ok(())
 }
 
-fn validate_kinds(settings: &Settings, path: &Path) -> Result<(), ConfigError> {
-    for mapping in &settings.kinds {
-        if Kind::from_name(&mapping.kind).is_none() {
-            return Err(invalid(
-                path,
-                format!(
-                    "unknown kind {:?}; expected {}",
-                    mapping.kind,
-                    Kind::ALL.map(Kind::as_str).join(", ")
-                ),
-            ));
-        }
-    }
-    Ok(())
+fn parse_kinds(settings: &Settings, path: &Path) -> Result<Vec<Kind>, ConfigError> {
+    settings
+        .kinds
+        .iter()
+        .map(|mapping| {
+            Kind::from_name(&mapping.kind).ok_or_else(|| {
+                invalid(
+                    path,
+                    format!(
+                        "unknown kind {:?}; expected {}",
+                        mapping.kind,
+                        Kind::ALL.map(Kind::as_str).join(", ")
+                    ),
+                )
+            })
+        })
+        .collect()
 }
 
 fn validate_domains(settings: &Settings, path: &Path) -> Result<(), ConfigError> {

@@ -100,46 +100,34 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             return Err(format!("cross-file errors: {:?}", cross.errors).into());
         }
         for file in index.files() {
-            let context = CheckContext {
-                document: &file.document,
-                filename: &file.policy.filename,
-                path: &file.path,
-                workspace_root: &root,
-                config: &file.config,
-                policy: std::borrow::Cow::Borrowed(&file.policy),
-            };
-            let mut raw = check(&context, &index);
-            raw.diagnostics.extend(
+            let filename = file.filename();
+            let mut raw = check(&CheckContext::indexed(file, &root), &index);
+            raw.add_cross_file(
+                file.policy(),
                 cross
                     .diagnostics
                     .iter()
-                    .filter(|diagnostic| diagnostic.filename == file.policy.filename)
-                    .cloned(),
-            );
-            raw.incomplete_rules.extend(
-                cross
-                    .incomplete
-                    .remove(&file.policy.filename)
-                    .unwrap_or_default(),
+                    .filter(|diagnostic| diagnostic.filename == filename)
+                    .cloned()
+                    .collect(),
+                cross.incomplete.remove(filename).unwrap_or_default(),
             );
             let incomplete_rules = raw.incomplete_rules.iter().cloned().collect();
-            let result = raw.finish(&file.document, &file.policy.filename);
+            let result = raw.finish(file.document(), filename);
             if !result.errors.is_empty() {
-                return Err(
-                    format!("file errors: {}: {:?}", file.policy.filename, result.errors).into(),
-                );
+                return Err(format!("file errors: {filename}: {:?}", result.errors).into());
             }
             output.push(Output {
                 source: source.id.clone(),
-                path: file.policy.filename.clone(),
-                sha256: inputs[&file.policy.filename].clone(),
-                language: file.document.language,
-                links: file.document.links.clone(),
+                path: filename.to_owned(),
+                sha256: inputs[filename].clone(),
+                language: file.document().language,
+                links: file.document().links.clone(),
                 incomplete_rules,
                 result,
                 section_annotations: input
                     .sections
-                    .then(|| seiso::sections::classify(&file.document)),
+                    .then(|| seiso::sections::classify(file.document())),
             });
         }
         eprintln!("evaluated {}: {} documents", source.id, index.files().len());

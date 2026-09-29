@@ -1,5 +1,6 @@
-use common::{value, write};
 mod common;
+use common::{value, write};
+
 use std::path::Path;
 use std::process::{Command, Output};
 

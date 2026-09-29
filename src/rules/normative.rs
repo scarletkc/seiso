@@ -295,9 +295,14 @@ impl NormativeChecks<'_> {
                 && !with_code.iter().any(|run| BOUND.is_match(&run.text))
                 && let Some(span) = with_code.iter().find_map(volatile_value)
             {
-                diagnostics.push(emit(self.document, self.filename, "STL001", span,
-                        "This sentence pairs a current-state marker with a value that can change.",
-                        "Link to the source that owns the value, or state a lasting requirement with its constraint."));
+                diagnostics.push(emit(
+                    self.document,
+                    self.filename,
+                    "STL001",
+                    span,
+                    "This sentence pairs a current-state marker with a value that can change.",
+                    "Link to the source that owns the value, or state a lasting requirement with its constraint.",
+                ));
             }
         }
     }
@@ -327,9 +332,14 @@ impl NormativeChecks<'_> {
                                 occurrence.end + hash.end(),
                             );
                             if let Some(span) = run.span(range).filter(|span| seen.insert(*span)) {
-                                diagnostics.push(emit(self.document, self.filename, "STL003", span,
+                                diagnostics.push(emit(
+                                    self.document,
+                                    self.filename,
+                                    "STL003",
+                                    span,
                                     "A commit or build identifier is embedded in a long-lived document.",
-                                    "Point to the command or release record that provides the identifier."));
+                                    "Point to the command or release record that provides the identifier.",
+                                ));
                             }
                         }
                     }
@@ -385,9 +395,14 @@ impl NormativeChecks<'_> {
             && let Some(span) = marker(prose, &words(self.config, sentence.language, Words::Source))
             && !sentence.fragments.iter().any(specific_target)
         {
-            diagnostics.push(emit(self.document, self.filename, "PTR003", span,
-                        "This source pointer names no file or symbol.",
-                        "Name the source file and a searchable symbol, or link directly to the relevant definition."));
+            diagnostics.push(emit(
+                self.document,
+                self.filename,
+                "PTR003",
+                span,
+                "This source pointer names no file or symbol.",
+                "Name the source file and a searchable symbol, or link directly to the relevant definition.",
+            ));
         }
     }
 
@@ -418,9 +433,14 @@ impl NormativeChecks<'_> {
                     })
             });
             if let Some(span) = span {
-                diagnostics.push(emit(self.document, self.filename, "RAT002", span,
+                diagnostics.push(emit(
+                    self.document,
+                    self.filename,
+                    "RAT002",
+                    span,
                     "This heading introduces a design-choice rationale in a how-to or reference page.",
-                    "Move the decision rationale to an ADR and keep the procedure or contract here."));
+                    "Move the decision rationale to an ADR and keep the procedure or contract here.",
+                ));
             }
         }
     }

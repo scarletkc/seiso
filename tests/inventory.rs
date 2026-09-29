@@ -1,11 +1,13 @@
-use seiso::paths::TargetStatus;
 mod common;
 use common::{CheckContext, check};
-use seiso::config::{CliOverrides, Config};
-use seiso::index::{IndexedFile, InventoryEntryKind, LinkStatus, WorkspaceIndex};
-use seiso::rules::WorkspaceFiles;
+
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
+
+use seiso::config::{CliOverrides, Config};
+use seiso::index::{IndexedFile, InventoryEntryKind, LinkStatus, WorkspaceIndex};
+use seiso::paths::TargetStatus;
+use seiso::rules::WorkspaceFiles;
 
 struct Inventory {
     paths: BTreeSet<PathBuf>,
@@ -257,4 +259,50 @@ fn directory_routes_complete_existence_checks_before_page_candidates() {
     assert!(result.diagnostics.is_empty());
     assert!(result.errors.is_empty());
     assert!(result.incomplete_rules.is_empty());
+}
+
+#[test]
+fn index_rules_stay_disabled_until_workspace_results_are_merged() {
+    let root = tempfile::tempdir().unwrap();
+    let source = "---\nkind: reference\n---\n<!-- seiso: allow LNK002 -- The generated heading is added later. -->\n[Heading](#missing)\n";
+    let config = Config::parse(
+        "preview = true\n[lint]\nselect = ['LNK002', 'SUP002']\n",
+        root.path(),
+    )
+    .unwrap();
+    let path = root.path().join("page.md");
+    let document = seiso::md::parse(source).unwrap();
+    let index = WorkspaceIndex::new(
+        root.path().to_path_buf(),
+        vec![
+            IndexedFile::new(
+                "page.md".into(),
+                path.clone(),
+                document.clone().into(),
+                config.clone(),
+                &CliOverrides::default(),
+            )
+            .unwrap(),
+        ],
+        true,
+    );
+    let file = &index.files()[0];
+    let indexed = seiso::rules::check(
+        &seiso::rules::CheckContext::indexed(file, root.path()),
+        &index,
+    )
+    .finish(file.document(), file.filename());
+    let standalone = check(&CheckContext {
+        document: &document,
+        filename: "page.md",
+        path: &path,
+        workspace_root: root.path(),
+        config: &config,
+        overrides: &CliOverrides::default(),
+    })
+    .unwrap();
+    // An unmerged LNK002 would leave the suppression unused and report SUP002.
+    assert_eq!(indexed.enabled_rules, ["SUP002"]);
+    assert_eq!(standalone.enabled_rules, indexed.enabled_rules);
+    assert!(indexed.diagnostics.is_empty(), "{:?}", indexed.diagnostics);
 }

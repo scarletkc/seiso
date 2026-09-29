@@ -67,7 +67,7 @@ pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> L
             TargetStatus::File | TargetStatus::Directory => {}
             TargetStatus::CaseMismatch(actual) => {
                 result.diagnostics.push(Diagnostic::new(
-                    context.filename,
+                    context.filename(),
                     &context.document.source,
                     "LNK001",
                     link.span,
@@ -86,7 +86,7 @@ pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> L
                     ),
                 };
                 result.diagnostics.push(Diagnostic::new(
-                    context.filename,
+                    context.filename(),
                     &context.document.source,
                     "LNK001",
                     link.span,

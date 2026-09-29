@@ -104,23 +104,37 @@ impl KindOutcome {
         let (code, span, message, suggestion) = match self {
             Self::Declared(_) | Self::Mapped(_) => return None,
             Self::InvalidFrontmatter(error) => (
-                "KND001", error.span,
-                format!("Document kind cannot be resolved because the frontmatter is invalid: {}.", error.message.trim_end_matches('.')),
+                "KND001",
+                error.span,
+                format!(
+                    "Document kind cannot be resolved because the frontmatter is invalid: {}.",
+                    error.message.trim_end_matches('.')
+                ),
                 "Correct the YAML frontmatter so its kind declaration can be read.".into(),
             ),
             Self::GeneratedDeclaration(span) => (
-                "KND002", *span,
+                "KND002",
+                *span,
                 "The generated kind is declared in frontmatter; it can only be assigned in configuration.".into(),
                 "Remove this declaration and assign generated with a [[kinds]] path mapping if a tool generates this file.".into(),
             ),
             Self::Unknown { name, span } => (
-                "KND002", *span, format!("Unknown document kind {name:?}."),
-                format!("Use one of the lowercase kinds {} in frontmatter.", declarable_kinds()),
+                "KND002",
+                *span,
+                format!("Unknown document kind {name:?}."),
+                format!(
+                    "Use one of the lowercase kinds {} in frontmatter.",
+                    declarable_kinds()
+                ),
             ),
             Self::Missing(span) => (
-                "KND001", *span,
+                "KND001",
+                *span,
                 "Document kind is not declared and no kind mapping matches this file.".into(),
-                format!("Declare kind as {} in YAML frontmatter, or add a matching [[kinds]] configuration entry.", declarable_kinds()),
+                format!(
+                    "Declare kind as {} in YAML frontmatter, or add a matching [[kinds]] configuration entry.",
+                    declarable_kinds()
+                ),
             ),
         };
         Some(Diagnostic::new(
@@ -140,7 +154,7 @@ impl Serialize for KindOutcome {
     }
 }
 
-pub fn resolve_kind(document: &Document, mapped: Option<&str>) -> KindOutcome {
+pub fn resolve_kind(document: &Document, mapped: Option<Kind>) -> KindOutcome {
     let mut span = Span::new(0, 0);
     if let Some(frontmatter) = &document.frontmatter {
         span = frontmatter.span;
@@ -158,9 +172,7 @@ pub fn resolve_kind(document: &Document, mapped: Option<&str>) -> KindOutcome {
             };
         }
     }
-    mapped.map_or(KindOutcome::Missing(span), |name| {
-        KindOutcome::Mapped(Kind::from_name(name).expect("validated kind mapping"))
-    })
+    mapped.map_or(KindOutcome::Missing(span), KindOutcome::Mapped)
 }
 
 fn declarable_kinds() -> String {

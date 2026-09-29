@@ -10,7 +10,7 @@ use crate::config::{CliOverrides, Config, Settings, SiteMapping, Workspace};
 use crate::index::{IndexedFile, WorkspaceIndex};
 use crate::md::Document;
 use crate::paths::normalize;
-use crate::rules::{Kind, KindOutcome, SuppressionRecord, resolve_kind};
+use crate::rules::{KindOutcome, SuppressionRecord, resolve_kind};
 use serde::Serialize;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -38,16 +38,14 @@ pub enum LoadScope {
     Workspace,
 }
 
-#[derive(Clone, Debug, Serialize)]
+/// The kind, scope, and rules resolved for one included document.
+#[derive(Clone, Debug)]
 pub struct FilePolicy {
     pub filename: String,
-    pub configuration: String,
-    pub kind: Option<KindOutcome>,
+    pub kind: KindOutcome,
     pub domain: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub site: Option<SiteMapping>,
     pub enabled_rules: Vec<String>,
-    pub excluded: Option<&'static str>,
     pub suppressions: Vec<SuppressionRecord>,
 }
 
@@ -67,23 +65,43 @@ impl FilePolicy {
             .collect();
         Ok(Self {
             filename,
-            configuration: config
-                .source
-                .as_ref()
-                .map(|source| relative(&config.directory, source))
-                .unwrap_or_else(|| "<defaults>".into()),
-            kind: Some(kind),
+            kind,
             domain: config.domain_for(path).map(str::to_owned),
             site: config.site_for(path).cloned(),
             enabled_rules,
-            excluded: None,
             suppressions: Vec::new(),
         })
     }
 
-    pub fn kind_value(&self) -> Option<Kind> {
-        self.kind.as_ref().and_then(KindOutcome::value)
+    /// Documents without a domain mapping share one domain.
+    pub fn domain_key(&self) -> &str {
+        self.domain.as_deref().unwrap_or("")
     }
+}
+
+/// A discovered document that configuration leaves out of every check.
+#[derive(Clone, Debug)]
+pub struct ExcludedPolicy {
+    pub filename: String,
+    pub configuration: String,
+    pub domain: Option<String>,
+    pub site: Option<SiteMapping>,
+    /// The configuration field that leaves the document out: `include` or `exclude`.
+    pub excluded: &'static str,
+}
+
+/// One document's entry in `seiso policy`, whether included or excluded.
+#[derive(Serialize)]
+pub struct PolicyRecord<'a> {
+    filename: &'a str,
+    configuration: String,
+    kind: Option<&'a KindOutcome>,
+    domain: Option<&'a str>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    site: Option<&'a SiteMapping>,
+    enabled_rules: &'a [String],
+    excluded: Option<&'static str>,
+    suppressions: &'a [SuppressionRecord],
 }
 
 pub struct Snapshot {
@@ -91,32 +109,49 @@ pub struct Snapshot {
     pub selected: BTreeSet<String>,
     pub requested: BTreeSet<PathBuf>,
     pub configurations: BTreeMap<String, Settings>,
-    pub excluded_policies: BTreeMap<String, FilePolicy>,
+    pub excluded_policies: BTreeMap<String, ExcludedPolicy>,
     pub errors: Vec<InputError>,
     /// Requested paths, or the whole workspace, that selected no document to check.
     pub skipped: Vec<InputError>,
 }
 
 impl Snapshot {
-    pub fn policies(&self) -> BTreeMap<&str, &FilePolicy> {
-        self.index
-            .files()
-            .iter()
-            .map(|file| (file.policy.filename.as_str(), &file.policy))
-            .chain(
-                self.excluded_policies
-                    .iter()
-                    .map(|(name, policy)| (name.as_str(), policy)),
-            )
-            .collect()
+    /// List included and excluded documents in filename order.
+    pub fn policy_records(&self) -> Vec<PolicyRecord<'_>> {
+        let included = self.index.files().iter().map(|file| {
+            let policy = file.policy();
+            PolicyRecord {
+                filename: &policy.filename,
+                configuration: configuration_name(&self.index.root, file.config()),
+                kind: Some(&policy.kind),
+                domain: policy.domain.as_deref(),
+                site: policy.site.as_ref(),
+                enabled_rules: &policy.enabled_rules,
+                excluded: None,
+                suppressions: &policy.suppressions,
+            }
+        });
+        let excluded = self.excluded_policies.values().map(|policy| PolicyRecord {
+            filename: &policy.filename,
+            configuration: policy.configuration.clone(),
+            kind: None,
+            domain: policy.domain.as_deref(),
+            site: policy.site.as_ref(),
+            enabled_rules: &[],
+            excluded: Some(policy.excluded),
+            suppressions: &[],
+        });
+        let mut records: Vec<_> = included.chain(excluded).collect();
+        records.sort_by(|left, right| left.filename.cmp(right.filename));
+        records
     }
 
     pub fn enabled_count(&self) -> usize {
         self.index
             .files()
             .iter()
-            .filter(|file| self.selected.contains(&file.policy.filename))
-            .map(|file| file.policy.enabled_rules.len())
+            .filter(|file| self.selected.contains(file.filename()))
+            .map(|file| file.policy().enabled_rules.len())
             .sum()
     }
 
@@ -131,7 +166,6 @@ struct PendingDocument {
     path: PathBuf,
     filename: String,
     config: Config,
-    configuration: String,
     source_override: Option<String>,
 }
 
@@ -325,7 +359,7 @@ fn discover(root: &Path, overlay: Option<(PathBuf, String)>) -> Discovery {
 struct LoadPlan {
     pending: Vec<PendingDocument>,
     configurations: BTreeMap<String, Settings>,
-    policies: BTreeMap<String, FilePolicy>,
+    excluded_policies: BTreeMap<String, ExcludedPolicy>,
     errors: Vec<InputError>,
     deferred_errors: Vec<InputError>,
     excluded_inputs: Vec<(PathBuf, &'static str, String)>,
@@ -349,7 +383,7 @@ impl LoadPlan {
             &workspace.config,
             &options.overrides,
         );
-        let mut policies = BTreeMap::new();
+        let mut excluded_policies = BTreeMap::new();
         let mut config_cache = BTreeMap::new();
         let mut pending = Vec::new();
         let mut deferred_errors = Vec::new();
@@ -396,22 +430,19 @@ impl LoadPlan {
                 }
                 if source_override.is_some() {
                     errors.push(InputError {
-                    filename: filename.clone(),
-                    message: "The stdin filename is excluded by configuration; choose an included Markdown path.".into(),
-                });
+                        filename: filename.clone(),
+                        message: "The stdin filename is excluded by configuration; choose an included Markdown path.".into(),
+                    });
                 }
                 if scope == LoadScope::Workspace {
-                    policies.insert(
+                    excluded_policies.insert(
                         filename.clone(),
-                        FilePolicy {
+                        ExcludedPolicy {
                             filename,
                             configuration,
-                            kind: None,
                             domain: config.domain_for(&path).map(str::to_owned),
                             site: config.site_for(&path).cloned(),
-                            enabled_rules: Vec::new(),
-                            excluded,
-                            suppressions: Vec::new(),
+                            excluded: field,
                         },
                     );
                 }
@@ -422,14 +453,13 @@ impl LoadPlan {
                 path,
                 filename,
                 config,
-                configuration,
                 source_override,
             });
         }
         Ok(Self {
             pending,
             configurations,
-            policies,
+            excluded_policies,
             errors,
             deferred_errors,
             excluded_inputs,
@@ -477,7 +507,6 @@ impl LoadPlan {
                 path,
                 filename,
                 config,
-                configuration,
                 ..
             } = input;
             let document = match loaded {
@@ -487,29 +516,17 @@ impl LoadPlan {
                     continue;
                 }
             };
-            let mut policy = FilePolicy::resolve(
-                filename.clone(),
-                &path,
-                &document,
-                &config,
-                &options.overrides,
-            )
-            .map_err(|error| error.to_string())?;
-            policy.configuration = configuration;
-            if request.includes(&path) {
-                selected.insert(filename.clone());
+            let file = IndexedFile::new(filename, path, document, config, &options.overrides)
+                .map_err(|error| error.to_string())?;
+            if request.includes(file.path()) {
+                selected.insert(file.filename().to_owned());
             }
-            files.push(IndexedFile {
-                policy,
-                path,
-                document,
-                config,
-            });
+            files.push(file);
         }
         let checked: Vec<_> = files
             .iter()
-            .filter(|file| selected.contains(&file.policy.filename))
-            .map(|file| file.path.as_path())
+            .filter(|file| selected.contains(file.filename()))
+            .map(IndexedFile::path)
             .collect();
         let skipped = skipped_inputs(
             &root,
@@ -525,7 +542,7 @@ impl LoadPlan {
             selected,
             requested: request.paths,
             configurations: self.configurations,
-            excluded_policies: self.policies,
+            excluded_policies: self.excluded_policies,
             errors: self.errors,
             skipped,
         };
@@ -659,11 +676,7 @@ fn record_configuration(
     config: &Config,
     overrides: &CliOverrides,
 ) -> String {
-    let name = config
-        .source
-        .as_ref()
-        .map(|path| relative(root, path))
-        .unwrap_or_else(|| "<defaults>".into());
+    let name = configuration_name(root, config);
     configurations.entry(name.clone()).or_insert_with(|| {
         let mut settings = config.settings.clone();
         settings.preview |= overrides.preview;
@@ -674,6 +687,16 @@ fn record_configuration(
         settings
     });
     name
+}
+
+/// Name a configuration by its workspace-relative path, as `seiso policy` reports it.
+pub fn configuration_name(root: &Path, config: &Config) -> String {
+    configuration_source(root, config).unwrap_or_else(|| "<defaults>".into())
+}
+
+/// Locate a configuration file relative to the workspace root; defaults have none.
+pub fn configuration_source(root: &Path, config: &Config) -> Option<String> {
+    config.source.as_ref().map(|path| relative(root, path))
 }
 
 pub fn absolute(cwd: &Path, path: &Path) -> PathBuf {

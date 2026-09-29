@@ -1,9 +1,10 @@
-use common::{run, value, workspace, write};
 mod common;
+use common::{run, value, workspace, write};
+
 use std::process::Output;
-use tempfile::TempDir;
 
 use serde_json::json;
+use tempfile::TempDir;
 
 fn status(output: &Output, expected: i32) {
     assert_eq!(

@@ -1,5 +1,6 @@
-use common::{run, value, workspace, write};
 mod common;
+use common::{run, value, workspace, write};
+
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 #[cfg(unix)]

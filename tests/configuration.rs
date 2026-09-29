@@ -1,10 +1,11 @@
-use common::write;
 mod common;
+use common::write;
+
 use std::fs;
 use std::path::Path;
 
 use seiso::config::{CliOverrides, Config, ConfigError, Workspace};
-use seiso::rules::rule_codes;
+use seiso::rules::{Kind, rule_codes};
 use tempfile::{TempDir, tempdir};
 
 fn parse(source: &str) -> (TempDir, Config) {
@@ -17,7 +18,7 @@ fn rules(config: &Config, kind: Option<&str>, overrides: &CliOverrides) -> Vec<&
     config
         .enabled_rules(
             Path::new("docs/page.md"),
-            kind.and_then(seiso::rules::Kind::from_name),
+            kind.and_then(Kind::from_name),
             overrides,
         )
         .unwrap()
@@ -68,14 +69,17 @@ path = "docs/reference/**"
 name = "api"
 "#,
     );
-    assert_eq!(config.kind_for(Path::new("docs/intro.md")), Some("howto"));
+    assert_eq!(
+        config.kind_for(Path::new("docs/intro.md")),
+        Some(Kind::Howto)
+    );
     assert_eq!(
         config.kind_for(Path::new("docs/reference/config.md")),
-        Some("reference")
+        Some(Kind::Reference)
     );
     assert_eq!(
         config.kind_for(Path::new("docs/reference/generated/client.md")),
-        Some("generated")
+        Some(Kind::Generated)
     );
     assert_eq!(
         config.domain_for(Path::new("docs/reference/config.md")),
@@ -152,7 +156,7 @@ fn nested_config_replaces_parent_without_implicit_inheritance() {
     assert!(!nested.excludes(&dir.path().join("docs/reference/page.md")));
     assert_eq!(
         nested.kind_for(&dir.path().join("docs/reference/page.md")),
-        Some("reference")
+        Some(Kind::Reference)
     );
     assert_eq!(nested.kind_for(&dir.path().join("docs/guide.md")), None);
 }
@@ -261,7 +265,7 @@ min-jaccard = 0.9
     assert_eq!(config.settings.kinds.len(), 1);
     assert_eq!(
         config.kind_for(&dir.path().join("docs/reference/page.md")),
-        Some("reference")
+        Some(Kind::Reference)
     );
 }
 

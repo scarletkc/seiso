@@ -1,5 +1,6 @@
 mod common;
 use common::{CheckContext, check};
+
 use seiso::config::{CliOverrides, Config};
 use seiso::md::parse;
 use seiso::rules::CheckResult;

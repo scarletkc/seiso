@@ -14,45 +14,57 @@ use std::path::Path;
 
 use crate::config::{CliOverrides, Config, ConfigError};
 use crate::diagnostics::{Diagnostic, Span, sorted_diagnostics};
+use crate::index::IndexedFile;
 use crate::md::{Document, FragmentKind};
+use crate::workspace::FilePolicy;
 use serde::Serialize;
 
-use crate::workspace::FilePolicy;
 pub use kind::{Kind, KindOutcome, KindResolution, resolve_kind};
 pub use links::{LocalWorkspaceFiles, WorkspaceFiles};
 pub use suppression::SuppressionRecord;
 
+/// One document and the policy that its single-document rules run under.
 pub struct CheckContext<'a> {
-    pub document: &'a Document,
-    pub filename: &'a str,
-    pub path: &'a Path,
-    pub workspace_root: &'a Path,
-    pub config: &'a Config,
-    pub policy: Cow<'a, FilePolicy>,
+    document: &'a Document,
+    path: &'a Path,
+    workspace_root: &'a Path,
+    config: &'a Config,
+    policy: Cow<'a, FilePolicy>,
 }
 
 impl<'a> CheckContext<'a> {
+    /// Resolve the policy of a document that no workspace index holds.
     pub fn new(
         document: &'a Document,
-        filename: &'a str,
+        filename: &str,
         path: &'a Path,
         workspace_root: &'a Path,
         config: &'a Config,
         overrides: &CliOverrides,
     ) -> Result<Self, ConfigError> {
-        let mut policy =
-            FilePolicy::resolve(filename.to_owned(), path, document, config, overrides)?;
-        policy
-            .enabled_rules
-            .retain(|code| rule(code).is_some_and(|rule| !rule.requires_index));
+        let policy = FilePolicy::resolve(filename.to_owned(), path, document, config, overrides)?;
         Ok(Self {
             document,
-            filename,
             path,
             workspace_root,
             config,
             policy: Cow::Owned(policy),
         })
+    }
+
+    /// Borrow the policy resolved when the workspace was loaded.
+    pub fn indexed(file: &'a IndexedFile, workspace_root: &'a Path) -> Self {
+        Self {
+            document: file.document(),
+            path: file.path(),
+            workspace_root,
+            config: file.config(),
+            policy: Cow::Borrowed(file.policy()),
+        }
+    }
+
+    pub fn filename(&self) -> &str {
+        &self.policy.filename
     }
 }
 
@@ -73,16 +85,13 @@ pub struct RawCheckResult {
     pub errors: Vec<String>,
 }
 
-/// Run single-document rules using the policy resolved by the caller.
+/// Run the policy's single-document rules. Index rules count as enabled only
+/// once [`RawCheckResult::add_cross_file`] merges their results.
 pub fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> RawCheckResult {
-    let kind = context
-        .policy
-        .kind
-        .as_ref()
-        .expect("included document policy");
-    let enabled: BTreeSet<String> = context.policy.enabled_rules.iter().cloned().collect();
+    let kind = &context.policy.kind;
+    let enabled = policy_rules(&context.policy, false);
     let mut diagnostics: Vec<_> = kind
-        .diagnostic(context.document, context.filename)
+        .diagnostic(context.document, context.filename())
         .filter(|diagnostic| enabled.contains(&diagnostic.code))
         .into_iter()
         .collect();
@@ -92,7 +101,7 @@ pub fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> RawCheck
     {
         diagnostics.extend(normative::check(
             context.document,
-            context.filename,
+            context.filename(),
             context.path,
             context.workspace_root,
             context.config,
@@ -104,8 +113,12 @@ pub fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> RawCheck
         .iter()
         .any(|code| rule(code).is_some_and(|rule| rule.phase == RulePhase::Heuristic))
     {
-        let heuristic =
-            heuristic::check(context.document, context.filename, context.config, &enabled);
+        let heuristic = heuristic::check(
+            context.document,
+            context.filename(),
+            context.config,
+            &enabled,
+        );
         diagnostics.extend(heuristic.diagnostics);
         incomplete.extend(heuristic.incomplete_rules);
     }
@@ -137,7 +150,42 @@ pub fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> RawCheck
     }
 }
 
+/// The policy's enabled rules that do, or do not, require the workspace index.
+fn policy_rules(policy: &FilePolicy, requires_index: bool) -> BTreeSet<String> {
+    policy
+        .enabled_rules
+        .iter()
+        .filter(|code| rule(code).is_some_and(|rule| rule.requires_index == requires_index))
+        .cloned()
+        .collect()
+}
+
 impl RawCheckResult {
+    /// Describe a document whose single-document rules did not run.
+    pub fn unchecked(policy: &FilePolicy) -> Self {
+        Self {
+            kind: policy.kind.resolution(),
+            enabled_rules: policy_rules(policy, false),
+            diagnostics: Vec::new(),
+            incomplete_rules: single_file_rules()
+                .map(|rule| rule.code.to_owned())
+                .collect(),
+            errors: Vec::new(),
+        }
+    }
+
+    /// Merge the workspace rule results for this document and enable its index rules.
+    pub fn add_cross_file(
+        &mut self,
+        policy: &FilePolicy,
+        diagnostics: Vec<Diagnostic>,
+        incomplete: BTreeSet<String>,
+    ) {
+        self.enabled_rules.extend(policy_rules(policy, true));
+        self.diagnostics.extend(diagnostics);
+        self.incomplete_rules.extend(incomplete);
+    }
+
     pub fn finish(self, document: &Document, filename: &str) -> CheckResult {
         let RawCheckResult {
             kind,

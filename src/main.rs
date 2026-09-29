@@ -42,7 +42,7 @@ fn main() -> ExitCode {
     match run(Cli::parse()) {
         Ok(code) => ExitCode::from(code),
         Err(error) => {
-            commands::print_github_log(&error);
+            commands::print_escaped_log(&error);
             ExitCode::from(2)
         }
     }

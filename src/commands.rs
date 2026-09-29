@@ -1,5 +1,3 @@
-use seiso::md::Document;
-use seiso::rules::KindResolution;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::io::{self, Read, Write};
@@ -11,9 +9,14 @@ use std::sync::Arc;
 use clap::{Args, Subcommand, ValueEnum};
 use seiso::analysis::{self, Analysis};
 use seiso::config::{CliOverrides, Settings, Workspace};
-use seiso::diagnostics::{render_concise, render_github, render_json, render_sarif, render_text};
+use seiso::diagnostics::{
+    Diagnostic, render_concise, render_github, render_json, render_sarif, render_text,
+};
+use seiso::index::IndexedFile;
+use seiso::md::Document;
+use seiso::rules::KindResolution;
 use seiso::workspace::{
-    self, FilePolicy, InputError, LoadOptions, LoadScope, Snapshot, is_markdown,
+    self, FilePolicy, InputError, LoadOptions, LoadScope, PolicyRecord, Snapshot, is_markdown,
 };
 use serde::Serialize;
 
@@ -124,7 +127,7 @@ pub enum HookCommand {
 #[derive(Serialize)]
 struct PolicyReport<'a> {
     configurations: &'a BTreeMap<String, Settings>,
-    files: Vec<&'a FilePolicy>,
+    files: Vec<PolicyRecord<'a>>,
     errors: &'a [InputError],
 }
 
@@ -141,7 +144,7 @@ fn render(evaluation: &Analysis, format: CheckFormat) -> Result<String, String> 
                     .into_iter()
                     .filter_map(|filename| {
                         evaluation.snapshot.index.file(filename).map(|file| {
-                            (file.policy.filename.clone(), file.document.source.clone())
+                            (file.filename().to_owned(), file.document().source.clone())
                         })
                     })
                     .collect();
@@ -162,7 +165,7 @@ fn print_errors(snapshot: &Snapshot, github: bool) {
     for error in &snapshot.errors {
         let message = format!("{}: {}", error.filename, error.message);
         if github {
-            print_github_log(&message);
+            print_escaped_log(&message);
         } else {
             eprintln!("{message}");
         }
@@ -202,7 +205,7 @@ pub fn check(args: CheckArgs) -> Result<u8, String> {
         "Cannot write output",
     )?;
     if args.statistics && matches!(args.output_format, CheckFormat::Github) {
-        print_github_log(&statistics_text(&evaluation));
+        print_escaped_log(&statistics_text(&evaluation));
     }
     let github = matches!(args.output_format, CheckFormat::Github);
     print_errors(&evaluation.snapshot, github);
@@ -234,7 +237,7 @@ pub fn check(args: CheckArgs) -> Result<u8, String> {
 
 fn print_notice(message: &str, github: bool) {
     if github {
-        print_github_log(message);
+        print_escaped_log(message);
     } else {
         eprintln!("seiso: {message}");
     }
@@ -278,13 +281,13 @@ pub fn policy(args: PolicyArgs) -> Result<u8, String> {
     };
     let mut snapshot = workspace::load(&current_dir()?, &options, LoadScope::Workspace)?;
     if args.evaluate {
-        snapshot = analysis::check(snapshot)?.snapshot;
+        snapshot = analysis::check(snapshot).snapshot;
     } else {
         analysis::inspect_policy(&mut snapshot);
     }
     let report = PolicyReport {
         configurations: &snapshot.configurations,
-        files: snapshot.policies().into_values().collect(),
+        files: snapshot.policy_records(),
         errors: &snapshot.errors,
     };
     write_stdout(
@@ -311,14 +314,21 @@ pub fn index(args: IndexArgs) -> Result<u8, String> {
     Ok(if snapshot.errors.is_empty() { 0 } else { 2 })
 }
 
+/// Excluded documents have no suppressions, so only indexed documents are reported.
 fn reported_policies(evaluation: &Analysis) -> impl Iterator<Item = &FilePolicy> {
-    evaluation.snapshot.policies().into_values().filter(|file| {
-        evaluation.snapshot.selected.contains(&file.filename)
-            || evaluation
-                .diagnostics
-                .iter()
-                .any(|diagnostic| diagnostic.filename == file.filename)
-    })
+    evaluation
+        .snapshot
+        .index
+        .files()
+        .iter()
+        .map(IndexedFile::policy)
+        .filter(|file| {
+            evaluation.snapshot.selected.contains(&file.filename)
+                || evaluation
+                    .diagnostics
+                    .iter()
+                    .any(|diagnostic| diagnostic.filename == file.filename)
+        })
 }
 
 fn statistics(evaluation: &Analysis) -> serde_json::Value {
@@ -358,7 +368,7 @@ fn statistics_text(evaluation: &Analysis) -> String {
     text
 }
 
-pub(crate) fn print_github_log(text: &str) {
+pub(crate) fn print_escaped_log(text: &str) {
     // The runner also parses stderr, including legacy commands embedded within
     // a line. Prefix every line and break that legacy delimiter in log content.
     for line in text.lines() {
@@ -409,7 +419,7 @@ fn apply_safe_fixes(evaluation: &Analysis) -> (usize, Vec<InputError>) {
         let diagnostics = evaluation
             .diagnostics
             .iter()
-            .filter(|diagnostic| diagnostic.filename == file.policy.filename)
+            .filter(|diagnostic| diagnostic.filename == file.filename())
             .cloned()
             .collect::<Vec<_>>();
         let outcome = write_safe_fixes(file, &diagnostics);
@@ -418,7 +428,7 @@ fn apply_safe_fixes(evaluation: &Analysis) -> (usize, Vec<InputError>) {
         }
         if let Err(message) = outcome {
             errors.push(InputError {
-                filename: file.policy.filename.clone(),
+                filename: file.filename().to_owned(),
                 message,
             });
         }
@@ -426,21 +436,19 @@ fn apply_safe_fixes(evaluation: &Analysis) -> (usize, Vec<InputError>) {
     (changed, errors)
 }
 
-fn write_safe_fixes(
-    file: &seiso::index::IndexedFile,
-    diagnostics: &[seiso::diagnostics::Diagnostic],
-) -> Result<bool, String> {
-    let Some(updated) = seiso::rules::fixes::apply_fixes(&file.document.source, diagnostics)?
-    else {
+fn write_safe_fixes(file: &IndexedFile, diagnostics: &[Diagnostic]) -> Result<bool, String> {
+    let source = &file.document().source;
+    let Some(updated) = seiso::rules::fixes::apply_fixes(source, diagnostics)? else {
         return Ok(false);
     };
-    let metadata = fs::symlink_metadata(&file.path).map_err(|error| error.to_string())?;
+    let path = file.path();
+    let metadata = fs::symlink_metadata(path).map_err(|error| error.to_string())?;
     if metadata.file_type().is_symlink() || !metadata.is_file() || metadata.permissions().readonly()
     {
         return Err("Cannot apply fixes to a symlink, non-file, or read-only file.".into());
     }
     let mut temporary =
-        tempfile::NamedTempFile::new_in(file.path.parent().ok_or("Missing parent directory.")?)
+        tempfile::NamedTempFile::new_in(path.parent().ok_or("Missing parent directory.")?)
             .map_err(|e| e.to_string())?;
     temporary
         .as_file()
@@ -450,10 +458,10 @@ fn write_safe_fixes(
         .write_all(updated.as_bytes())
         .map_err(|e| e.to_string())?;
     temporary.flush().map_err(|e| e.to_string())?;
-    if fs::read(&file.path).map_err(|e| e.to_string())? != file.document.source.as_bytes() {
+    if fs::read(path).map_err(|e| e.to_string())? != source.as_bytes() {
         return Err("Source changed before the fix could be written; rerun the check.".into());
     }
-    temporary.persist(&file.path).map_err(|e| e.to_string())?;
+    temporary.persist(path).map_err(|e| e.to_string())?;
     Ok(true)
 }
 
@@ -466,7 +474,7 @@ fn evaluate(cwd: &Path, args: &CheckArgs, replacement: Option<String>) -> Result
         no_cache: args.no_cache,
     };
     let snapshot = workspace::load(cwd, &options, LoadScope::Check)?;
-    analysis::check(snapshot)
+    Ok(analysis::check(snapshot))
 }
 
 pub fn rule(args: RuleArgs) -> Result<u8, String> {
@@ -623,16 +631,16 @@ impl SuggestedConfig {
         let mut contents = String::from("include = [\"**/*.md\", \"**/*.markdown\"]\n");
         if !excludes.is_empty() {
             contents.push_str(
-            "# Templates, dependencies, and adopted texts are not project documentation.\nexclude = [\n",
-        );
+                "# Templates, dependencies, and adopted texts are not project documentation.\nexclude = [\n",
+            );
             for pattern in excludes {
                 contents.push_str(&format!("  {},\n", quote(pattern)));
             }
             contents.push_str("]\n");
         }
         contents.push_str(
-        "preview = false\n\n# Review these path mappings and declare other kinds in document frontmatter.\n",
-    );
+            "preview = false\n\n# Review these path mappings and declare other kinds in document frontmatter.\n",
+        );
         for (path, kind) in kinds {
             contents.push_str(&format!(
                 "\n[[kinds]]\npath = {}\nkind = \"{kind}\"\n",
@@ -641,8 +649,8 @@ impl SuggestedConfig {
         }
         if !sites.is_empty() {
             contents.push_str(
-            "\n# Links in documents that a site generator renders resolve as site routes; review these entries.\n",
-        );
+                "\n# Links in documents that a site generator renders resolve as site routes; review these entries.\n",
+            );
         }
         for site in sites {
             let path = if site.root == "." {
@@ -831,7 +839,8 @@ pub fn hook(command: HookCommand) -> u8 {
 
 fn run_hook(command: HookCommand) -> Result<u8, String> {
     let HookCommand::ClaudeCode { config, selection } = command;
-    let input: serde_json::Value = serde_json::from_str(&read_stdin("Cannot read UTF-8 stdin")?).map_err(|error| {
+    let input = read_stdin("Cannot read UTF-8 stdin")?;
+    let input: serde_json::Value = serde_json::from_str(&input).map_err(|error| {
         format!(
             "Cannot read Claude Code hook JSON: {error}; configure a PostToolUse Write|Edit hook."
         )
@@ -963,21 +972,12 @@ pub fn parse(args: ParseArgs) -> Result<u8, String> {
             .into_files()
             .into_iter()
             .map(|file| ParsedFile {
-                filename: file.policy.filename,
-                configuration: file
-                    .config
-                    .source
-                    .as_ref()
-                    .map(|path| workspace::relative(&root, path)),
-                kind: file
-                    .policy
-                    .kind
-                    .as_ref()
-                    .expect("included document policy")
-                    .resolution(),
-                domain: file.policy.domain,
-                section_annotations: seiso::sections::classify(&file.document),
-                document: Arc::unwrap_or_clone(file.document),
+                filename: file.filename().to_owned(),
+                configuration: workspace::configuration_source(&root, file.config()),
+                kind: file.policy().kind.resolution(),
+                domain: file.policy().domain.clone(),
+                section_annotations: seiso::sections::classify(file.document()),
+                document: Arc::unwrap_or_clone(file.into_document()),
             })
             .collect(),
         errors: snapshot.errors,

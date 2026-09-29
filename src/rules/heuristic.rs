@@ -376,7 +376,9 @@ struct Findings<'a> {
 }
 
 impl Findings<'_> {
+    /// Callers check that the rule is enabled before evaluating its conditions.
     fn emit(&mut self, code: &str, span: Span, message: &str, suggestion: &str) -> &mut Diagnostic {
+        debug_assert!(self.enabled.contains(code), "{code} is not enabled");
         self.result.diagnostics.push(Diagnostic::new(
             self.filename,
             &self.document.source,
@@ -796,7 +798,13 @@ impl Findings<'_> {
                             .map(|block| block.span)
                     })
                     .unwrap_or(first.span);
-                self.emit_before_flow("ORD001", span, "A long preamble delays the first procedure or runnable example.", "Put the runnable example or ordered procedure before extended background and reference tables.", first.span);
+                self.emit_before_flow(
+                    "ORD001",
+                    span,
+                    "A long preamble delays the first procedure or runnable example.",
+                    "Put the runnable example or ordered procedure before extended background and reference tables.",
+                    first.span,
+                );
             }
         }
     }
@@ -817,11 +825,18 @@ impl Findings<'_> {
                         .parent
                         .is_none_or(|parent| !in_recovery(self.document, annotations, parent))
                 {
-                    self.emit_before_flow("ORD002", section.heading_span.unwrap(), "Troubleshooting or exceptions appear before the main flow.", "Move this section after the main procedure so readers can reach the common path first.", first.span);
+                    self.emit_before_flow(
+                        "ORD002",
+                        section.heading_span.unwrap(),
+                        "Troubleshooting or exceptions appear before the main flow.",
+                        "Move this section after the main procedure so readers can reach the common path first.",
+                        first.span,
+                    );
                 }
             }
         }
     }
+
     fn check_mixed_sections(&mut self, annotations: &[sections::SectionAnnotation]) {
         for annotation in annotations {
             let section = &self.document.sections[annotation.section];
@@ -848,9 +863,12 @@ impl Findings<'_> {
                 })
                 .count();
             if paragraphs >= RATIONALE_PARAGRAPHS {
-                self.emit("MIX001", section.heading_span.unwrap(),
+                self.emit(
+                    "MIX001",
+                    section.heading_span.unwrap(),
                     "An extended rationale section conflicts with this procedure or reference page.",
-                    "Move the decision rationale to an ADR and keep a link beside the procedure or contract it explains.");
+                    "Move the decision rationale to an ADR and keep a link beside the procedure or contract it explains.",
+                );
             }
         }
     }

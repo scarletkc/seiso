@@ -25,7 +25,8 @@ static STRIP: LazyLock<Regex> = LazyLock::new(|| {
 static ATX_CLOSING: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"[ \t]+#+$").unwrap());
 static SETEXT_UNDERLINE: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"^[ \t]*(?:=+|-+)$").unwrap());
-static LIST: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"(?:^|[^\\])\{:?[^{}]*\}$").unwrap());
+static TRAILING_ATTRIBUTE_LIST: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"(?:^|[^\\])\{:?[^{}]*\}$").unwrap());
 static HEADING_ATTRIBUTES: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"\s*\{:?\s*([^{}]*)\}\s*$").unwrap());
 static TAG: LazyLock<Regex> = LazyLock::new(|| {
@@ -38,12 +39,14 @@ static ATTRIBUTE: LazyLock<Regex> = LazyLock::new(|| {
 static ENTITY: LazyLock<Regex> =
     LazyLock::new(|| Regex::new(r"&(#(?:x|X)[0-9a-fA-F]+|#[0-9]+|[a-zA-Z][a-zA-Z0-9]+);").unwrap());
 
+/// A document with the policy resolved from its path, source, and configuration.
+/// Fields are read-only so the policy cannot drift from the inputs it describes.
 #[derive(Clone, Debug)]
 pub struct IndexedFile {
-    pub policy: FilePolicy,
-    pub path: PathBuf,
-    pub document: Arc<Document>,
-    pub config: Config,
+    policy: FilePolicy,
+    path: PathBuf,
+    document: Arc<Document>,
+    config: Config,
 }
 
 impl IndexedFile {
@@ -61,6 +64,30 @@ impl IndexedFile {
             document,
             config,
         })
+    }
+
+    pub fn filename(&self) -> &str {
+        &self.policy.filename
+    }
+
+    pub fn policy(&self) -> &FilePolicy {
+        &self.policy
+    }
+
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    pub fn document(&self) -> &Arc<Document> {
+        &self.document
+    }
+
+    pub fn config(&self) -> &Config {
+        &self.config
+    }
+
+    pub fn into_document(self) -> Arc<Document> {
+        self.document
     }
 }
 
@@ -118,10 +145,10 @@ pub struct LinkResolution {
 impl WorkspaceIndex {
     /// Sort workspace files and defer anchor extraction until a lookup needs it.
     pub fn new(root: PathBuf, mut files: Vec<IndexedFile>, complete: bool) -> Self {
-        files.sort_by(|left, right| left.policy.filename.cmp(&right.policy.filename));
+        files.sort_by(|left, right| left.filename().cmp(right.filename()));
         let anchors = files
             .iter()
-            .map(|file| (file.policy.filename.clone(), OnceLock::new()))
+            .map(|file| (file.filename().to_owned(), OnceLock::new()))
             .collect();
         Self {
             root,
@@ -146,7 +173,7 @@ impl WorkspaceIndex {
         for (filename, suppressions) in records {
             if let Ok(index) = self
                 .files
-                .binary_search_by(|file| file.policy.filename.cmp(&filename))
+                .binary_search_by(|file| file.filename().cmp(&filename))
             {
                 self.files[index].policy.suppressions = suppressions;
             }
@@ -168,7 +195,7 @@ impl WorkspaceIndex {
     /// Look up an indexed file by its workspace-relative filename.
     pub fn file(&self, filename: &str) -> Option<&IndexedFile> {
         self.files
-            .binary_search_by(|file| file.policy.filename.as_str().cmp(filename))
+            .binary_search_by(|file| file.filename().cmp(filename))
             .ok()
             .map(|index| &self.files[index])
     }
@@ -325,15 +352,15 @@ impl WorkspaceIndex {
             let links: Vec<_> = file.document.links.iter().map(|link| serde_json::json!({
                 "raw": link.destination,
                 "span": link.span,
-                "resolution": self.resolve_link(&file.policy.filename, &link.destination),
+                "resolution": self.resolve_link(file.filename(), &link.destination),
             })).collect();
             let mut record = serde_json::json!({
-                "filename": file.policy.filename,
-                "kind": file.policy.kind_value(),
-                "domain": file.policy.domain.as_deref().unwrap_or(""),
+                "filename": file.filename(),
+                "kind": file.policy.kind.value(),
+                "domain": file.policy.domain_key(),
                 "language": file.document.language,
                 "canonical": file.document.frontmatter.as_ref().filter(|value| value.errors.is_empty()).and_then(|value| value.canonical).unwrap_or(false),
-                "anchors": self.anchor_index(&file.policy.filename).unwrap().spans,
+                "anchors": self.anchor_index(file.filename()).unwrap().spans,
                 "identifiers": file.document.identifiers,
                 "links": links,
             });
@@ -348,8 +375,7 @@ impl WorkspaceIndex {
 
 /// Unicode category filtering follows github-slugger's documented generation rules.
 pub fn github_slug(heading: &str) -> String {
-    let strip = &*STRIP;
-    strip
+    STRIP
         .replace_all(&heading.to_lowercase(), "")
         .replace(' ', "-")
 }
@@ -363,15 +389,18 @@ fn source_ends_with_attribute_list(source: &str) -> bool {
         .map(str::trim_end)
         .filter(|line| !line.is_empty())
         .collect();
-    let underline = &*SETEXT_UNDERLINE;
-    if lines.len() > 1 && lines.last().is_some_and(|line| underline.is_match(line)) {
+    if lines.len() > 1
+        && lines
+            .last()
+            .is_some_and(|line| SETEXT_UNDERLINE.is_match(line))
+    {
         lines.pop();
     }
     let Some(line) = lines.last() else {
         return false;
     };
     let line = ATX_CLOSING.replace(line, "");
-    LIST.is_match(&line)
+    TRAILING_ATTRIBUTE_LIST.is_match(&line)
 }
 
 /// Extract heading slugs and explicit HTML anchors with their original spans.
@@ -380,7 +409,6 @@ fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
     let mut seen = BTreeSet::new();
     // Site generators read a trailing attribute list such as `{#id}` or
     // `{: #id .class}` as the heading's id and omit it from the visible text.
-    let heading_attributes = &*HEADING_ATTRIBUTES;
     for block in document
         .blocks
         .iter()
@@ -400,7 +428,7 @@ fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
         anchors.entry(slug).or_insert(block.span);
         // The flattened text has lost code delimiters and escapes, so confirm
         // the list in the heading's source before trusting it.
-        if let Some(attributes) = heading_attributes.captures(text)
+        if let Some(attributes) = HEADING_ATTRIBUTES.captures(text)
             && source_ends_with_attribute_list(&document.source[block.span.start..block.span.end])
         {
             let visible = &text[..attributes.get(0).unwrap().start()];
@@ -414,8 +442,6 @@ fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
             }
         }
     }
-    let tag = &*TAG;
-    let attribute = &*ATTRIBUTE;
     let mut ignored: Vec<Span> = document
         .blocks
         .iter()
@@ -438,7 +464,7 @@ fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
             .map(|fragment| fragment.span),
     );
     let mut raw_text_end = 0;
-    for capture in tag.captures_iter(&document.source) {
+    for capture in TAG.captures_iter(&document.source) {
         let matched = capture.get(0).unwrap();
         let inside_html = document.blocks.iter().any(|block| {
             block.kind == BlockKind::Html
@@ -478,7 +504,7 @@ fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
                 .find(&format!("</{element}"))
                 .map_or(document.source.len(), |offset| matched.end() + offset);
         }
-        for attr in attribute.captures_iter(matched.as_str()) {
+        for attr in ATTRIBUTE.captures_iter(matched.as_str()) {
             if !(attr[1].eq_ignore_ascii_case("id")
                 || attr[1].eq_ignore_ascii_case("name") && capture[1].eq_ignore_ascii_case("a"))
             {
@@ -592,15 +618,15 @@ mod tests {
             ],
             true,
         );
-        assert_eq!(index.files()[0].policy.filename, "a.md");
+        assert_eq!(index.files()[0].filename(), "a.md");
         assert!(index.anchors("a.md").unwrap().contains("before"));
-        let original_document = Arc::clone(&index.files()[1].document);
+        let original_document = Arc::clone(index.files()[1].document());
 
         let mut files = index.into_files();
-        assert!(Arc::ptr_eq(&original_document, &files[1].document));
+        assert!(Arc::ptr_eq(&original_document, files[1].document()));
         files[0] = file(root.path(), "renamed.md", "# After\n");
         let rebuilt = WorkspaceIndex::new(root.path().to_path_buf(), files, true);
-        assert_eq!(rebuilt.files()[0].policy.filename, "b.md");
+        assert_eq!(rebuilt.files()[0].filename(), "b.md");
         assert!(rebuilt.file("a.md").is_none());
         assert!(rebuilt.anchors("a.md").is_none());
         assert!(rebuilt.file("renamed.md").is_some());
