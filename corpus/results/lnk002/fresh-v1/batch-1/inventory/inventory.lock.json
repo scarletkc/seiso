@@ -1,0 +1,96 @@
+{
+  "corpus_lock_sha256": "8affea1f5c672343c851b0861192ba3b64315999288509ce849a78d08aa75f8a",
+  "schema_version": 1,
+  "sources": [
+    {
+      "archive": "node.json.gz",
+      "commit": "524eb248e55a7e2c65da6efaf9be1aa16f519045",
+      "entries": 56757,
+      "id": "node",
+      "repository": "nodejs/node",
+      "sha256": "c339554f25422c1c5eb977cc15a56a572316bd09aa10ad3e7b3b258d7acf22a8",
+      "tree": "00df49af3ccb571e221ad5f2c6a8168356278379"
+    },
+    {
+      "archive": "electron.json.gz",
+      "commit": "7af89da308fee1a45b0e6242a1be38ec22bd396c",
+      "entries": 3588,
+      "id": "electron",
+      "repository": "electron/electron",
+      "sha256": "03893b873b77fd660d8e9d2ac1e4184f92e0a256f6031d57f9ed34966155a293",
+      "tree": "4925a0c7c9cecc025e1d2eaab14c8c52621d194a"
+    },
+    {
+      "archive": "vscode-docs.json.gz",
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "entries": 9670,
+      "id": "vscode-docs",
+      "repository": "microsoft/vscode-docs",
+      "sha256": "42ab06636b11b3f44fc3982c3e2760d008b682a7d379850766fd0dff864d855f",
+      "tree": "812f38910b51769b31b386c666286564104755d6"
+    },
+    {
+      "archive": "fastapi.json.gz",
+      "commit": "3e33a03bdaa3a89f27d5e0c390c4ba9032f14b5e",
+      "entries": 3605,
+      "id": "fastapi",
+      "repository": "fastapi/fastapi",
+      "sha256": "2b238b7cc41b55abb6d0a4097b8ae63d81fe0ad33ea04a76c1ac7424dfaee319",
+      "tree": "33559cbaa523682582dc9b084850f00bc2fed496"
+    },
+    {
+      "archive": "mkdocs-material.json.gz",
+      "commit": "1c73dca3ff4909e4cddd0d3b6e272298e902dec7",
+      "entries": 15604,
+      "id": "mkdocs-material",
+      "repository": "squidfunk/mkdocs-material",
+      "sha256": "66b18b7d8fcf2860fb41902cd6b7b5bfd612b4bb7a399c54cd0533203cec5689",
+      "tree": "033aee5d15062a3f4bd931a612910c900eb55a1f"
+    },
+    {
+      "archive": "traefik.json.gz",
+      "commit": "fcbfb8aff229498eddc941ea47f7bd18cbc65078",
+      "entries": 2702,
+      "id": "traefik",
+      "repository": "traefik/traefik",
+      "sha256": "8a9d7108c22ccad590536f44209a7ab8d24822b8c1c6fe08f7d89b1b393e9908",
+      "tree": "7be72fd13f3b973e9d86c091f0c69b4ec2a86ecc"
+    },
+    {
+      "archive": "cargo.json.gz",
+      "commit": "f3865b2a4d1acc5276f6b3c67d0e057f4dab3928",
+      "entries": 4710,
+      "id": "cargo",
+      "repository": "rust-lang/cargo",
+      "sha256": "801a9012c07382223cfcad8e3cebdf13d94ff19f7c93a83aa15b69004e14d76f",
+      "tree": "16f9762671deb3e9f9ea2e955fff1a96a33b7792"
+    },
+    {
+      "archive": "rustc-dev-guide.json.gz",
+      "commit": "d70a58f9574c627cff6af7b4705ffa360835f7f6",
+      "entries": 345,
+      "id": "rustc-dev-guide",
+      "repository": "rust-lang/rustc-dev-guide",
+      "sha256": "28832917021e8a555dd9964ace2e516069dcf04ba040b7c3330833992b3217ee",
+      "tree": "a2f1994af661c651914d688d6317197a7800d75b"
+    },
+    {
+      "archive": "vitest.json.gz",
+      "commit": "62a7fe6791fcbe796fcbf58a17e0ee88663b9555",
+      "entries": 3881,
+      "id": "vitest",
+      "repository": "vitest-dev/vitest",
+      "sha256": "03720cc05564fd0d8cd0d428b4e6ec2f809e618ee8e138826b2bfdd08452919f",
+      "tree": "2b454a79c4f606787edfd0b5b8c647af2320bb77"
+    },
+    {
+      "archive": "eslint.json.gz",
+      "commit": "d166567901e09940c1de4ad0e95d572eeab5c927",
+      "entries": 2746,
+      "id": "eslint",
+      "repository": "eslint/eslint",
+      "sha256": "3309591a5334de93f497b0cdb10d90d24467505d07dd21e01e9bf042a884e697",
+      "tree": "c9e881e3cdb4d793b26505367bc5fefd6725d426"
+    }
+  ]
+}
