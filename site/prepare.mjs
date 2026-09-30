@@ -90,9 +90,14 @@ export function prepare({ unreleased = false } = {}) {
     return { version, released: version !== UNRELEASED, pages }
   })
 
+  // A directory path such as /0.1.0/ opens that version's specification.
+  for (const { version } of result) {
+    writeFileSync(join(source, version, 'index.md'), redirect(`/${version}/convention`))
+  }
   const newest = result[0]
   writeFileSync(join(source, 'index.md'), redirect(`/${newest.version}/convention`))
   mkdirSync(join(source, 'latest'))
+  writeFileSync(join(source, 'latest', 'index.md'), redirect(`/${newest.version}/convention`))
   for (const { name } of newest.pages) {
     writeFileSync(join(source, 'latest', `${name}.md`), redirect(`/${newest.version}/${name}`))
   }

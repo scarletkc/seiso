@@ -12,8 +12,10 @@ on:
 permissions:
   contents: read
 
+# Deploying runs share one group from checkout to deploy, and a newer run
+# replaces a pending one, so the last deploy is built from the newest state.
 concurrency:
-  group: pages-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.event_name == 'pull_request' && format('pages-pr-{0}', github.event.pull_request.number) || 'pages' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -23,6 +25,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # A deploy builds main's site whatever ref triggered it.
+          ref: ${{ github.event_name != 'pull_request' && github.event.repository.default_branch || '' }}
           # The site reads every released version from its spec-v tag.
           fetch-depth: 0
           persist-credentials: false
@@ -51,9 +55,6 @@ jobs:
     permissions:
       pages: write
       id-token: write
-    concurrency:
-      group: pages-deploy
-      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
