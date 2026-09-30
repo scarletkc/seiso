@@ -1,0 +1,32 @@
+{
+  "accepted": true,
+  "artifact_sha256": {
+    "run/diagnostics.json.gz": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+    "run/run.json": "798a971b1acd5c1ec3aa9f8357f67d769ef36bf7d6746fe08e145a6311549271",
+    "stage-5-checkpoint.json": "54409cd34f848ee08aa287bbdb594cdc5bbaffffd857d260178b1701e0d8aa35"
+  },
+  "blindness": {
+    "author_labels_or_oracle_read": false,
+    "diagnostic_prose_displayed_or_interpreted": false,
+    "source_or_target_prose_read": false
+  },
+  "independently_verified": {
+    "all_diagnostic_identity_and_related_input_bindings": true,
+    "files": 2230,
+    "first_threshold_reaching_batch": 1,
+    "implementation_matches_freeze": true,
+    "lnk002_diagnoses": 451,
+    "only_batch_one_exists": true,
+    "protected_paths_unchanged": true,
+    "remote_main_unchanged": "7f8371f25ae438561c28ce99931b666b7723d629",
+    "report_and_run_and_checkpoint_hashes": true,
+    "retained_release_probe_hash_matches": true
+  },
+  "owner_diversity_decision": "pending; never assumed accepted",
+  "probe_sha256": "fb0a6aa42fcc3b8c814cf8c4412e0cacc9d36e68422c21e87ae0156aedd4d281",
+  "raw_result_sha256": "143c270d70e714faf1285729f885b66fe937d5befee2f1a6477c96a0ead4e28e",
+  "raw_reverse_verification_provenance": "The reviewed evaluator compared raw forward/reverse bytes and bound the raw SHA256 during execution; it deleted temporary raw probe files. Independent reviewer verified guarded run provenance and retained binary, without a second fresh replay or direct raw-byte inspection.",
+  "reviewer": "/root/blind_lnk002_reviewer",
+  "schema_version": 1,
+  "stage": 5
+}
