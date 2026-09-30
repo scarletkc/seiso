@@ -320,3 +320,13 @@ source or reading its content. No upstream code runs.
 Record the results under `docs/evaluation/`. A failed gate keeps the rule in
 preview, and a fix needs another fresh cohort. Before a record merges, rebase
 on `main` and rerun every batch; the raw results must be byte-identical.
+
+To rerun a recorded batch, restore its documents from the lock instead of
+pinning it again, which the overlap check rejects. Evaluate into a new
+directory, then compare `raw_result_sha256` in its `run.json` with the
+recorded one:
+
+```sh
+python -c "import json; from corpus.corpus import fetch_blob; lock = json.load(open('corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json', encoding='utf-8')); [fetch_blob(s, e) for s in lock['sources'] for e in s['documents'] + s['licenses']]"
+python -m scripts.evaluation.fresh_links evaluate --input corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json --profile corpus/results/lnk002/fresh-v1/batch-1/kinds.json --sites corpus/results/lnk002/fresh-v1/batch-1/sites.json --output target/lnk002-replay
+```
