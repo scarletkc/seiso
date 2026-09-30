@@ -1,0 +1,24 @@
+{
+  "diagnoses_by_source": {
+    "eslint": 7,
+    "mkdocs-material": 74,
+    "node": 25,
+    "rustc-dev-guide": 21,
+    "traefik": 8,
+    "vitest": 268,
+    "vscode-docs": 48
+  },
+  "label_results_inspected": false,
+  "owner_accepted": null,
+  "owner_decision_status": "requested; pending",
+  "samples": 451,
+  "schema_version": 1,
+  "selection": "All 451 diagnoses from the first threshold-reaching batch; no later batch or replacement source.",
+  "sources_over_half": [
+    {
+      "diagnoses": 268,
+      "fraction": 0.5942350332594235,
+      "source": "vitest"
+    }
+  ]
+}
