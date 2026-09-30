@@ -21,13 +21,15 @@ the same revision checks.
 
 ## Kind assignment
 
-Frontmatter supplies a kind before a `[[kinds]]` path mapping, whose syntax
-and precedence the [configuration reference](configuration.md#kinds-and-domains)
-defines. `generated` can only be assigned in configuration. Generated documents
-are exempt from rules but remain index sources, link targets, and possible
-owners of duplicated facts. A document without a valid kind receives only the
-kind-independent checks. See [KND001](../rules/KND001.md) and
-[KND002](../rules/KND002.md) for executable examples.
+The specification defines declaration precedence, broken declarations, and
+the mapping-only `generated` kind
+([`KIND-2` to `KIND-4`](../../spec/convention.md#document-kinds)). In seiso
+the mapping is a `[[kinds]]` entry, whose syntax and last-match behavior the
+[configuration reference](configuration.md#kinds-and-domains) defines.
+Generated documents run no rules but remain index sources, link targets, and
+possible owners of duplicated facts. A document without a valid kind receives
+only the kind-independent checks. [KND001](../rules/KND001.md) and
+[KND002](../rules/KND002.md) give executable examples.
 
 ## Ownership precedence
 
@@ -40,9 +42,11 @@ Ownership is evaluated per pair of duplicate blocks, without transitive
 merging. The precedence is `canonical: true`, then generated, reference, ADR,
 how-to, README, and other kinds. `canonical` applies to the whole file. Ties
 remain unresolved and are reported by [OWN002](../rules/OWN002.md); Git age or
-discovery order never decides ownership. The specification makes `canonical`
-and the responsibilities of each kind normative and leaves the rest of this
-ranking to the checker. Rule-specific matching belongs to
+discovery order never decides ownership. The specification makes two things
+normative ([`FACT-2`](../../spec/convention.md#facts-and-authority)): a
+`canonical` declaration takes precedence over responsibilities, and
+responsibilities decide otherwise. The order among kinds is seiso's reading
+of those responsibilities. Rule-specific matching belongs to
 [DUP001](../rules/DUP001.md), [DUP002](../rules/DUP002.md),
 [DUP003](../rules/DUP003.md), [OWN001](../rules/OWN001.md), and OWN002.
 
@@ -63,12 +67,14 @@ names the decision instead of making it.
 
 ## Exceptions
 
-Exceptions name complete rule codes and give a reviewable reason. The syntax
-and scope are defined by [SUP001](../rules/SUP001.md); completion and
-unused-code semantics are defined by [SUP002](../rules/SUP002.md). Rule codes
-are the accepted codes; specification identifiers such as `POINTER-1` are
-not. A suppression cannot make an incomplete check complete: an incomplete
-check keeps its [exit code](../guides/checking.md#consume-results), and SUP002
+The specification defines the form and scope of an exception
+([`EXCEPTION-1`](../../spec/convention.md#exceptions)). Rule codes are the
+accepted codes; specification identifiers such as `POINTER-1` are not.
+[SUP001](../rules/SUP001.md) reports declarations that break the form and
+defines how seiso matches a declaration to diagnostics; completion and
+unused-code semantics are defined by [SUP002](../rules/SUP002.md). A
+suppression cannot make an incomplete check complete: an incomplete check
+keeps its [exit code](../guides/checking.md#consume-results), and SUP002
 leaves its exceptions in the `incomplete` state.
 
 ## Rule availability
@@ -104,7 +110,7 @@ rows a default check covers.
 | `KIND-7` no design argument in a procedure or contract | RAT002, RAT001, MIX001 | Partial: RAT002 matches design-choice headings; the others are heuristic |
 | `KIND-8` procedure before background and recovery | ORD001, ORD002 | Heuristic |
 | `FACT-1` one home per fact | DUP001, DUP002, DUP003 | Partial: definition blocks, restatement before a link, and near-duplicate paragraphs above thresholds; paraphrase is reviewed |
-| `FACT-2` identifiable owner | OWN002 | Partial: ties are reported; the ranking above is seiso's |
+| `FACT-2` identifiable owner | OWN002 | Partial: `canonical` overrides and ties are reported; the order among kinds above is seiso's |
 | `FACT-3` comparison scope | `[[domains]]`, `lang` | Complete, as configured |
 | `FACT-4` plans do not own shipped definitions | OWN001 | Partial: shared definition keys |
 | `FACT-5` dated records hold history | none | Reviewed; `adr` and `changelog` are outside the STL rules |

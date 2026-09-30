@@ -136,13 +136,22 @@ This sentence breaks `POINTER-1` in a how-to:
 The current release is 2.4.1.
 ```
 
-Either of these satisfies it:
+The repair that preserves its meaning points to where releases are recorded:
+
+```markdown
+Releases are listed in the [changelog](../CHANGELOG.md).
+```
+
+A requirement is a different statement, not a rewrite of the same one. This
+satisfies `POINTER-1`, but only when the minimum is established on its own,
+for example by the compatibility policy or the test matrix:
 
 ```markdown
 `example` requires 2.4 or later.
-
-Releases are listed in the [changelog](../CHANGELOG.md).
 ```
+
+Turning an observed release into a minimum to satisfy the convention invents
+a requirement; a checker cannot tell the two apart, and the authors must.
 
 `Tested with 2.4.1` is a boundary case: a compatibility statement, a
 historical fact, or a snapshot of the test matrix. A checker can observe the
@@ -235,8 +244,11 @@ restatement is a judgment.
 If `docs/reference/cache.md` also defines `cache.dir` and `cache.max-age`, two
 references own the same facts and neither outranks the other. The set has a
 defect under `FACT-2`. A checker reports the tie and names the decision
-(`CONFORMANCE-5`); the authors remove one definition, or declare
-`canonical: true` in the frontmatter of the page that owns the settings.
+(`CONFORMANCE-5`). The repair has two parts: the authors choose the owner,
+declaring `canonical: true` in its frontmatter if the kinds alone do not make
+it the owner, and then replace the definitions in the other page with a
+pointer to it. The declaration settles who owns the facts; the remaining copy
+still breaks `FACT-1` until it becomes a pointer.
 
 ### A procedure in a reference
 

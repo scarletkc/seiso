@@ -37,12 +37,13 @@ Git ignore policy. Unknown fields and unsupported selectors are errors.
 
 ## Kinds and domains
 
-Frontmatter supplies a document kind before path mappings. Kind names are
-lowercase and case-sensitive. An invalid
-declaration remains invalid instead of inheriting a fallback exemption.
-`generated` is available only through configuration. When multiple `[[kinds]]`
-entries match, the last wins. `[[domains]]` also uses the last matching entry;
-the workspace is the default comparison domain.
+Frontmatter and path mappings assign kinds as the
+[specification](../../spec/convention.md#document-kinds) defines: a
+declaration wins over a mapping, a broken declaration gets no mapped kind,
+and `generated` is assigned only here. Kind names are lowercase and
+case-sensitive. When multiple `[[kinds]]` entries match, the last wins.
+`[[domains]]` also uses the last matching entry; the workspace is the default
+comparison domain.
 
 ```toml
 include = ["**/*.md"]

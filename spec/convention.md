@@ -134,10 +134,10 @@ when it links to the target.
 `FACT-2` The authoritative home follows from responsibilities: definitions and
 accepted values belong to a `reference` or to generated output, decisions to
 an `adr`, dated changes to a `changelog`, and procedures to a `howto` or
-`runbook`. Where responsibilities do not decide, a document MAY declare
-`canonical: true` in its frontmatter to own every fact it states within its
-scope; the declaration applies to the whole document. Two candidate homes that
-neither responsibilities nor a declaration separate are a defect of the
+`runbook`. A document MAY declare `canonical: true` in its frontmatter to own
+every fact it states within its scope; the declaration applies to the whole
+document and takes precedence over responsibilities. Two candidate homes that
+neither a declaration nor responsibilities separate are a defect of the
 documentation set, and its authors resolve it.
 
 `FACT-3` Ownership and duplication are evaluated within a comparison scope. A
@@ -165,7 +165,8 @@ current state. It MAY state a requirement or a range, such as a minimum
 version; a historical fact, such as the release that introduced a feature; or
 an example identified as one. For the current value it points to the source
 that answers the question: a manifest, a release record, a command, a
-dashboard.
+dashboard. A requirement replaces a snapshot only when the requirement holds
+independently; an observed value does not establish one.
 
 `POINTER-2` A pointer MUST identify where the answer lives: a file, a symbol, a
 section, a command, or a document. A pointer to a repository root, to an
@@ -185,7 +186,9 @@ or a family, and the reason is one a reviewer can evaluate. On its own line
 before a block, the comment applies to that block; inside a paragraph, list
 item, or table cell, it applies to that unit; written as `allow-file` after
 the frontmatter and before the first content block, it applies to the whole
-document.
+document. This version defines no code for a documentation set that no
+checker evaluates. Such a set cannot except a requirement, so it conforms only
+by satisfying every MUST requirement outright.
 
 `EXCEPTION-2` An exception records a judgment. It does not make the excepted
 content correct, and it does not complete a check that could not run. An
@@ -199,10 +202,12 @@ removed, so that it cannot hide a later finding in the same scope.
 
 `CONFORMANCE-1` A documentation set conforms to a version of this
 specification when every document has a kind, every MUST requirement is
-satisfied or covered by an exception, and its authors have reviewed the
-requirements that need judgment. A claim of conformance MUST name the
-specification version. It MAY name the checker used and the requirements that
-checker covered; a checker's pass is evidence for those requirements only.
+satisfied or covered by an exception, and its authors have reviewed what no
+checker established: the requirements listed below under judgment, and the
+parts of partially established requirements that the checker in use does not
+cover. A claim of conformance MUST name the specification version. It MAY
+name the checker used and the requirements that checker covered; a checker's
+pass is evidence for those requirements only.
 
 Requirements differ in what a checker can establish from the documents alone:
 
@@ -247,7 +252,10 @@ contract, changed frontmatter or exception semantics, or a renumbered
 identifier. An added kind, a new SHOULD or MAY, a clarification, or
 explanatory text increments MINOR. Every change is recorded in the
 [changelog](CHANGELOG.md). A checker states the version it checks; a
-documentation set states the version it claims.
+documentation set states the version it claims. While the specification is a
+draft, its wording can change without a version change, so a claim names the
+draft label together with the revision of the specification it adopted, and
+points to that revision rather than to the development copy.
 
 ## Relation to other conventions
 

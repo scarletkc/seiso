@@ -5,9 +5,11 @@ kind: howto
 # Adopt the convention
 
 Apply the [Seiso Convention Specification](convention.md) to an existing
-repository, with or without a checker. Each step names the requirements it
-satisfies; the [worked examples](examples.md) show each one on a small
-documentation set.
+repository. Each step names the requirements it satisfies; the
+[worked examples](examples.md) show each one on a small documentation set. A
+checker is optional, with one consequence described under
+[Record exceptions](#record-exceptions): without one, the documentation set
+cannot except a requirement.
 
 ## Assign a kind to every document
 
@@ -31,22 +33,26 @@ mapping, and a broken declaration leaves the file without a kind (`KIND-1` to
 For each definition, accepted value, default, or decision that appears in more
 than one document, choose the home by responsibility: a reference for
 definitions, a decision record for decisions, a changelog for dated changes.
-Replace every other copy with a link. Where responsibilities do not decide,
-add `canonical: true` to the frontmatter of the owner (`FACT-1`, `FACT-2`,
-`FACT-4`).
+Replace every other copy with a link. Where responsibilities do not decide, or
+the owner must be a document they would not choose, add `canonical: true` to
+the owner's frontmatter; it takes precedence over responsibilities (`FACT-1`,
+`FACT-2`, `FACT-4`).
 
 ## Replace volatile values with pointers
 
 In each long-lived document, look for current versions, deployment states,
-commit identifiers, and counts. Rewrite each one as a requirement or a range,
-move it to a dated record, or replace it with a link to the manifest, release
-record, or command that answers the question. Make every pointer name a file,
-symbol, section, or document (`POINTER-1`, `POINTER-2`).
+commit identifiers, and counts. Replace each one with a link to the manifest,
+release record, or command that answers the question, or move it to a dated
+record as an observation with its date. State a requirement or a supported
+range only where that requirement is established on its own; a value that was
+observed does not become a minimum by being rewritten. Make every pointer name
+a file, symbol, section, or document (`POINTER-1`, `POINTER-2`).
 
 ## Record exceptions
 
-Where a requirement does not apply, write the exception in the document, with
-a complete code from the checker in use and a reason a reviewer can evaluate:
+Where a requirement does not apply and a checker is in use, write the
+exception in the document, with a complete code from that checker and a
+reason a reviewer can evaluate:
 
 ```markdown
 <!-- seiso: allow LNK001 -- The release build writes this page. -->
@@ -54,22 +60,35 @@ a complete code from the checker in use and a reason a reviewer can evaluate:
 
 Remove an exception once it covers nothing (`EXCEPTION-1` to `EXCEPTION-3`).
 
+Without a checker there is no code to name, and the specification defines no
+other form, so a documentation set that no checker evaluates cannot except a
+requirement: change the content, or adopt a checker before claiming
+conformance. Specification identifiers such as `KIND-7` are not codes; seiso
+reports them as invalid. Whether they should become codes is an open question
+in the [roadmap](../docs/design/roadmap.md#convention-specification).
+
 ## Instruct coding agents
 
 Add the following to `AGENTS.md`, `CLAUDE.md`, or the equivalent instruction
 file, so that the convention applies while a document is written rather than
-after. The snippet summarizes; the specification is authoritative.
+after. The snippet summarizes; the specification is authoritative. Replace
+`COMMIT` with the revision of `spec/convention.md` you adopted, so that the
+agents read the requirements you reviewed: a draft's wording can change
+without a version change, and the copy on `main` follows development.
 
 ```markdown
 ## Documentation convention
 
-Markdown in this repository follows the Seiso Convention, draft 0.1:
-https://github.com/scarletkc/seiso/blob/main/spec/convention.md
+Markdown in this repository follows the Seiso Convention, draft 0.1, at the
+revision this link pins:
+https://github.com/scarletkc/seiso/blob/COMMIT/spec/convention.md
+(development copy: https://github.com/scarletkc/seiso/blob/main/spec/convention.md)
 
-- Every document declares one `kind` in frontmatter or inherits one from the
+- Every document has one `kind`, declared in frontmatter or assigned by the
   configured path mapping: readme, howto, reference, runbook, agents, adr,
-  plan, or changelog. Hold only what that kind is for; a how-to gives steps,
-  a reference gives definitions, an ADR gives the reasons.
+  plan, or changelog; `generated` is assigned only by mapping. Hold only
+  what that kind is for; a how-to gives steps, a reference gives
+  definitions, an ADR gives the reasons.
 - Each fact has one home. Link to it instead of restating it.
 - Long-lived pages state requirements and point to sources. They do not
   record the current version, deployment state, commit id, or count.
@@ -99,7 +118,11 @@ at all; a passing check is evidence for those requirements only
 
 ## Claim conformance
 
-State the specification version and, when one is used, the checker, for
-example in the README: "Documentation follows the Seiso Convention, draft 0.1,
-checked with seiso." Review the requirements the specification lists under
-judgment before making the claim (`CONFORMANCE-1`).
+Before making the claim, review what no checker established: the requirements
+the specification lists under judgment, and the parts of partially covered
+requirements that the checker's rules do not reach, such as paraphrased
+restatements under `FACT-1` or rationale in prose under `KIND-7`. Then state
+the specification version and, when one is used, the checker, for example in
+the README: "Documentation follows the Seiso Convention, draft 0.1, checked
+with seiso." While the specification is a draft, link the claim to the
+revision you adopted, as the agent snippet does (`CONFORMANCE-1`).
