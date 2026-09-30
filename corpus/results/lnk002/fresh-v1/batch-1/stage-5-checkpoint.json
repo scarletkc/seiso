@@ -1,0 +1,30 @@
+{
+  "all_451_diagnoses_require_individual_dual_review": true,
+  "batch_lnk002_counts": {
+    "1": 451
+  },
+  "corpus_sha256": "8affea1f5c672343c851b0861192ba3b64315999288509ce849a78d08aa75f8a",
+  "count_only_pool_extension_review": true,
+  "cumulative_lnk002_count": 451,
+  "diagnostic_text_inspected_before_stop": false,
+  "evaluated_batches": [
+    1
+  ],
+  "extension_stopped": true,
+  "first_threshold_reaching_batch": 1,
+  "freeze_commit": "136585a72b7317df0a9893348350d04f70b8de91",
+  "implementation_unchanged_since_freeze": true,
+  "inventory_sha256": "c5c99a61cf12a807d502dd67284fe08ad3f4b7076ef32890e56e6d95e25401ae",
+  "kind_profile_sha256": "89adb5c9a6732d878b886a5c028521cf65950ad11743315a4dc7bd42d39e1078",
+  "labels_started": false,
+  "later_batches_pinned_or_fetched": false,
+  "precision_claim": null,
+  "raw_result_sha256": "143c270d70e714faf1285729f885b66fe937d5befee2f1a6477c96a0ead4e28e",
+  "report_sha256": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+  "reverse_byte_identical": true,
+  "run_json_sha256": "798a971b1acd5c1ec3aa9f8357f67d769ef36bf7d6746fe08e145a6311549271",
+  "schema_version": 1,
+  "site_profile_sha256": "5c1c81da352415b1f3c550b49cd9ead8d2d2fd15dbc446af17bb851f002471f4",
+  "stage": 5,
+  "threshold": 100
+}
