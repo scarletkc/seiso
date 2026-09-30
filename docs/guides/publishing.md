@@ -265,3 +265,23 @@ publication for that commit. Promotion builds new stable artifacts; it does
 not rename prerelease artifacts. The stable npm upload updates `latest`, and
 GitHub creates a stable release. npm channel tags continue to identify their
 last prereleases. Subsequent `patch` bumps advance the patch number normally.
+
+## Release a specification version
+
+The [specification](../../spec/convention.md) takes its own version number and
+publishes no package. Choose the number by its
+[Versioning](../../spec/convention.md#versioning) section, then:
+
+1. On a `release/spec-vX.Y.Z` branch, rename the `Unreleased` heading in
+   [`spec/CHANGELOG.md`](../../spec/CHANGELOG.md) to `X.Y.Z - YYYY-MM-DD` and
+   add an empty `Unreleased` heading above it. Title the pull request
+   `chore(release): prepare spec-vX.Y.Z`.
+2. After the squash merge, tag the merge commit on `main` and push the tag:
+
+   ```sh
+   git tag -a spec-vX.Y.Z -m "Seiso Convention Specification X.Y.Z" <commit>
+   git push origin spec-vX.Y.Z
+   ```
+
+Create no GitHub Release for the tag, so that the latest release stays a
+seiso build.

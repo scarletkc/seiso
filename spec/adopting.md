@@ -73,17 +73,15 @@ become codes is an open question in the
 Add the following to `AGENTS.md`, `CLAUDE.md`, or the equivalent instruction
 file, so that the convention applies while a document is written rather than
 after. The snippet summarizes; the specification is authoritative. Replace
-`COMMIT` with the revision of `spec/convention.md` you adopted, so that the
-agents read the requirements you reviewed: a draft's wording can change
-without a version change, and the copy on `main` follows development.
+`VERSION` with the version you adopted from the [changelog](CHANGELOG.md), so
+that the agents read the requirements you reviewed rather than the copy on
+`main`, which includes unreleased changes.
 
 ```markdown
 ## Documentation convention
 
-Markdown in this repository follows the Seiso Convention, draft 0.1, at the
-revision this link pins:
-https://github.com/scarletkc/seiso/blob/COMMIT/spec/convention.md
-(development copy: https://github.com/scarletkc/seiso/blob/main/spec/convention.md)
+Markdown in this repository follows the Seiso Convention VERSION:
+https://github.com/scarletkc/seiso/blob/spec-vVERSION/spec/convention.md
 
 - Every document has one `kind`, declared in frontmatter or assigned by the
   configured path mapping: readme, howto, reference, runbook, agents, adr,
@@ -126,6 +124,6 @@ the specification lists under judgment, and the parts of partially covered
 requirements that the checker's rules do not reach, such as paraphrased
 restatements under `FACT-1` or rationale in prose under `KIND-7`. Then state
 the specification version and, when one is used, the checker, for example in
-the README: "Documentation follows the Seiso Convention, draft 0.1, checked
-with seiso." While the specification is a draft, link the claim to the
-revision you adopted, as the agent snippet does (`CONFORMANCE-1`).
+the README: "Documentation follows the Seiso Convention VERSION, checked with
+seiso." Link the claim to that version's copy, as the agent snippet does
+(`CONFORMANCE-1`).

@@ -47,8 +47,8 @@ The convention is written up as a standalone
 with [worked examples](https://github.com/scarletkc/seiso/blob/main/spec/examples.md)
 and an [adoption guide](https://github.com/scarletkc/seiso/blob/main/spec/adopting.md),
 so a project can follow it without installing anything. The specification is
-a provisional draft, open for discussion in
-[#37](https://github.com/scarletkc/seiso/issues/37).
+provisional before 1.0.0 and versioned separately from seiso; its direction is
+open for discussion in [#37](https://github.com/scarletkc/seiso/issues/37).
 
 seiso is the reference implementation. Its rules check documents against the
 specification; stable rules run by default, and the rest are opt-in previews.

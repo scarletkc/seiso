@@ -4,15 +4,15 @@ kind: reference
 
 # Seiso Convention Specification
 
-Draft 0.1. This specification is provisional. It restates the convention that
-[seiso](../README.md) checks, so that a project can follow the convention
-without installing seiso or any other tool, and so that a checker other than
-seiso can claim to check it. Its wording, requirement identifiers, and scope
-can change before a stable version is published. The
-[roadmap](../docs/design/roadmap.md#convention-specification) records the open
-questions and the criteria for continuing, narrowing, or closing this
-exploration. Changes to this document are recorded in its
-[changelog](CHANGELOG.md).
+This specification restates the convention that [seiso](../README.md) checks,
+so that a project can follow the convention without installing seiso or any
+other tool, and so that a checker other than seiso can claim to check it. It is
+provisional: before 1.0.0, a release can change its wording, requirement
+identifiers, and scope, as [Versioning](#versioning) describes. The
+[changelog](CHANGELOG.md) lists the released versions and the changes not yet
+released. The [roadmap](../docs/design/roadmap.md#convention-specification)
+records the open questions and the criteria for continuing, narrowing, or
+closing this exploration.
 
 The convention applies to the Markdown documents of a software project: the
 README, guides, references, runbooks, agent instructions, decision records,
@@ -245,17 +245,23 @@ those checks cover.
 ## Versioning
 
 This specification is versioned independently of any checker, as
-MAJOR.MINOR. While MAJOR is 0, any version can change requirements. After
-that, a change that can make a conforming documentation set non-conforming
-increments MAJOR: a new or strengthened MUST, a removed kind, a changed kind
-contract, changed frontmatter or exception semantics, or a renumbered
-identifier. An added kind, a new SHOULD or MAY, a clarification, or
-explanatory text increments MINOR. Every change is recorded in the
-[changelog](CHANGELOG.md). A checker states the version it checks; a
-documentation set states the version it claims. While the specification is a
-draft, its wording can change without a version change, so a claim names the
-draft label together with the revision of the specification it adopted, and
-points to that revision rather than to the development copy.
+MAJOR.MINOR.PATCH. A released version does not change: every later change,
+however small, is released as a new version, and the
+[changelog](CHANGELOG.md) records each one.
+
+From 1.0.0, a change that can make a conforming documentation set
+non-conforming increments MAJOR: a new or strengthened MUST, a removed kind, a
+changed kind contract, changed frontmatter or exception semantics, or a
+renumbered identifier. Any other change to the requirements, such as an added
+kind or a new SHOULD or MAY, increments MINOR. A change that leaves every
+requirement as it was, such as a clarification, a corrected example, or
+explanatory text, increments PATCH. Before 1.0.0, every change to the
+requirements increments MINOR, including one that can make a conforming set
+non-conforming, and any other change increments PATCH.
+
+A checker states the version it checks, and a documentation set states the
+version it claims (`CONFORMANCE-1`, `CONFORMANCE-2`). A claim names a released
+version, never the unreleased text.
 
 ## Relation to other conventions
 

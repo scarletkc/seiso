@@ -72,29 +72,38 @@ measured result and decision as its acceptance record.
 
 ## Convention specification
 
-The [Seiso Convention Specification](../../spec/convention.md) is a
-provisional draft that states the convention independently of the CLI, as
-explored in [#37](https://github.com/scarletkc/seiso/issues/37). The draft
-gives each requirement a stable identifier; the
-[worked examples](../../spec/examples.md) read those requirements against a
-small documentation set; and the
+The [Seiso Convention Specification](../../spec/convention.md) states the
+convention independently of the CLI, as explored in
+[#37](https://github.com/scarletkc/seiso/issues/37). It gives each requirement
+a stable identifier; the [worked examples](../../spec/examples.md) read those
+requirements against a small documentation set; and the
 [requirement coverage](../reference/convention.md#requirement-coverage) table
 maps each one to complete checks, partial checks, and judgments. The
 [adoption guide](../../spec/adopting.md) carries the instruction snippet for
 coding agents.
 
-The proposed criterion for publishing the draft as 0.1 is evidence that an
+Versions before 1.0.0 are released as changes are ready, and each can change
+requirements. The proposed criterion for 1.0.0 is evidence that an
 independent reader, or a small separate tool, interprets the worked examples
-from the draft alone, without inspecting the Rust implementation, and reaches
-seiso's results.
+from the specification alone, without inspecting the Rust implementation, and
+reaches seiso's results.
 Divergences, and places where the text depends on undocumented implementation
-behavior, are recorded against the draft before its wording changes. The
-exploration closes without a separate specification if the draft adds
-duplication or maintenance cost without improving clarity, independent
+behavior, are recorded against the specification before its wording changes.
+The exploration closes without a separate specification if the specification
+adds duplication or maintenance cost without improving clarity, independent
 adoption, or interoperability; improving the repository's own reference pages
 would then be the outcome.
 
-Open questions for the draft:
+Planned work:
+
+- A GitHub Pages site built with VitePress from `spec/` at each `spec-v` tag,
+  with one path per version. Links that leave `spec/` point to the same tag,
+  and each requirement identifier gets an anchor.
+- Each seiso release states the specification version it checks in
+  `seiso --version`, in machine-readable output, and in its release notes. The
+  two version numbers are not aligned.
+
+Open questions:
 
 - Whether specification identifiers such as `POINTER-1` should be accepted as
   exception codes alongside rule codes, so that an exception keeps its meaning
@@ -103,13 +112,10 @@ Open questions for the draft:
   should become normative or remain checker policy.
 - Whether the specification needs an extension mechanism for custom kinds,
   and whether tutorials need a kind of their own.
-- Where the specification is published: a GitHub Pages site built from the
-  `spec/` sources, the build tool that keeps that site small, and whether the
-  agent-instruction snippet ships as a separate copyable file.
+- Whether the agent-instruction snippet also ships as a separate copyable
+  file.
 - Whether the specification needs Chinese and Japanese versions from the
   start.
-- How specification versions relate to seiso releases, and how a release
-  records the version it checks.
 
 ## Open design questions
 

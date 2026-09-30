@@ -14,11 +14,11 @@ evidence behind each diagnostic.
 
 The [Seiso Convention Specification](../spec/convention.md) states the
 convention independently of seiso, so that a project can follow it without
-the tool and another checker can claim to check it. It is a provisional draft.
-[Worked examples](../spec/examples.md) read its requirements against a small
-documentation set, and the [adoption guide](../spec/adopting.md) applies them
-to an existing repository. Its [changelog](../spec/CHANGELOG.md) records
-changes to the specification separately from seiso releases.
+the tool and another checker can claim to check it. It is provisional before
+1.0.0. [Worked examples](../spec/examples.md) read its requirements against a
+small documentation set, and the [adoption guide](../spec/adopting.md) applies
+them to an existing repository. Its [changelog](../spec/CHANGELOG.md) lists
+its versions, which are separate from seiso releases.
 
 ## Guides
 

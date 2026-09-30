@@ -16,8 +16,7 @@ authorship, check spelling or formatting, or rewrite meaning. The convention
 is independent of any writing skill or prompt; its original motivation is
 recorded in the [design history](../design/history.md).
 
-The specification in this repository is the version that a seiso built from
-the same revision checks.
+seiso checks the specification text of the revision it was built from.
 
 ## Kind assignment
 
