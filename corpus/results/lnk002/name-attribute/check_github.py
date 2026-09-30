@@ -29,7 +29,7 @@ def download(url, data=None):
 
 source = download(RAW)
 heading = re.search(rb'<h3 name="config">.*?</h3>', source, re.S).group()
-(OUT / 'config-heading.md').write_bytes(heading)
+(OUT / 'config-heading.txt').write_bytes(heading)
 request_bytes = pathlib.Path(__file__).with_name('markdown-request.json').read_bytes()
 request = json.loads(request_bytes)
 for block in re.findall(rb'<h3 name="[^"]+">.*?</h3>', source, re.S):

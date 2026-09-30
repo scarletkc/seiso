@@ -13,7 +13,7 @@ holdout evidence or promote LNK002.
 
 The source is `BurntSushi/ripgrep` at
 `3fce3b5bb0236da2df6d99672afb8a719642eca7`. The
-[exact configuration heading](../../corpus/results/lnk002/name-attribute/config-heading.md)
+[exact configuration heading](../../corpus/results/lnk002/name-attribute/config-heading.txt)
 declares `name="config"` on an `h3`. The
 [Markdown API request](../../corpus/results/lnk002/name-attribute/markdown-request.json)
 contains all 27 original heading blocks. Its successful
