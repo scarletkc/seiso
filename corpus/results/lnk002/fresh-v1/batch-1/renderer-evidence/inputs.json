@@ -1,4 +1,15 @@
 {
+  "auxiliary_provenance": {
+    "vitepress": {
+      "commit": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "commit_api_sha256": "30c3b7702955606483af969e957e124b4e3b0126c46794f282c183ba7ee4d5d1",
+      "note": "The /git/trees/COMMIT endpoint echoes the supplied commit identity in sha; git_tree here is the actual tree object from /git/commits/COMMIT, verified with the tree-object endpoint.",
+      "source_blobs_bound": true,
+      "tree": "7d155d3ada46803157cc0857e399be0a1815e2ce",
+      "tree_api_archive_sha256": "b230b0e77b53eab652477dd86f8e96e84232db108e80722b2499e92bbf51d1a9",
+      "truncated": false
+    }
+  },
   "executed": false,
   "files": [
     {
@@ -175,7 +186,7 @@
       "bytes": 18427,
       "commit": "ecc7ae15f22251359d432af7dd019620776a9933",
       "git_blob": "3791465fe4fa041434b4be6720809beb8cd1b2b9",
-      "git_tree": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "git_tree": "7d155d3ada46803157cc0857e399be0a1815e2ce",
       "path": "src/node/markdown/markdown.ts",
       "ref": "v2.0.0-alpha.19",
       "repository": "vuejs/vitepress",
@@ -187,7 +198,7 @@
       "bytes": 9839,
       "commit": "ecc7ae15f22251359d432af7dd019620776a9933",
       "git_blob": "e7fda629f946c67c525ba8c857daacd70b9f1e6f",
-      "git_tree": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "git_tree": "7d155d3ada46803157cc0857e399be0a1815e2ce",
       "path": "src/shared/shared.ts",
       "ref": "v2.0.0-alpha.19",
       "repository": "vuejs/vitepress",
@@ -199,7 +210,7 @@
       "bytes": 7102,
       "commit": "ecc7ae15f22251359d432af7dd019620776a9933",
       "git_blob": "54693436948adb8d52134cf472f76e015e8dd01b",
-      "git_tree": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "git_tree": "7d155d3ada46803157cc0857e399be0a1815e2ce",
       "path": "package.json",
       "repository": "vuejs/vitepress",
       "retained_path": "vitepress/package.json",
@@ -280,6 +291,7 @@
       "bytes": 7689,
       "commit": "ecc7ae15f22251359d432af7dd019620776a9933",
       "git_blob": "36b62cfd4f4def7505d3b2340faf18fe11a2440e",
+      "git_tree": "7d155d3ada46803157cc0857e399be0a1815e2ce",
       "path": "src/node/markdown/plugins/containers.ts",
       "repository": "vuejs/vitepress",
       "retained_path": "vitepress/src/node/markdown/plugins/containers.ts",
