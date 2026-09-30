@@ -42,7 +42,7 @@ class ExplicitAnchors(HTMLParser):
         if self.raw:
             return
         for key, value in attributes:
-            if value is not None and (key == "id" or (tag == "a" and key == "name")):
+            if value is not None and key in {"id", "name"}:
                 self.anchors.add(value)
         if tag in {"script", "style", "textarea", "title", "xmp", "iframe", "noembed", "noframes", "plaintext"}:
             self.raw = tag
