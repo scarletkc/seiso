@@ -281,113 +281,42 @@ remain agent judgments unless their label bundles record human review.
 
 `scripts.evaluation.fresh_links` runs an independent LNK002 holdout. Freeze
 the implementation and commit the selection specification before pinning a
-source or reading any cohort Markdown or diagnostic. No upstream code or
-configuration runs.
+source or reading its content. No upstream code runs.
 
-The specification has `schema_version: 1`, a full `freeze_commit`, and a
-`sources` list. Each source records a unique `id`, a `repository`, a positive
-integer `batch`, and `include` patterns. Pinning rejects repositories,
-compared case-insensitively, that appear in the main corpus, in any retained
-`corpus/results/**/corpus.lock.json` or `selection.json`, or in an earlier
-batch. A source that fails a mechanical check is recorded as skipped, not
-replaced. Pinning saves the recursive tree from the resolution that selected
-the documents. Fetching stores original documents and licenses in the shared
-`corpus/data/blobs` cache, verifies their Git blob hashes and SHA-256, and
-writes inventory archives beside the batch lock:
+1. Pin a batch and fetch its documents. Pinning rejects any repository that an
+   earlier corpus or batch used.
 
-```sh
-python -m scripts.evaluation.fresh_links pin --spec corpus/results/lnk002/fresh-v1/sources.json --batch 1 --output corpus/results/lnk002/fresh-v1/batch-1/selection.json
-python -m scripts.evaluation.fresh_links fetch --input corpus/results/lnk002/fresh-v1/batch-1/selection.json --output corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json
-```
+   ```sh
+   python -m scripts.evaluation.fresh_links pin --spec corpus/results/lnk002/fresh-v1/sources.json --batch 1 --output corpus/results/lnk002/fresh-v1/batch-1/selection.json
+   python -m scripts.evaluation.fresh_links fetch --input corpus/results/lnk002/fresh-v1/batch-1/selection.json --output corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json
+   ```
 
-Review sites before evaluating, reading only pinned generator configuration
-or navigation files. `sites.json` binds to the batch lock with
-`schema_version: 1` and `corpus_sha256`, and its `profiles` give every source
-a `sites` list and a `reason`. Each site records `path`, `root`, and optional
-`public` and `base`, plus the review fields `generator`, `evidence`,
-`evidence_path`, and `evidence_git_blob`; the evidence must be a configuration
-or navigation blob in the pinned tree. `kinds.json` binds the same way and
-gives every document, keyed by `source-id/path.md`, a `kind`, its
-`input_sha256`, and a `reason`. LNK002 applies to every kind, so link cohorts
-use `unknown`, which adds no mapping.
+2. Write `sites.json` from each source's pinned generator configuration, and
+   `kinds.json` with every document `unknown`. `validate_sites` and
+   `kind_mappings` in `fresh_links.py` define their fields.
+3. Evaluate the batch. Add the next batch only while the total LNK002 count is
+   below 100.
 
-```sh
-python -m scripts.evaluation.fresh_links evaluate --input corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json --profile corpus/results/lnk002/fresh-v1/batch-1/kinds.json --sites corpus/results/lnk002/fresh-v1/batch-1/sites.json --output corpus/results/lnk002/fresh-v1/batch-1/run
-```
+   ```sh
+   python -m scripts.evaluation.fresh_links evaluate --input corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json --profile corpus/results/lnk002/fresh-v1/batch-1/kinds.json --sites corpus/results/lnk002/fresh-v1/batch-1/sites.json --output corpus/results/lnk002/fresh-v1/batch-1/run
+   ```
 
-Each source is its own workspace with preview enabled and LNK001 and LNK002
-selected. The report keeps links, related-input identities, and
-incomplete-rule states, binds every input and implementation hash, and must
-be byte-identical with sources, documents, and tree entries reversed.
-Commands refuse to overwrite evidence.
+4. Label every LNK002 diagnosis on the page its readers see: the site's output
+   when a site entry covers the target, and GitHub otherwise. `tp` means nothing
+   on that page matches the fragment, `fp` means something does, and
+   `uncertain` means the pinned sources cannot tell, with the missing evidence
+   named. Two agents label independently; `validate_dual_review` lists the
+   required fields. Cite third-party files by repository, commit, and path
+   instead of copying them. For GitHub-only first evidence, run
+   `corpus/evaluation/review_m2_links.py --candidate` with `--corpus-lock` and
+   `--inventory` on the `files` list from the report.
+5. Bind the labels to the report and summarize:
 
-Only the LNK002 count in `run/run.json` decides whether to add a batch.
-Continue while the cumulative count is below 100 and stop at the first batch
-that reaches it; the summary rejects any later batch. If every batch is used
-first, the sample is insufficient and the rule stays in preview. From the
-freeze until labeling ends, nothing under `src/`, `docs/rules/`, or
-`examples/evaluate_m2.rs` changes.
+   ```sh
+   python corpus/evaluation/review_m2_links.py --bind-report corpus/results/lnk002/fresh-v1/batch-1/run/diagnostics.json.gz --decisions corpus/results/lnk002/fresh-v1/batch-1/decisions.json --output corpus/results/lnk002/fresh-v1/batch-1/labels.json
+   python -m scripts.evaluation.fresh_links summarize --manifest corpus/results/lnk002/fresh-v1/manifest.json --output corpus/results/lnk002/fresh-v1/summary.json
+   ```
 
-The link oracle gives initial GitHub-only evidence. It reads an uncompressed
-list of file results, so extract that from the saved report first:
-
-```sh
-python - <<'PY'
-import gzip
-import json
-from pathlib import Path
-
-batch = Path("corpus/results/lnk002/fresh-v1/batch-1")
-report = json.loads(gzip.decompress((batch / "run/diagnostics.json.gz").read_bytes()))
-with (batch / "candidate.json").open("xb") as stream:
-    stream.write((json.dumps(report["files"], ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode())
-PY
-python corpus/evaluation/review_m2_links.py --candidate corpus/results/lnk002/fresh-v1/batch-1/candidate.json --corpus-lock corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json --inventory corpus/results/lnk002/fresh-v1/batch-1/inventory/inventory.lock.json --slugger target/oracle/node_modules/github-slugger/index.js --output corpus/results/lnk002/fresh-v1/batch-1/oracle.json
-```
-
-Use `markdown-it-py==4.0.0` and `github-slugger@2.0.0`, installing the latter
-with lifecycle scripts disabled. Without `--corpus-lock` and `--inventory`,
-the oracle reads the main corpus.
-
-Label each diagnosis on the page its readers open: the site generator's output
-when a reviewed site entry covers the target, and GitHub's repository view
-otherwise. `tp` means no element on that page matches the fragment. `fp` means
-the renderer's heading slugs or a declared id match it. `uncertain` means the
-pinned sources cannot establish the result, as with content generated at build
-time or rendered by a client component; name the missing evidence. Cite
-third-party files by repository, commit, path, and blob SHA, or a package by
-version and registry integrity hash, instead of copying them into this
-repository.
-
-Two agents label every diagnosis independently, and the reviewing agent does
-not see the other labels first. Each label keeps the diagnostic identity,
-`diagnostic_sha256`, and `related_inputs`, and adds a label, `reason`,
-`renderer`, `evidence`, and `agent_context_reviewed: true`. The resolved
-bundle keeps both reviews as `author_review` and `independent_review`, each
-with a distinct `reviewer`, and a `disagreement_reason` where they differ. It
-also records `schema_version: 1`, `scope_codes: ["LNK002"]`, `corpus_sha256`,
-`inventory_sha256`, `reviewer_kind`, and `human_reviewers`, which is 0 unless
-a person labels. Bind it to the report, then summarize:
-
-```sh
-python corpus/evaluation/review_m2_links.py --bind-report corpus/results/lnk002/fresh-v1/batch-1/run/diagnostics.json.gz --decisions corpus/results/lnk002/fresh-v1/batch-1/decisions.json --output corpus/results/lnk002/fresh-v1/batch-1/labels.json
-python -m scripts.evaluation.fresh_links summarize --manifest corpus/results/lnk002/fresh-v1/manifest.json --output corpus/results/lnk002/fresh-v1/summary.json
-```
-
-The manifest lists consecutive `batches` from 1, each with `batch`,
-`corpus_lock`, `report`, and `labels` paths relative to the manifest, and a
-`source_diversity_review` with `reviewed` and a `reason`. When one source
-supplies more than half the diagnoses, the gate also needs the owner's
-`owner_accepted`. The summary rejects missing, duplicate, or unbound labels,
-reports TP, FP, uncertain, samples, both precision measures, and agreement
-overall and per batch, source, and language, and states whether the gate in
-the [promotion policy](../../docs/evaluation/policy.md#stable-promotion)
-passes. It never promotes a rule.
-
-Record the results and the cause of every false positive and uncertain label
-under `docs/evaluation/`. If the gate passes, promote in a separate commit and
-rerun every batch with a receipt showing unchanged diagnostics and file
-results. If it fails, the rule stays in preview, and a fix informed by the
-findings needs another fresh cohort. Before the record merges, rebase on
-`main` and rerun every labeled batch. The raw results must be byte-identical;
-report any difference instead of relabeling.
+Record the results under `docs/evaluation/`. A failed gate keeps the rule in
+preview, and a fix needs another fresh cohort. Before a record merges, rebase
+on `main` and rerun every batch; the raw results must be byte-identical.
