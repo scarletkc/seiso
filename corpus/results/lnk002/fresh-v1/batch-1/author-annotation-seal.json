@@ -1,0 +1,12 @@
+{
+  "author_labels_path_private": true,
+  "diagnoses": 451,
+  "human_reviewers": 0,
+  "independent_annotation_started": false,
+  "labels_bytes": 1258465,
+  "labels_sha256": "4aa71a2ca33d84281d5212797f5a864a17668128254a7ae7930d65b85aa1879c",
+  "report_sha256": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+  "reviewer": "/root",
+  "schema_version": 1,
+  "sealed_at": "2026-09-30T10:36:18.058152+00:00"
+}

@@ -1,0 +1,322 @@
+{
+  "executed": false,
+  "files": [
+    {
+      "bytes": 210,
+      "commit": "524eb248e55a7e2c65da6efaf9be1aa16f519045",
+      "git_blob": "102922481e31a17e4bf0465a4ea3f032ae26cfb9",
+      "path": "tools/doc/package.json",
+      "repository": "nodejs/node",
+      "retained_path": "node/tools/doc/package.json",
+      "sha256": "8bd14f7205175ac114596fc1b58ad1cf4127a8a9b34d80379135af81b83407b3",
+      "source": "node"
+    },
+    {
+      "bytes": 1423,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "d04950148556f0598ab12f4cfd0e2b57a50a642d",
+      "path": "package.json",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "vscode-docs/package.json",
+      "sha256": "8b7063bb515d1724ee79cc8d440f2bbd6111b89867d1ec542a1aea2caf83c477",
+      "source": "vscode-docs"
+    },
+    {
+      "bytes": 3761,
+      "commit": "1c73dca3ff4909e4cddd0d3b6e272298e902dec7",
+      "git_blob": "17f4584e9d48b3580afff850c72e7cd1ff0d707f",
+      "path": "pyproject.toml",
+      "repository": "squidfunk/mkdocs-material",
+      "retained_path": "mkdocs-material/pyproject.toml",
+      "sha256": "7cdd1de76f2945c09f03657fe97a62bbf0400bfc548eedb8020006c2843553a2",
+      "source": "mkdocs-material"
+    },
+    {
+      "bytes": 1530,
+      "commit": "62a7fe6791fcbe796fcbf58a17e0ee88663b9555",
+      "git_blob": "85d0f6100c3aad01701cf9174ae07abb341453b5",
+      "path": "docs/package.json",
+      "repository": "vitest-dev/vitest",
+      "retained_path": "vitest/docs/package.json",
+      "sha256": "5cac90f7e6050707efd3e419eddf5a95bf39f63bcfdcdec254d7a9c2995e647a",
+      "source": "vitest"
+    },
+    {
+      "bytes": 2502,
+      "commit": "d166567901e09940c1de4ad0e95d572eeab5c927",
+      "git_blob": "d2cbc56d749e14e1e952e0c0f1e2ce7422f615a7",
+      "path": "docs/package.json",
+      "repository": "eslint/eslint",
+      "retained_path": "eslint/docs/package.json",
+      "sha256": "359367f6d147c11ce25740cf9a2401e781c36d3451c41ae88ef82d228395e05d",
+      "source": "eslint"
+    },
+    {
+      "bytes": 8765,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "541e7d6a1cc586b48e7e9ce8b8393e22b021c8ce",
+      "path": "build/data-variables.js",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "vscode-docs/build/data-variables.js",
+      "sha256": "d7c6bc3557020d1abec747a5705a9765bb28294c5888991fdeed6bf8aa530ae9",
+      "source": "vscode-docs"
+    },
+    {
+      "bytes": 2637,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "499f9e282e2929bd46d1f3e9cd540b6d932aa46e",
+      "path": "build/data-variables-substitution.js",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "vscode-docs/build/data-variables-substitution.js",
+      "sha256": "64e7c7eae3851b4cd755471a2dfbbf5c97e2169f19eafcd36db7e4bff06c30a5",
+      "source": "vscode-docs"
+    },
+    {
+      "bytes": 2810,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "7ca0ab11e9908449f02412210e1c23782a203069",
+      "path": "build/feature-lifecycle.json",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "vscode-docs/build/feature-lifecycle.json",
+      "sha256": "3b6511adeea702df9b098efdf4ed92998310673f528a9bc9e7a3923081dd8996",
+      "source": "vscode-docs"
+    },
+    {
+      "bytes": 2748,
+      "commit": "62a7fe6791fcbe796fcbf58a17e0ee88663b9555",
+      "git_blob": "0bb9abea3f67a2cab0ec3327e1514293fdff1653",
+      "path": "docs/.vitepress/scripts/cli-generator.ts",
+      "repository": "vitest-dev/vitest",
+      "retained_path": "vitest/docs/.vitepress/scripts/cli-generator.ts",
+      "sha256": "993210c94ea962d314ea5cf46d1320b649cb5fa21539467b39f52ec06b40ea03",
+      "source": "vitest"
+    },
+    {
+      "bytes": 2960,
+      "commit": "62a7fe6791fcbe796fcbf58a17e0ee88663b9555",
+      "git_blob": "84661c2337b1ff5efdf4dcc13481c53a9f973a6d",
+      "path": "docs/.vitepress/theme/index.ts",
+      "repository": "vitest-dev/vitest",
+      "retained_path": "vitest/docs/.vitepress/theme/index.ts",
+      "sha256": "dc0b91852c003bfbee450bea0e0743e0d679cc82f97f7cb2ef427622a3bb1376",
+      "source": "vitest"
+    },
+    {
+      "bytes": 7736,
+      "commit": "d166567901e09940c1de4ad0e95d572eeab5c927",
+      "git_blob": "aa186c002cc17b6349acbd21b1a67dde672a23b9",
+      "path": "docs/src/_includes/layouts/doc.html",
+      "repository": "eslint/eslint",
+      "retained_path": "eslint/docs/src/_includes/layouts/doc.html",
+      "sha256": "fdf4f09b2a466edc81248ed2810bfa4f337f48b15c45bd6363f0ba847623a741",
+      "source": "eslint"
+    },
+    {
+      "bytes": 7324,
+      "commit": "d166567901e09940c1de4ad0e95d572eeab5c927",
+      "git_blob": "0649e4e06679f3be604c44b36ae5554a3d618291",
+      "path": "docs/src/_includes/layouts/base.html",
+      "repository": "eslint/eslint",
+      "retained_path": "eslint/docs/src/_includes/layouts/base.html",
+      "sha256": "4ad966d507d80aace3bcdd1f50fc9b08414753e83ccddb9efb4926fab1de27bc",
+      "source": "eslint"
+    },
+    {
+      "bytes": 11290,
+      "commit": "1c73dca3ff4909e4cddd0d3b6e272298e902dec7",
+      "git_blob": "d3ccd3ff9ae71c25d2a8bb15aaf7e03fc1097b0b",
+      "path": "material/overrides/hooks/shortcodes.py",
+      "repository": "squidfunk/mkdocs-material",
+      "retained_path": "mkdocs-material/material/overrides/hooks/shortcodes.py",
+      "sha256": "8f9487d9a089ad8b380c8ec4dc565ea598fe2092baa1f85d07c15e8c51280256",
+      "source": "mkdocs-material"
+    },
+    {
+      "bytes": 1367,
+      "commit": "1c73dca3ff4909e4cddd0d3b6e272298e902dec7",
+      "git_blob": "5cad0113d7c9146c087586aa0f325278242d96a3",
+      "path": "requirements.txt",
+      "repository": "squidfunk/mkdocs-material",
+      "retained_path": "mkdocs-material/requirements.txt",
+      "sha256": "9275b34acea3583cf67ae21236745f471e623a27a0285d320219d3ed685340d3",
+      "source": "mkdocs-material"
+    },
+    {
+      "bytes": 695,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "b0fe4045bcb786bbcb393ef8b03022dd8992259a",
+      "path": "data/variables/product.yml",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "vscode-docs/data/variables/product.yml",
+      "sha256": "786f4bdd2d80f5b0f320c9223c53301347a9aa41ebd3f610b9b858078e1d3306",
+      "source": "vscode-docs"
+    },
+    {
+      "bytes": 1828,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "fd2add706acdb639f1f285f764a6783ac2b73cab",
+      "path": "data/variables/copilot.yml",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "vscode-docs/data/variables/copilot.yml",
+      "sha256": "1827c7bd4ce6ba0a43cd06769cdb4d26635aac73cf0bcb940445927c8a850c38",
+      "source": "vscode-docs"
+    },
+    {
+      "bytes": 37748,
+      "commit": "62a7fe6791fcbe796fcbf58a17e0ee88663b9555",
+      "git_blob": "cdd996d33a87af7679bb5d8219fa45df4ed280b6",
+      "path": "packages/vitest/src/node/cli/cli-config.ts",
+      "repository": "vitest-dev/vitest",
+      "retained_path": "vitest/packages/vitest/src/node/cli/cli-config.ts",
+      "sha256": "abbd5c63fcccc6382b6cbe7156bda0b5aaa0318d33372644b29801b9623117e4",
+      "source": "vitest"
+    },
+    {
+      "bytes": 18427,
+      "commit": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "git_blob": "3791465fe4fa041434b4be6720809beb8cd1b2b9",
+      "git_tree": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "path": "src/node/markdown/markdown.ts",
+      "ref": "v2.0.0-alpha.19",
+      "repository": "vuejs/vitepress",
+      "retained_path": "vitepress/src/node/markdown/markdown.ts",
+      "sha256": "4549499761e87d4a50b9581d9a165f46d5fc43cd60069b8f4fb94219ac6d4611",
+      "source": "vitepress"
+    },
+    {
+      "bytes": 9839,
+      "commit": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "git_blob": "e7fda629f946c67c525ba8c857daacd70b9f1e6f",
+      "git_tree": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "path": "src/shared/shared.ts",
+      "ref": "v2.0.0-alpha.19",
+      "repository": "vuejs/vitepress",
+      "retained_path": "vitepress/src/shared/shared.ts",
+      "sha256": "7c8aaa786f206e6049e4a37c6c2d86dceab4da9073ef580f33c7b585bccc1ea2",
+      "source": "vitepress"
+    },
+    {
+      "bytes": 7102,
+      "commit": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "git_blob": "54693436948adb8d52134cf472f76e015e8dd01b",
+      "git_tree": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "path": "package.json",
+      "repository": "vuejs/vitepress",
+      "retained_path": "vitepress/package.json",
+      "sha256": "3f5e6a179a0478a6bc146f0e1c8e9d8f84a98d1bb9965ade817057b31df6af32",
+      "source": "vitepress"
+    },
+    {
+      "bytes": 667683,
+      "commit": "62a7fe6791fcbe796fcbf58a17e0ee88663b9555",
+      "git_blob": "6d54b72cd7020619da7536d671a027d53c7f96aa",
+      "path": "pnpm-lock.yaml",
+      "repository": "vitest-dev/vitest",
+      "retained_path": "vitest/pnpm-lock.yaml",
+      "sha256": "d3d3e7203ff8eb6e4123100e3fd38e4dfd32f17f7f5b090da8671fe57e305409",
+      "source": "vitest"
+    },
+    {
+      "bytes": 13934,
+      "integrity": "sha512-cqWMrijPywyXBkBStP+vA50f5iCHpvkBBZ4rTnqclPJvdoXKd4oi8K8kOQZXsrL16eITYBJ7aWq4xnnR3uvGDQ==",
+      "package": "@node-core/doc-kit",
+      "retained_path": "npm/node-core-doc-kit-2.0.3.tgz",
+      "sha256": "56445770dbd9794c928d9ee4b0b668542dd67bbfe53d5c80f59719c5540bb458",
+      "source": "node-renderer-dependency",
+      "url": "https://registry.npmjs.org/@node-core/doc-kit/-/doc-kit-2.0.3.tgz",
+      "version": "2.0.3"
+    },
+    {
+      "bytes": 25302,
+      "integrity": "sha512-xkNw89uWajGpsBOZ1t1UHD6fqb1rEmrmRb4QPcjzcnWBQ4pLgJrV5VXJ1bW7aQQEOFQAp5Jux5yi3kHUvGhhlw==",
+      "package": "@node-core/doc-kit-legacy",
+      "retained_path": "npm/node-core-doc-kit-legacy-1.0.3.tgz",
+      "sha256": "a29b1226b79038f25e6198ccb986e6a997b61100284d2f040dbf2b24541b337f",
+      "source": "node-renderer-dependency",
+      "url": "https://registry.npmjs.org/@node-core/doc-kit-legacy/-/doc-kit-legacy-1.0.3.tgz",
+      "version": "1.0.3"
+    },
+    {
+      "bytes": 86010,
+      "integrity": "sha512-IO6mBPL6hglqfR/b+0Ir4/ZoZzKePJPPd4WRc9eK5rEDCz3bHQU31qFtk8Yf6hHJldWNcTQWllWXGBPFMIHRzg==",
+      "package": "@doc-kit/core",
+      "retained_path": "npm/doc-kit-core-1.2.0.tgz",
+      "sha256": "d78fb1a1ac3e2a9e8d1066325a71763f54a785183b695968260d2bc5390a1b1f",
+      "source": "node-renderer-dependency",
+      "url": "https://registry.npmjs.org/@doc-kit/core/-/core-1.2.0.tgz",
+      "version": "1.2.0"
+    },
+    {
+      "bytes": 1338671,
+      "integrity": "sha512-WnBsb0Bwr43kXKyiis+lld/7ri3hnMbthS8N3hpFtjjwsdLO4IRmiAE08D7aud4q6oMDf9uwRowxzNqRFe/amw==",
+      "package": "vitepress",
+      "retained_path": "npm/vitepress-2.0.0-alpha.19.tgz",
+      "sha256": "67a775115ab382ec7a7c4fc95cbc680ad1fb20c6dfa7f6850488ac3ec53aecb3",
+      "source": "vitest-renderer-dependency",
+      "url": "https://registry.npmjs.org/vitepress/-/vitepress-2.0.0-alpha.19.tgz",
+      "version": "2.0.0-alpha.19"
+    },
+    {
+      "bytes": 12774,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "be438858442a7d391c8c12cbacc57db87640596a",
+      "path": "index.html",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "vscode-docs/index.html",
+      "sha256": "e59e7244e2fbfc73ea5d32baa1cecc5fb3e56783c585e518599d1d91afbcb1aa",
+      "source": "vscode-docs"
+    },
+    {
+      "bytes": 68392,
+      "integrity": "sha512-NcvwOaWiDS2fGgEQvl0G1MlWMF3bs7blVxKakYsPzI4vUGLlZCvmEeLNMYsguGK57yK/nrZGElWPzzHiQrtuOQ==",
+      "package": "@doc-kit/generator-react",
+      "retained_path": "npm/doc-kit-generator-react-0.3.1.tgz",
+      "sha256": "ed90a3a1cada5b1e42c3551a7d90d96e2a304a8c7b109bfb1e070b97ac63d738",
+      "source": "node-renderer-dependency",
+      "url": "https://registry.npmjs.org/@doc-kit/generator-react/-/generator-react-0.3.1.tgz",
+      "version": "0.3.1"
+    },
+    {
+      "bytes": 7689,
+      "commit": "ecc7ae15f22251359d432af7dd019620776a9933",
+      "git_blob": "36b62cfd4f4def7505d3b2340faf18fe11a2440e",
+      "path": "src/node/markdown/plugins/containers.ts",
+      "repository": "vuejs/vitepress",
+      "retained_path": "vitepress/src/node/markdown/plugins/containers.ts",
+      "sha256": "a94bcfccec3768ca02f65442c8894ac9d588f48d2d974c7df9e33c300a78c9e0",
+      "source": "vitepress"
+    },
+    {
+      "bytes": 9389,
+      "commit": "1c73dca3ff4909e4cddd0d3b6e272298e902dec7",
+      "git_blob": "f5e7fc4bff990eac9404a838e8b80df807b13122",
+      "path": "src/templates/assets/javascripts/components/content/tabs/index.ts",
+      "repository": "squidfunk/mkdocs-material",
+      "retained_path": "mkdocs-material/src/templates/assets/javascripts/components/content/tabs/index.ts",
+      "sha256": "6b532889240a15481e39e27b9f6f5d6074ad4bbcac03f1d8f9f65b5321f96489",
+      "source": "mkdocs-material"
+    },
+    {
+      "bytes": 7721715,
+      "integrity": "sha512-pzACA3+D564tulGW5XSWSaJ8YwghPJCKYJdZtGuMDkqji6xH/TDhvlHr35b1s9fCLeN/ksGTjBaWO9S5uwTvtA==",
+      "package": "@voidzero-dev/vitepress-theme",
+      "retained_path": "npm/voidzero-vitepress-theme-5.0.6.tgz",
+      "sha256": "d89157abec8c707b3001586333230b60144a8813d549ff3ae448b277a0498aae",
+      "source": "vitest-renderer-dependency",
+      "url": "https://registry.npmjs.org/@voidzero-dev/vitepress-theme/-/vitepress-theme-5.0.6.tgz",
+      "version": "5.0.6"
+    },
+    {
+      "bytes": 1034,
+      "commit": "1c73dca3ff4909e4cddd0d3b6e272298e902dec7",
+      "git_blob": "67f7491c06bfc99aeda75aa1bc3934eae00c7d94",
+      "path": "includes/mkdocs.md",
+      "repository": "squidfunk/mkdocs-material",
+      "retained_path": "mkdocs-material/includes/mkdocs.txt",
+      "sha256": "5649c1634bcb867e8a996a8965d4fc536209d44e1580879a81768bdf2e44c6f2",
+      "source": "mkdocs-material"
+    }
+  ],
+  "purpose": "Unannotated pinned renderer sources and integrity-verified published dependencies, available identically to both agents. No author oracle, labels, target-fact analysis or label totals are included.",
+  "schema_version": 1
+}
