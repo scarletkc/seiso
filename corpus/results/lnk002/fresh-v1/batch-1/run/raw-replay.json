@@ -1,0 +1,18 @@
+{
+  "diagnoses": 877,
+  "files": 2230,
+  "files_and_diagnostics_identical_to_report": true,
+  "freeze_commit": "136585a72b7317df0a9893348350d04f70b8de91",
+  "implementation_unchanged": true,
+  "labels_used": false,
+  "original_run_byte_identical": true,
+  "probe_sha256": "fb0a6aa42fcc3b8c814cf8c4412e0cacc9d36e68422c21e87ae0156aedd4d281",
+  "purpose": "Retain literal raw bytes and independently replay frozen batch before final branch delivery; this is not a future-main integration replay.",
+  "raw_archive_bytes": 3911689,
+  "raw_archive_sha256": "a79c5ca9a9eabda0f4df62bd39221513cdc7ce5c810be22a5553c649c9647f6f",
+  "raw_result_bytes": 35194918,
+  "raw_result_sha256": "143c270d70e714faf1285729f885b66fe937d5befee2f1a6477c96a0ead4e28e",
+  "report_sha256": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+  "reverse_byte_identical": true,
+  "schema_version": 1
+}
