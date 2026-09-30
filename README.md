@@ -42,15 +42,23 @@ kinds, and `seiso init` suggests a starting point.
 - Judgment calls a tool can't make are written down with a reason. An
   exception without one is itself a violation.
 
-seiso's rules check documents against this convention; stable rules run by
-default, and the rest are opt-in previews. Each diagnostic says where the
-problem is and how to fix it, so an agent can repair most findings from
-seiso's output alone. When a fix needs a judgment, such as which of two pages
-owns a fact, the diagnostic names the decision. seiso doesn't guess whether
-prose sounds machine-written, and it leaves formatting and spelling to other
-tools. The
-[convention](https://github.com/scarletkc/seiso/blob/main/docs/reference/convention.md)
-defines each kind's contract and the evidence a diagnostic can claim.
+The convention is written up as a standalone
+[specification](https://github.com/scarletkc/seiso/blob/main/spec/convention.md),
+with [worked examples](https://github.com/scarletkc/seiso/blob/main/spec/examples.md)
+and an [adoption guide](https://github.com/scarletkc/seiso/blob/main/spec/adopting.md),
+so a project can follow it without installing anything. The specification is
+a provisional draft, open for discussion in
+[#37](https://github.com/scarletkc/seiso/issues/37).
+
+seiso is the reference implementation. Its rules check documents against the
+specification; stable rules run by default, and the rest are opt-in previews.
+Each diagnostic says where the problem is and how to fix it, so an agent can
+repair most findings from seiso's output alone. When a fix needs a judgment,
+such as which of two pages owns a fact, the diagnostic names the decision.
+seiso doesn't guess whether prose sounds machine-written, and it leaves
+formatting and spelling to other tools.
+[How seiso checks the convention](https://github.com/scarletkc/seiso/blob/main/docs/reference/convention.md)
+maps each rule to the requirement it covers and the evidence it can claim.
 
 ## Install
 

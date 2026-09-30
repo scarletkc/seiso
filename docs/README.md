@@ -5,8 +5,20 @@ kind: readme
 # Documentation
 
 Start with [checking documents](guides/checking.md) to configure seiso and read
-its output. The [convention](reference/convention.md) explains the document
-responsibilities and evidence behind those checks.
+its output. The [specification](../spec/convention.md) defines the document
+responsibilities those checks enforce, and
+[how seiso checks the convention](reference/convention.md) explains the
+evidence behind each diagnostic.
+
+## Specification
+
+The [Seiso Convention Specification](../spec/convention.md) states the
+convention independently of seiso, so that a project can follow it without
+the tool and another checker can claim to check it. It is a provisional draft.
+[Worked examples](../spec/examples.md) read its requirements against a small
+documentation set, and the [adoption guide](../spec/adopting.md) applies them
+to an existing repository. Its [changelog](../spec/CHANGELOG.md) records
+changes to the specification separately from seiso releases.
 
 ## Guides
 
@@ -22,7 +34,8 @@ responsibilities and evidence behind those checks.
 
 ## Reference
 
-- [Convention](reference/convention.md): kinds, fact ownership, and diagnostic evidence.
+- [How seiso checks the convention](reference/convention.md): kind assignment,
+  ownership precedence, evidence, rule availability, and requirement coverage.
 - [Configuration](reference/configuration.md): discovery, inheritance, path
   mappings, comparison domains, and rule selection.
 - [Architecture and execution](reference/architecture.md): modules, command

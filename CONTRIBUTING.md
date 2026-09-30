@@ -51,7 +51,11 @@ considered.
   or misses it, and why the result is wrong.
 - **New rule or convention change**: real documents that show the problem. New
   rules start in preview and must meet the
-  [evaluation policy](docs/evaluation/policy.md) before they become stable.
+  [evaluation policy](docs/evaluation/policy.md) before they become stable. A
+  change to the convention itself is made in the
+  [specification](spec/convention.md) and recorded in its
+  [changelog](spec/CHANGELOG.md); rule pages and
+  [how seiso checks the convention](docs/reference/convention.md) follow it.
 
 ## Name the branch
 
