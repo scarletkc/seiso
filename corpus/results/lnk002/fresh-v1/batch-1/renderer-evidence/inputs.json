@@ -315,6 +315,16 @@
       "retained_path": "mkdocs-material/includes/mkdocs.txt",
       "sha256": "5649c1634bcb867e8a996a8965d4fc536209d44e1580879a81768bdf2e44c6f2",
       "source": "mkdocs-material"
+    },
+    {
+      "bytes": 201994,
+      "commit": "524eb248e55a7e2c65da6efaf9be1aa16f519045",
+      "git_blob": "2c36f834feb3f7cd29e5b97b51efb70f32e28acf",
+      "path": "tools/doc/package-lock.json",
+      "repository": "nodejs/node",
+      "retained_path": "node/tools/doc/package-lock.json",
+      "sha256": "f434d5e054d4d444cdb1931a4c5974504387fc9eecf922c4a73c0617f4ca0a2c",
+      "source": "node"
     }
   ],
   "purpose": "Unannotated pinned renderer sources and integrity-verified published dependencies, available identically to both agents. No author oracle, labels, target-fact analysis or label totals are included.",
