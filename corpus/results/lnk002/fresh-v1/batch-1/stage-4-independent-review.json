@@ -1,0 +1,64 @@
+{
+  "accepted": true,
+  "artifacts": {
+    "corpus.lock.json": "8affea1f5c672343c851b0861192ba3b64315999288509ce849a78d08aa75f8a",
+    "inventory/inventory.lock.json": "c5c99a61cf12a807d502dd67284fe08ad3f4b7076ef32890e56e6d95e25401ae",
+    "kinds.json": "89adb5c9a6732d878b886a5c028521cf65950ad11743315a4dc7bd42d39e1078",
+    "selection.json": "0854e6e28360c89a70df568f65899819e5eb1f53b9f378764a90481197e60391",
+    "site-evidence/inputs.json": "0b437dae4839e9a2f7bbf129bfa3eab5c40887e5d606951e68d46597f0b73bee",
+    "sites.json": "5c1c81da352415b1f3c550b49cd9ead8d2d2fd15dbc446af17bb851f002471f4",
+    "stage-4-checkpoint.json": "ccb8f7f61730a224297971134e7f16445a8400ab6d63228fe38a10589ae7d326"
+  },
+  "blindness": {
+    "chapter_prose_inspected": false,
+    "diagnostics_inspected": false,
+    "implementer_labels_or_author_notes_inspected": false,
+    "only_navigation_markdown_decoded": true,
+    "oracle_outputs_inspected": false,
+    "reviewer_filesystem_or_git_mutations": false,
+    "upstream_code_or_configuration_executed": false
+  },
+  "checks": {
+    "document_and_license_records_hash_verified": 2244,
+    "freeze_implementation_fingerprints_unchanged": true,
+    "inventory_entries_verified": 103608,
+    "prior_source_identities_checked_without_overlap": 35,
+    "reconstructed_matching_git_tree_hashes": 9944,
+    "retained_pinned_configuration_and_navigation_files_verified": 16,
+    "unknown_kind_records_with_exact_reason_and_input_hash": 2230
+  },
+  "findings_and_resolution": [
+    {
+      "finding": "Traefik exclude plugin removes **/include-*.md from published pages.",
+      "resolution": "Explicit entries exclude all six snippets; snippets remain selected cohort documents."
+    },
+    {
+      "finding": "mdBook SUMMARY.md defines chapter membership and is not itself a rendered chapter.",
+      "resolution": "Explicit chapter entries match all 98 Cargo and 245 rustc-dev-guide destinations; navigation bytes retained and summaries left unmapped."
+    },
+    {
+      "finding": "VS Code extension/language navigation needed independent scope verification.",
+      "resolution": "All three pinned navigation files use /docs/ URLs; none introduces /api/ prefix."
+    }
+  ],
+  "mdbook_reference": "https://rust-lang.github.io/mdBook/format/summary.html",
+  "model": "GPT-6.1 Sol",
+  "no_remaining_static_blocker_to_stage_5": true,
+  "reasoning_effort": "xhigh",
+  "renderer_scope_notes": [
+    "Eleventy docs/src input and /docs/head/ prefix are supported by pinned config.",
+    "Electron empty mapping follows the precommitted pinned config/navigation evidence requirement.",
+    "Node and Vitest scopes match configured exclusions."
+  ],
+  "reviewer": "/root/blind_lnk002_reviewer",
+  "reviewer_kind": "independent-agent",
+  "schema_version": 1,
+  "site_membership": {
+    "cargo": 98,
+    "node": 69,
+    "rustc-dev-guide": 245,
+    "traefik": 166,
+    "vitest": 223
+  },
+  "stage": 4
+}

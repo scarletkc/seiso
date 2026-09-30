@@ -119,6 +119,50 @@
       "retained_path": "site-evidence/node/tools/doc/web.doc-kit.config.mjs",
       "sha256": "818f4c7c00241ac0d6eb5897dcc2e417d717a302c14c02957833bc04b911e9eb",
       "source": "node"
+    },
+    {
+      "bytes": 5174,
+      "commit": "f3865b2a4d1acc5276f6b3c67d0e057f4dab3928",
+      "git_blob": "011c20492a812f5c68b2dc22f8ae46f9ca74f9c7",
+      "path": "doc/book/src/SUMMARY.md",
+      "read_role": "mdBook navigation only; no chapter prose read",
+      "repository": "rust-lang/cargo",
+      "retained_path": "site-evidence/cargo/doc/book/src/SUMMARY.md.txt",
+      "sha256": "dcd0cdcf92c606813f5f16710ffbcdc02c17ea6469947fc934bd2eaa4a15dde3",
+      "source": "cargo"
+    },
+    {
+      "bytes": 13990,
+      "commit": "d70a58f9574c627cff6af7b4705ffa360835f7f6",
+      "git_blob": "7c4ffe7b05a187846270d075752c231ba6b5aeba",
+      "path": "src/SUMMARY.md",
+      "read_role": "mdBook navigation only; no chapter prose read",
+      "repository": "rust-lang/rustc-dev-guide",
+      "retained_path": "site-evidence/rustc-dev-guide/src/SUMMARY.md.txt",
+      "sha256": "71f98dc104b2df4dd3b78d688ad2593f065d6506eea20fb127f86356f1efcd33",
+      "source": "rustc-dev-guide"
+    },
+    {
+      "bytes": 4999,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "8f3a4ea20f4f9ef5e145e054a30202f387a6c409",
+      "path": "docs/extension-docs/toc.json",
+      "read_role": "Site navigation only",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "site-evidence/vscode-docs/docs/extension-docs/toc.json",
+      "sha256": "336747cd08ade796228ce84200fd3527775f0c1670876818ce1e11c6b3726298",
+      "source": "vscode-docs"
+    },
+    {
+      "bytes": 5889,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "54949cb089c9edad34298c2a423c2d77bd34c0cb",
+      "path": "docs/languages/toc.json",
+      "read_role": "Site navigation only",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "site-evidence/vscode-docs/docs/languages/toc.json",
+      "sha256": "929b91e95cb3effcfcb02d359fefde1f058307261fdc67d5de8843cb39945bde",
+      "source": "vscode-docs"
     }
   ],
   "read_scope": "Only generator/build configuration and navigation files; never executed. No cohort document prose or diagnostic text was inspected.",

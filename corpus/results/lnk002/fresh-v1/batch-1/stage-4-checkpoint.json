@@ -10,21 +10,42 @@
   "every_source_site_reviewed": true,
   "implementation_unchanged_since_freeze": true,
   "kinds_sha256": "89adb5c9a6732d878b886a5c028521cf65950ad11743315a4dc7bd42d39e1078",
+  "pre_evaluation_review_correction": {
+    "initial_site_review_commit": "2f2f64f",
+    "mdbook_unmapped_navigation_or_unlisted": {
+      "cargo": [
+        "doc/book/src/SUMMARY.md"
+      ],
+      "rustc-dev-guide": [
+        "src/SUMMARY.md"
+      ]
+    },
+    "reason": "Independent configuration review found the pinned exclude plugin; no evaluation or cohort prose/diagnostics had been read. Correct mapping without dropping any selected documents. The same review required mdBook chapter membership from pinned navigation, so the two SUMMARY.md files are retained as navigation evidence and left unmapped.",
+    "reviewer": "/root/blind_lnk002_reviewer",
+    "traefik_unmapped_excluded_snippets": [
+      "docs/content/https/include-acme-multiple-domains-example.md",
+      "docs/content/https/include-acme-multiple-domains-from-rule-example.md",
+      "docs/content/https/include-acme-single-domain-example.md",
+      "docs/content/operations/include-api-examples.md",
+      "docs/content/operations/include-dashboard-custom-path-examples.md",
+      "docs/content/operations/include-dashboard-examples.md"
+    ]
+  },
   "schema_version": 1,
   "site_entries_per_source": {
-    "cargo": 1,
+    "cargo": 98,
     "electron": 0,
     "eslint": 1,
     "fastapi": 1,
     "mkdocs-material": 1,
     "node": 69,
-    "rustc-dev-guide": 1,
-    "traefik": 1,
+    "rustc-dev-guide": 245,
+    "traefik": 166,
     "vitest": 223,
     "vscode-docs": 1
   },
-  "site_evidence_inputs_sha256": "4fafc6d280ba921263bdcf07fb0692db6c4bbffe0eff47f67de873973f2df04a",
-  "sites_sha256": "ab1c76b24414a655a7c949a1e4549c2fd052cc4dc30514fe28aac48fb283455f",
+  "site_evidence_inputs_sha256": "0b437dae4839e9a2f7bbf129bfa3eab5c40887e5d606951e68d46597f0b73bee",
+  "sites_sha256": "5c1c81da352415b1f3c550b49cd9ead8d2d2fd15dbc446af17bb851f002471f4",
   "stage": 4,
   "unknown_kind_mappings_empty": true
 }
