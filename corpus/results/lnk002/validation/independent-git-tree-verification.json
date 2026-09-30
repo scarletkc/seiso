@@ -1,0 +1,18 @@
+{
+  "command": "python corpus/results/lnk002/validation/verify_git_trees.py corpus/results/lnk002/fresh-v1/batch-1",
+  "diagnostics_or_labels_read": false,
+  "document_blobs_or_prose_read": false,
+  "exit_code": 0,
+  "inventory_entries": 103608,
+  "inventory_lock_sha256": "c5c99a61cf12a807d502dd67284fe08ad3f4b7076ef32890e56e6d95e25401ae",
+  "matching_reconstructed_git_trees": 9944,
+  "method": "Group entries by parent, order names using Git directory ordering, serialize octal modes, basenames and binary child object IDs, hash tree <length> NUL <payload> and compare pinned SHA-1.",
+  "mismatches": 0,
+  "reviewer": "/root/blind_lnk002_reviewer",
+  "reviewer_reproduced_original_algorithm": true,
+  "schema_version": 1,
+  "script": "verify_git_trees.py",
+  "script_sha256": "f84fd87d29fe59ee75d169c40e13746d72cdb50816cf45767125596a794418af",
+  "stage": 3,
+  "upstream_code_or_configuration_executed": false
+}
