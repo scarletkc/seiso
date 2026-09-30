@@ -1,0 +1,36 @@
+{
+  "added_diagnostics": 0,
+  "after_raw_sha256": "55e8c645172c753527f99b4d0fab1317f8b21770f267c67d4336ee68418fbad8",
+  "all_other_file_results_unchanged": true,
+  "artifacts": {
+    "heading-name-after-raw.json.gz": "e67f6a7735315e3ce4c16da7ba55ff8a483f7a338127db7d11c213e0f2080272",
+    "heading-name-after-run.json": "10c2fb60a3bdf67603260769e26f9e64ee9d2a8fa2326f6462cc8368b7c5da2b",
+    "heading-name-delta.json": "88e1f4ae895b1fd01c7dceb1a17062cd208e2b1fc25c3e4925a7bde9ca311cd0",
+    "heading-name-oracle.json.gz": "b955426ff87a78541c7e2e6d39d063bb1d569ab92f97117c19e14ca97da7ddfa"
+  },
+  "baseline_commit": "7f8371f25ae438561c28ce99931b666b7723d629",
+  "before_raw_sha256": "167c842a507c2cf54abaa2d80a76245f20449342aa2641e301b6af40c9b2c249",
+  "documents": 1953,
+  "fix_commit": "1ccf91cb953b98eb9f4060bfa4ba595269be991d",
+  "historical_oracle_after_fix_labels": 46,
+  "historical_oracle_after_fix_sha256": "80964f172b819c4863ad297d93d49fc2f79a6fa4ea59959cf6fdc95d35d9a4d7",
+  "historical_oracle_before_fix_labels": 78,
+  "integrated_branch_replay": {
+    "byte_identical_to_independently_verified_fix": true,
+    "documents": 1953,
+    "forward_reverse_byte_identical": true,
+    "freeze_commit": "136585a72b7317df0a9893348350d04f70b8de91",
+    "raw_sha256": "55e8c645172c753527f99b4d0fab1317f8b21770f267c67d4336ee68418fbad8"
+  },
+  "raw_byte_identical": false,
+  "removed_codes": {
+    "LNK002": 32
+  },
+  "removed_diagnostics": 32,
+  "removed_sources": {
+    "ripgrep": 32
+  },
+  "reverse_byte_identical": true,
+  "schema_version": 1,
+  "scope": "Intentional verified heading-name fix on the historical main corpus; separate from the tooling-only byte-identical comparison and not fresh precision evidence."
+}

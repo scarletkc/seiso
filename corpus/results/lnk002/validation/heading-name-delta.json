@@ -1,0 +1,1350 @@
+{
+  "added": [],
+  "non_diagnostic_differences": [],
+  "removed": [
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 62,
+          "start": 10
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 55,
+          "row": 3
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 3
+        },
+        "message": "Anchor \"config\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 114,
+          "start": 65
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 52,
+          "row": 4
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 4
+        },
+        "message": "Anchor \"changelog\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 154,
+          "start": 117
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 40,
+          "row": 5
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 5
+        },
+        "message": "Anchor \"release\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 198,
+          "start": 157
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 44,
+          "row": 6
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 6
+        },
+        "message": "Anchor \"manpage\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 266,
+          "start": 201
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 68,
+          "row": 7
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 7
+        },
+        "message": "Anchor \"complete\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 323,
+          "start": 269
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 57,
+          "row": 8
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 8
+        },
+        "message": "Anchor \"order\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 379,
+          "start": 326
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 56,
+          "row": 9
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 9
+        },
+        "message": "Anchor \"encoding\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 430,
+          "start": 382
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 51,
+          "row": 10
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 10
+        },
+        "message": "Anchor \"compressed\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 483,
+          "start": 433
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 53,
+          "row": 11
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 11
+        },
+        "message": "Anchor \"multiline\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 542,
+          "start": 486
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 59,
+          "row": 12
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 12
+        },
+        "message": "Anchor \"fancy\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 592,
+          "start": 545
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 50,
+          "row": 13
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 13
+        },
+        "message": "Anchor \"colors\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 657,
+          "start": 595
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 65,
+          "row": 14
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 14
+        },
+        "message": "Anchor \"truecolors-windows\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 737,
+          "start": 660
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 80,
+          "row": 15
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 15
+        },
+        "message": "Anchor \"stop-ripgrep\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 804,
+          "start": 740
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 67,
+          "row": 16
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 16
+        },
+        "message": "Anchor \"because-cygwin\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 863,
+          "start": 807
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 59,
+          "row": 17
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 17
+        },
+        "message": "Anchor \"size-limit\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 921,
+          "start": 866
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 58,
+          "row": 18
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 18
+        },
+        "message": "Anchor \"dfa-size\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1015,
+          "start": 924
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 94,
+          "row": 19
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 19
+        },
+        "message": "Anchor \"silver-searcher-output\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1090,
+          "start": 1018
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 75,
+          "row": 20
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 20
+        },
+        "message": "Anchor \"pcre2-slow\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1166,
+          "start": 1093
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 76,
+          "row": 21
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 21
+        },
+        "message": "Anchor \"rg-other-cmd\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1238,
+          "start": 1169
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 72,
+          "row": 22
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 22
+        },
+        "message": "Anchor \"rg-alias-windows\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1301,
+          "start": 1241
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 63,
+          "row": 23
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 23
+        },
+        "message": "Anchor \"powershell-profile\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1385,
+          "start": 1304
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 84,
+          "row": 24
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 24
+        },
+        "message": "Anchor \"pipe-non-ascii-windows\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1453,
+          "start": 1388
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 68,
+          "row": 25
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 25
+        },
+        "message": "Anchor \"search-and-replace\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1492,
+          "start": 1456
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 39,
+          "row": 26
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 26
+        },
+        "message": "Anchor \"license\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1535,
+          "start": 1495
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 43,
+          "row": 27
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 27
+        },
+        "message": "Anchor \"posix4ever\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1603,
+          "start": 1538
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 68,
+          "row": 28
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 28
+        },
+        "message": "Anchor \"intentcountsforsomething\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1667,
+          "start": 1606
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 64,
+          "row": 29
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 29
+        },
+        "message": "Anchor \"donations\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 10356,
+          "start": 10273
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 84,
+          "row": 301
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 301
+        },
+        "message": "Anchor \"silver-searcher-output\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 10546,
+          "start": 10507
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 40,
+          "row": 310
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 310
+        },
+        "message": "Anchor \"colors\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 41596,
+          "start": 41513
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 19,
+          "row": 1046
+        },
+        "filename": "FAQ.md",
+        "fix": null,
+        "location": {
+          "column": 1,
+          "row": 1045
+        },
+        "message": "Anchor \"posix4ever\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "FAQ.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 1328,
+          "start": 1292
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 39,
+          "row": 29
+        },
+        "filename": "README.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 29
+        },
+        "message": "Anchor \"complete\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "README.md",
+      "source": "ripgrep"
+    },
+    {
+      "diagnostic": {
+        "byte_range": {
+          "end": 6578,
+          "start": 6550
+        },
+        "code": "LNK002",
+        "end_location": {
+          "column": 31,
+          "row": 120
+        },
+        "filename": "README.md",
+        "fix": null,
+        "location": {
+          "column": 3,
+          "row": 120
+        },
+        "message": "Anchor \"posix4ever\" does not exist in FAQ.md.",
+        "related": [
+          {
+            "byte_range": {
+              "end": 0,
+              "start": 0
+            },
+            "end_location": {
+              "column": 1,
+              "row": 1
+            },
+            "filename": "FAQ.md",
+            "location": {
+              "column": 1,
+              "row": 1
+            },
+            "message": "The target document has no matching anchor."
+          }
+        ],
+        "suggestion": "Update the fragment to an existing heading or explicit HTML anchor in the target document.",
+        "url": "https://github.com/scarletkc/seiso/blob/v0.3.0/docs/rules/LNK002.md"
+      },
+      "path": "README.md",
+      "source": "ripgrep"
+    }
+  ]
+}
