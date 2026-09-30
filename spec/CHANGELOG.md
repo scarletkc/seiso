@@ -8,11 +8,17 @@ Changes to the [Seiso Convention Specification](convention.md). The
 specification is versioned independently of the seiso crate, whose
 [releases](https://github.com/scarletkc/seiso/releases) carry their own notes;
 its [Versioning](convention.md#versioning) section defines the numbers. Each
-released version is published at the `spec-v<version>` tag of this
-repository. This file follows
+released version is published at `https://seiso.fog.moe/<version>/` and at
+the `spec-v<version>` tag of this repository. This file follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## Unreleased
+
+### Changed
+
+- The adoption guide's agent snippet links to the adopted version on
+  seiso.fog.moe instead of its `spec-v<version>` tag on GitHub, and this
+  changelog names the site.
 
 ## 0.1.0 - 2026-10-01
 

@@ -74,14 +74,14 @@ Add the following to `AGENTS.md`, `CLAUDE.md`, or the equivalent instruction
 file, so that the convention applies while a document is written rather than
 after. The snippet summarizes; the specification is authoritative. Replace
 `VERSION` with the version you adopted from the [changelog](CHANGELOG.md), so
-that the agents read the requirements you reviewed rather than the copy on
-`main`, which includes unreleased changes.
+that the agents read the requirements you reviewed rather than those of a
+later version.
 
 ```markdown
 ## Documentation convention
 
 Markdown in this repository follows the Seiso Convention VERSION:
-https://github.com/scarletkc/seiso/blob/spec-vVERSION/spec/convention.md
+https://seiso.fog.moe/VERSION/convention
 
 - Every document has one `kind`, declared in frontmatter or assigned by the
   configured path mapping: readme, howto, reference, runbook, agents, adr,
