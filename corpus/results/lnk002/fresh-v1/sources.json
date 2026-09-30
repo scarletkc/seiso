@@ -1,0 +1,232 @@
+{
+  "freeze_commit": "136585a72b7317df0a9893348350d04f70b8de91",
+  "schema_version": 1,
+  "selection": "The fixed repository and path table approved before reading source text or diagnostics. Mechanical failures are skipped, never replaced.",
+  "sources": [
+    {
+      "batch": 1,
+      "id": "node",
+      "include": [
+        "README.md",
+        "doc/**"
+      ],
+      "repository": "nodejs/node"
+    },
+    {
+      "batch": 1,
+      "id": "electron",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "electron/electron"
+    },
+    {
+      "batch": 1,
+      "id": "vscode-docs",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "microsoft/vscode-docs"
+    },
+    {
+      "batch": 1,
+      "id": "fastapi",
+      "include": [
+        "README.md",
+        "docs/en/docs/**"
+      ],
+      "repository": "fastapi/fastapi"
+    },
+    {
+      "batch": 1,
+      "id": "mkdocs-material",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "squidfunk/mkdocs-material"
+    },
+    {
+      "batch": 1,
+      "id": "traefik",
+      "include": [
+        "README.md",
+        "docs/content/**"
+      ],
+      "repository": "traefik/traefik"
+    },
+    {
+      "batch": 1,
+      "id": "cargo",
+      "include": [
+        "README.md",
+        "doc/book/src/**"
+      ],
+      "repository": "rust-lang/cargo"
+    },
+    {
+      "batch": 1,
+      "id": "rustc-dev-guide",
+      "include": [
+        "README.md",
+        "src/**"
+      ],
+      "repository": "rust-lang/rustc-dev-guide"
+    },
+    {
+      "batch": 1,
+      "id": "vitest",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "vitest-dev/vitest"
+    },
+    {
+      "batch": 1,
+      "id": "eslint",
+      "include": [
+        "README.md",
+        "docs/src/**"
+      ],
+      "repository": "eslint/eslint"
+    },
+    {
+      "batch": 2,
+      "id": "argo-cd",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "argoproj/argo-cd"
+    },
+    {
+      "batch": 2,
+      "id": "backstage",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "backstage/backstage"
+    },
+    {
+      "batch": 2,
+      "id": "opentelemetry-io",
+      "include": [
+        "README.md",
+        "content/en/docs/**"
+      ],
+      "repository": "open-telemetry/opentelemetry.io"
+    },
+    {
+      "batch": 2,
+      "id": "external-secrets",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "external-secrets/external-secrets"
+    },
+    {
+      "batch": 2,
+      "id": "rook",
+      "include": [
+        "README.md",
+        "Documentation/**"
+      ],
+      "repository": "rook/rook"
+    },
+    {
+      "batch": 3,
+      "id": "reference",
+      "include": [
+        "README.md",
+        "src/**"
+      ],
+      "repository": "rust-lang/reference"
+    },
+    {
+      "batch": 3,
+      "id": "typescript-website",
+      "include": [
+        "README.md",
+        "packages/documentation/copy/en/**"
+      ],
+      "repository": "microsoft/TypeScript-Website"
+    },
+    {
+      "batch": 3,
+      "id": "playwright",
+      "include": [
+        "README.md",
+        "docs/src/**"
+      ],
+      "repository": "microsoft/playwright"
+    },
+    {
+      "batch": 3,
+      "id": "pnpm-io",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "pnpm/pnpm.io"
+    },
+    {
+      "batch": 3,
+      "id": "pydantic",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "pydantic/pydantic"
+    },
+    {
+      "batch": 4,
+      "id": "vite",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "vitejs/vite"
+    },
+    {
+      "batch": 4,
+      "id": "jest",
+      "include": [
+        "README.md",
+        "docs/**"
+      ],
+      "repository": "jestjs/jest"
+    },
+    {
+      "batch": 4,
+      "id": "rustup",
+      "include": [
+        "README.md",
+        "doc/user-guide/src/**"
+      ],
+      "repository": "rust-lang/rustup"
+    },
+    {
+      "batch": 4,
+      "id": "grafana",
+      "include": [
+        "README.md",
+        "docs/sources/**"
+      ],
+      "repository": "grafana/grafana"
+    },
+    {
+      "batch": 4,
+      "id": "home-assistant-io",
+      "include": [
+        "README.md",
+        "source/**"
+      ],
+      "repository": "home-assistant/home-assistant.io"
+    }
+  ]
+}

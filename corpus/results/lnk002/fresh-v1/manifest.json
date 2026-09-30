@@ -1,0 +1,17 @@
+{
+  "batches": [
+    {
+      "batch": 1,
+      "corpus_lock": "batch-1/corpus.lock.json",
+      "labels": "batch-1/annotations/labels-links.json",
+      "report": "batch-1/run/diagnostics.json.gz"
+    }
+  ],
+  "schema_version": 1,
+  "source_diversity_review": {
+    "owner_accepted": null,
+    "owner_decision_status": "pending owner review; continuation to delivery is not diversity approval",
+    "reason": "The first predeclared batch contains ten independently selected repositories; diagnoses occur in seven sources. Vitest contributes 268 of 451 (59.4%), exceeding half, and six other sources contribute 183. The owner was asked to judge diversity and has not accepted it. All 451 diagnoses remain included; no later batch, replacement or filtering was used.",
+    "reviewed": true
+  }
+}

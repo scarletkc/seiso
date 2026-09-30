@@ -47,7 +47,8 @@ def blob_hash(content):
     return hashlib.sha1(b"blob " + str(len(content)).encode() + b"\0" + content).hexdigest()
 
 
-def resolve_source(source):
+def resolve_source(source, *, with_tree=False):
+    """Resolve once; optionally return the exact recursive tree used for selection."""
     repository = github(f"repos/{source['repository']}")
     if repository["private"]:
         raise ValueError(f"Corpus source must be public: {source['repository']}")
@@ -87,7 +88,7 @@ def resolve_source(source):
                   license_hint=(repository.get("license") or {}).get("spdx_id"),
                   documents=sorted(documents, key=lambda entry: entry["path"]),
                   licenses=sorted(licenses, key=lambda entry: entry["path"]), matched_patterns=matched)
-    return result
+    return (result, tree) if with_tree else result
 
 
 def fetch_blob(source, entry):

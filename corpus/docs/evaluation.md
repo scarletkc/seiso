@@ -276,3 +276,57 @@ current engine or requiring its source checkout and corpus cache. Its input
 list contains only files it consumes. Cohort roles come from their reports;
 empty samples retain unavailable precision. Source and classification reviews
 remain agent judgments unless their label bundles record human review.
+
+## Fresh link cohorts
+
+`scripts.evaluation.fresh_links` runs an independent LNK002 holdout. Freeze
+the implementation and commit the selection specification before pinning a
+source or reading its content. No upstream code runs.
+
+1. Pin a batch and fetch its documents. Pinning rejects any repository that an
+   earlier corpus or batch used.
+
+   ```sh
+   python -m scripts.evaluation.fresh_links pin --spec corpus/results/lnk002/fresh-v1/sources.json --batch 1 --output corpus/results/lnk002/fresh-v1/batch-1/selection.json
+   python -m scripts.evaluation.fresh_links fetch --input corpus/results/lnk002/fresh-v1/batch-1/selection.json --output corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json
+   ```
+
+2. Write `sites.json` from each source's pinned generator configuration, and
+   `kinds.json` with every document `unknown`. `validate_sites` and
+   `kind_mappings` in `fresh_links.py` define their fields.
+3. Evaluate the batch. Add the next batch only while the total LNK002 count is
+   below 100.
+
+   ```sh
+   python -m scripts.evaluation.fresh_links evaluate --input corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json --profile corpus/results/lnk002/fresh-v1/batch-1/kinds.json --sites corpus/results/lnk002/fresh-v1/batch-1/sites.json --output corpus/results/lnk002/fresh-v1/batch-1/run
+   ```
+
+4. Label every LNK002 diagnosis on the page its readers see: the site's output
+   when a site entry covers the target, and GitHub otherwise. `tp` means nothing
+   on that page matches the fragment, `fp` means something does, and
+   `uncertain` means the pinned sources cannot tell, with the missing evidence
+   named. Two agents label independently; `validate_dual_review` lists the
+   required fields. Cite third-party files by repository, commit, and path
+   instead of copying them. For GitHub-only first evidence, run
+   `corpus/evaluation/review_m2_links.py --candidate` with `--corpus-lock` and
+   `--inventory` on the `files` list from the report.
+5. Bind the labels to the report and summarize:
+
+   ```sh
+   python corpus/evaluation/review_m2_links.py --bind-report corpus/results/lnk002/fresh-v1/batch-1/run/diagnostics.json.gz --decisions corpus/results/lnk002/fresh-v1/batch-1/decisions.json --output corpus/results/lnk002/fresh-v1/batch-1/labels.json
+   python -m scripts.evaluation.fresh_links summarize --manifest corpus/results/lnk002/fresh-v1/manifest.json --output corpus/results/lnk002/fresh-v1/summary.json
+   ```
+
+Record the results under `docs/evaluation/`. A failed gate keeps the rule in
+preview, and a fix needs another fresh cohort. Before a record merges, rebase
+on `main` and rerun every batch; the raw results must be byte-identical.
+
+To rerun a recorded batch, restore its documents from the lock instead of
+pinning it again, which the overlap check rejects. Evaluate into a new
+directory, then compare `raw_result_sha256` in its `run.json` with the
+recorded one:
+
+```sh
+python -c "import json; from corpus.corpus import fetch_blob; lock = json.load(open('corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json', encoding='utf-8')); [fetch_blob(s, e) for s in lock['sources'] for e in s['documents'] + s['licenses']]"
+python -m scripts.evaluation.fresh_links evaluate --input corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json --profile corpus/results/lnk002/fresh-v1/batch-1/kinds.json --sites corpus/results/lnk002/fresh-v1/batch-1/sites.json --output target/lnk002-replay
+```
