@@ -50,9 +50,9 @@ a file, symbol, section, or document (`POINTER-1`, `POINTER-2`).
 
 ## Record exceptions
 
-Where a requirement does not apply and a checker is in use, write the
-exception in the document, with a complete code from that checker and a
-reason a reviewer can evaluate:
+Where a requirement does not apply and the checker in use reports a finding
+for the content, write the exception in the document, with that finding's
+complete code and a reason a reviewer can evaluate:
 
 ```markdown
 <!-- seiso: allow LNK001 -- The release build writes this page. -->
@@ -60,12 +60,13 @@ reason a reviewer can evaluate:
 
 Remove an exception once it covers nothing (`EXCEPTION-1` to `EXCEPTION-3`).
 
-Without a checker there is no code to name, and the specification defines no
-other form, so a documentation set that no checker evaluates cannot except a
-requirement: change the content, or adopt a checker before claiming
-conformance. Specification identifiers such as `KIND-7` are not codes; seiso
-reports them as invalid. Whether they should become codes is an open question
-in the [roadmap](../docs/design/roadmap.md#convention-specification).
+Everywhere else the content has to satisfy the requirement, because the
+specification defines no other form. That covers a documentation set that no
+checker evaluates, and content for which the checker reports nothing, such as
+a judgment requirement its rules do not reach. Specification identifiers such
+as `KIND-7` are not codes; seiso reports them as invalid. Whether they should
+become codes is an open question in the
+[roadmap](../docs/design/roadmap.md#convention-specification).
 
 ## Instruct coding agents
 
@@ -96,8 +97,10 @@ https://github.com/scarletkc/seiso/blob/COMMIT/spec/convention.md
   or a repository root.
 - Do not address the person who asked for the document or describe how it
   was written.
-- Where a rule does not apply, write `<!-- seiso: allow CODE -- reason -->`
-  with a complete code and a reason a reviewer can evaluate.
+- Where the checker in use reports a finding that does not apply, write
+  `<!-- seiso: allow CODE -- reason -->` with that finding's complete code
+  and a reason a reviewer can evaluate. Without a checker, or without a
+  finding to name, satisfy the requirement instead.
 ```
 
 ## Run a checker
