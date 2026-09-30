@@ -382,6 +382,8 @@ def summarize(manifest_path, output):
         return raw
 
     for batch in batches:
+        if len(rows) >= 100:
+            raise ValueError("Stop at the first batch reaching 100 LNK002 diagnoses; extra batches are not holdout evidence")
         packed = consume(batch["report"])
         report = json.loads(gzip.decompress(packed))
         lock_raw = consume(batch["corpus_lock"])

@@ -9,6 +9,14 @@ and approved by the project owner. This file is a work order. Delete it in the
 final commit of this branch: the evaluation record and the procedure section
 described below replace it.
 
+The owner amended the implementation baseline on 2026-09-30: complete the
+reviewable work on this branch and keep every PR unmerged. After stage 2
+review, integrate the verified heading-name fix from draft PR #56 into this
+branch and use its exact commit as the freeze baseline. This replaces the
+requirement to merge that fix into `main` before stage 3. It does not change
+the source selection, freeze ordering, blind dual review, batch stopping
+point, conservative precision, or diversity gates. `main` remains unchanged.
+
 ## Goal
 
 Measure LNK002 on repositories selected after its implementation is frozen,
@@ -66,8 +74,9 @@ If GitHub scrolls to the heading, change LNK002 to accept a `name` attribute on
 any element as an anchor, since seiso prefers a missed diagnosis to a false
 one. Make that change in a separate `fix(rules)` pull request that also updates
 the anchor list in [LNK002](../rules/LNK002.md#what-it-checks) and the oracle's
-explicit-anchor extraction in `corpus/evaluation/review_m2_links.py`, and merge
-it before stage 3. If GitHub does not scroll, change nothing; these links are
+explicit-anchor extraction in `corpus/evaluation/review_m2_links.py`. Keep that
+PR unmerged and integrate its verified change into this branch before stage 3,
+following the owner's amended baseline instruction above. If GitHub does not scroll, change nothing; these links are
 broken for readers.
 
 The two uncertain `ruff` diagnoses need no separate decision. They depend on
@@ -130,8 +139,10 @@ replaces this stage's description once the plan is deleted.
 
 ### 3. Freeze and pin
 
-The freeze commit is `main` after stage 1's decision, plus this branch's
-tooling. Record it in the run metadata. From then until the labels are
+The freeze commit is this branch after the verified stage 1 fix and reviewed
+stage 2 tooling, based on the unchanged `main`. Record it in the run metadata,
+and state that it is a branch baseline rather than an already-merged `main`
+implementation. From then until the labels are
 complete, this branch changes nothing under `src/`, `docs/rules/`, or
 `examples/evaluate_m2.rs`.
 

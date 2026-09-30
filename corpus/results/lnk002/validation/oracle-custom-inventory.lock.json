@@ -1,0 +1,15 @@
+{
+  "corpus_lock_sha256": "783b38097b0e2a148de591a5b865b12c9b8fa606165eec6c08c7c72606ba8c3b",
+  "schema_version": 1,
+  "sources": [
+    {
+      "archive": "ripgrep.json.gz",
+      "commit": "3fce3b5bb0236da2df6d99672afb8a719642eca7",
+      "entries": 299,
+      "id": "ripgrep",
+      "repository": "BurntSushi/ripgrep",
+      "sha256": "56c21b1e481d48e1c688df8a9c3cdcbd3b27b830bcf79157248aeba7057a3aa3",
+      "tree": "856ed9162d23416ee7dc5f4389975b54ca062f60"
+    }
+  ]
+}

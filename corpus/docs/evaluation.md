@@ -276,3 +276,129 @@ current engine or requiring its source checkout and corpus cache. Its input
 list contains only files it consumes. Cohort roles come from their reports;
 empty samples retain unavailable precision. Source and classification reviews
 remain agent judgments unless their label bundles record human review.
+
+## Fresh link cohorts
+
+Use `scripts.evaluation.fresh_links` for an independent LNK002 holdout.
+Review the heading-name renderer decision and cohort tooling first. Any rule
+fix required by that decision must land on `main` before freezing `main` plus
+the tooling. Commit the source specification before pinning or reading cohort
+Markdown or diagnostic text. Keep the approved repository scopes and batch
+order; mechanical failures are recorded as skips without replacement. No
+upstream code or configuration runs.
+
+The specification has `schema_version: 1`, a full `freeze_commit`, and a
+`sources` list. Every source records a unique `id`, `repository`, positive
+integer `batch`, and `include` patterns. The approved selection adds
+`README.md` to every documentation scope. Pinning rejects repositories,
+case-insensitively, from the main corpus, any retained
+`corpus/results/**/corpus.lock.json` or `selection.json`, and earlier batches.
+It saves the complete recursive tree from the same resolution that selected
+the documents.
+
+```sh
+python -m scripts.evaluation.fresh_links pin --spec corpus/results/lnk002/fresh-v1/sources.json --batch 1 --output corpus/results/lnk002/fresh-v1/batch-1/selection.json
+python -m scripts.evaluation.fresh_links fetch --input corpus/results/lnk002/fresh-v1/batch-1/selection.json --output corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json
+```
+
+Fetching stores original documents and licenses in the shared
+`corpus/data/blobs` cache, verifies Git blob hashes and SHA-256, and writes
+bound inventory archives beside the batch lock. An all-skipped batch retains
+its mechanical failure receipts and can evaluate with empty profiles.
+
+Before evaluation, read only pinned generator configuration or navigation
+files to review sites. Bind `sites.json` to the batch lock with
+`schema_version: 1` and `corpus_sha256`. Its `profiles` map covers every
+source; each review has `sites` and a `reason`. Each site records `path`,
+`root`, optional `public` and `base`, and the review fields `generator`,
+`evidence`, `evidence_path`, and `evidence_git_blob`. The evidence must name a
+configuration blob in the pinned tree. Sources without a site get an empty
+list and the review reason.
+
+Bind `kinds.json` to the same lock with `schema_version: 1`, `corpus_sha256`,
+and `documents` keyed by `source-id/path.md`. For this experiment every
+decision must have `kind: "unknown"`, its original `input_sha256`, and the
+reason "LNK002 applies to every kind; document responsibilities were not
+reviewed for this link-rule holdout." Verify this invariant at the checkpoint;
+the tool's generic support for other kinds is not evidence of that review.
+
+```sh
+python -m scripts.evaluation.fresh_links evaluate --input corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json --profile corpus/results/lnk002/fresh-v1/batch-1/kinds.json --sites corpus/results/lnk002/fresh-v1/batch-1/sites.json --output corpus/results/lnk002/fresh-v1/batch-1/run
+```
+
+Every source is a separate workspace selecting LNK001 and LNK002 with preview
+enabled. An unknown kind adds no mapping. Reports preserve links,
+related-input identities, and incomplete-rule states; bind all input and
+implementation hashes; and require byte-identical results with source,
+document, and tree order reversed. Commands refuse to overwrite evidence.
+
+Look only at LNK002 counts in `run/run.json` when extending the pool. Add the
+next approved batch only while the cumulative count is below 100. Stop at the
+first batch reaching or exceeding 100 and review every diagnosis from every
+evaluated batch, including the entire final batch. The summary rejects any
+later batch. Exhausting all approved batches below 100 ends with an
+insufficient sample and keeps the rule in preview. From freeze through labels,
+change nothing under `src/`, `docs/rules/`, or `examples/evaluate_m2.rs`.
+
+The oracle takes an uncompressed list of file results. Extract it from the
+saved report; the evaluator discards its temporary raw probe files:
+
+```sh
+python - <<'PY'
+import gzip
+import json
+from pathlib import Path
+
+batch = Path("corpus/results/lnk002/fresh-v1/batch-1")
+report = json.loads(gzip.decompress((batch / "run/diagnostics.json.gz").read_bytes()))
+with (batch / "candidate.json").open("xb") as stream:
+    stream.write((json.dumps(report["files"], ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode())
+PY
+python corpus/evaluation/review_m2_links.py --candidate corpus/results/lnk002/fresh-v1/batch-1/candidate.json --corpus-lock corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json --inventory corpus/results/lnk002/fresh-v1/batch-1/inventory/inventory.lock.json --slugger target/oracle/node_modules/github-slugger/index.js --output corpus/results/lnk002/fresh-v1/batch-1/oracle.json
+```
+
+Use `markdown-it-py==4.0.0` and `github-slugger@2.0.0`; disable lifecycle
+scripts when installing the latter. Without the optional corpus and inventory
+arguments, the oracle retains the main-corpus defaults. Its GitHub-only labels
+are initial evidence. A reviewed site entry makes that site's renderer
+authoritative for the target. Review its pinned source and renderer behavior
+individually, recording uncertainty and the missing evidence for generated
+content or client components that cannot be established.
+
+The implementing and reviewing agents label every LNK002 diagnosis
+independently, preserving separate outputs. The reviewer must not see the
+implementer's labels first. Each label preserves the diagnostic identity,
+`diagnostic_sha256`, and `related_inputs`, and adds its label, reason,
+renderer, evidence, and `agent_context_reviewed: true`. The resolved bundle
+keeps `author_review` and `independent_review`, each with its distinct
+`reviewer`, label, reason, renderer, evidence, and review flag. Disagreements
+need `disagreement_reason`. Record `human_reviewers: 0` unless the owner
+labels, then bind the resolved bundle:
+
+```sh
+python corpus/evaluation/review_m2_links.py --bind-report corpus/results/lnk002/fresh-v1/batch-1/run/diagnostics.json.gz --decisions corpus/results/lnk002/fresh-v1/batch-1/decisions.json --output corpus/results/lnk002/fresh-v1/batch-1/labels.json
+python -m scripts.evaluation.fresh_links summarize --manifest corpus/results/lnk002/fresh-v1/manifest.json --output corpus/results/lnk002/fresh-v1/summary.json
+```
+
+The decisions bundle records `schema_version: 1`, `scope_codes: ["LNK002"]`,
+`corpus_sha256`, `inventory_sha256`, `reviewer_kind`, `human_reviewers`, and
+`labels`. The manifest lists consecutive `batches` starting at 1, each with
+`batch`, `corpus_lock`, `report`, and `labels` paths relative to the manifest.
+It also records `source_diversity_review` with `reviewed` and a reason. A
+source contributing more than half the diagnoses needs the owner's decision,
+recorded as `owner_accepted`, before the gate can pass.
+
+The summary rejects missing, duplicate, or unbound labels and reports TP, FP,
+uncertain, sample counts, both precision measures, and agreement overall,
+per batch, per source, and per language. Kind breakdown is unavailable. The
+gate requires at least 100 individually reviewed diagnoses, two independent
+labels each, at least 95% conservative precision with uncertainty in the
+denominator, and the diversity review. Summarizing never promotes a rule.
+
+Record results and every FP or uncertain cause under `docs/evaluation/`.
+If the gate passes, promote in a separate commit and rerun every batch with a
+receipt proving unchanged diagnostics and file results. If it fails, keep
+the rule in preview; any fix informed by these findings needs another fresh
+cohort. Before merging, rebase on `main` and rerun all labeled batches.
+Require byte-identical raw results; stop and report a difference without
+relabeling it.

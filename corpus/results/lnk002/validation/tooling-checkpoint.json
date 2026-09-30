@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "stage": 2,
+  "fresh_cohort_inspected": false,
+  "validation": {
+    "build": "passed",
+    "rustfmt": "passed",
+    "clippy": "passed",
+    "rust_tests": {
+      "passed": 284,
+      "ignored": 2,
+      "temporary_directory": "/var/tmp/seiso-lnk002-tests",
+      "sandbox_fixture_git_roots_avoided": true
+    },
+    "script_tests": 176,
+    "corpus_tests": 10,
+    "oracle_tests": 9,
+    "focused_fresh_links_and_m2_tests": 32,
+    "repository_document_check": "passed",
+    "main_m2_raw_byte_identical": true,
+    "actual_oracle_default_byte_identical": true,
+    "actual_oracle_custom_binding_verified": true
+  },
+  "script_sha256": "b539112eaefcec255511562a781284bb1d5b2f9d8131305311f72f35ffa37b84",
+  "cohort_profiles": "Not created; checkpoint must verify every actual decision is unknown with the prescribed reason after pinning."
+}

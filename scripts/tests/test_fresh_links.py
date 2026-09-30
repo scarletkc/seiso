@@ -130,6 +130,41 @@ class FreshLinkTests(unittest.TestCase):
         manifest_path.write_bytes(encode(manifest))
         return manifest_path, manifest, labels_path, bundle
 
+    def append_summary_batch(self, manifest_path, manifest, diagnoses):
+        number = len(manifest["batches"]) + 1
+        directory = self.root / f"batch-{number}"
+        directory.mkdir()
+        lock = copy.deepcopy(read(self.lock_path))
+        lock["batch"] = number
+        lock["pinned_selection_sha256"] = str(number) * 64
+        source = lock["sources"][0]
+        source.update(id=f"project-{number}", repository=f"owner/project-{number}", batch=number)
+        lock_raw = encode(lock)
+        (directory / "corpus.lock.json").write_bytes(lock_raw)
+        report = json.loads(gzip.decompress((self.batch / "run/diagnostics.json.gz").read_bytes()))
+        report.update(batch=number, corpus_sha256=digest(lock_raw),
+                      pinned_selection_sha256=lock["pinned_selection_sha256"], files=self.files(lock, diagnoses))
+        report["diagnostics"] = evaluate_m2.diagnostic_rows(report["files"], lock)
+        packed = gzip.compress(encode(report), mtime=0)
+        (directory / "diagnostics.json.gz").write_bytes(packed)
+        reviews = []
+        for row in report["diagnostics"]:
+            review = {"label": "tp", "reason": "Individually inspected synthetic target lacks fragment.",
+                      "renderer": "GitHub", "evidence": "Synthetic target original bytes.", "agent_context_reviewed": True}
+            reviews.append({key: row[key] for key in ("id", "code", "source", "path", "span", "related_inputs", "split", "input_sha256")} |
+                review | {"diagnostic_sha256": digest(encode(row["diagnostic"])),
+                          "author_review": review | {"reviewer": "author-agent"},
+                          "independent_review": review | {"reviewer": "review-agent"}})
+        bundle = {"schema_version": 1, "scope_codes": ["LNK002"], "human_reviewers": 0,
+                  "reviewer_kind": "agent_consensus", "labels": reviews, "decision_receipt_sha256": "d" * 64,
+                  "report_sha256": digest(packed), "corpus_sha256": report["corpus_sha256"],
+                  "inventory_sha256": report["inventory_sha256"]}
+        (directory / "labels.json").write_bytes(encode(bundle))
+        manifest["batches"].append({"batch": number, "report": f"batch-{number}/diagnostics.json.gz",
+            "labels": f"batch-{number}/labels.json", "corpus_lock": f"batch-{number}/corpus.lock.json"})
+        manifest["source_diversity_review"]["owner_accepted"] = True
+        manifest_path.write_bytes(encode(manifest))
+
     def test_specification_rejects_invalid_or_duplicate_sources_before_network(self):
         variants = [self.spec | {"schema_version": 2}, self.spec | {"freeze_commit": "HEAD"},
                     self.spec | {"sources": []}]
@@ -207,6 +242,44 @@ class FreshLinkTests(unittest.TestCase):
         with patch.object(fresh_links.corpus_tools, "fetch_blob") as network, self.assertRaisesRegex(ValueError, "identity"):
             fresh_links.fetch(self.selection_path, self.lock_path)
         network.assert_not_called()
+
+    def test_empty_mechanically_skipped_batch_fetches_and_evaluates_without_network(self):
+        self.tree["truncated"] = True
+        self.pin()
+        with patch.object(fresh_links.corpus_tools, "fetch_blob") as network:
+            fresh_links.fetch(self.selection_path, self.lock_path)
+        network.assert_not_called()
+        lock = read(self.lock_path)
+        self.assertEqual(lock["sources"], [])
+        self.assertEqual(len(lock["skipped"]), 1)
+        self.profile_path.write_bytes(encode({"schema_version": 1,
+            "corpus_sha256": digest(self.lock_path.read_bytes()), "documents": {}}))
+        self.sites_path.write_bytes(encode({"schema_version": 1,
+            "corpus_sha256": digest(self.lock_path.read_bytes()), "profiles": {}}))
+        with patch.object(fresh_links, "build_probe", return_value=self.binary), \
+             patch.object(fresh_links, "implementation_fingerprints", return_value={"engine": "fixed"}), \
+             patch.object(fresh_links, "run_probe", return_value=b"[]"):
+            fresh_links.evaluate(self.lock_path, self.profile_path, self.sites_path, self.batch / "run")
+        receipt = read(self.batch / "run/run.json")
+        self.assertEqual(receipt["files"], 0)
+        self.assertEqual(receipt["counts"], {"LNK001": 0, "LNK002": 0})
+        self.assertTrue(receipt["reverse_byte_identical"])
+        report = json.loads(gzip.decompress((self.batch / "run/diagnostics.json.gz").read_bytes()))
+        (self.batch / "labels.json").write_bytes(encode({"schema_version": 1, "scope_codes": ["LNK002"],
+            "human_reviewers": 0, "reviewer_kind": "agent_consensus", "labels": [],
+            "decision_receipt_sha256": "d" * 64, "report_sha256": receipt["report_sha256"],
+            "corpus_sha256": report["corpus_sha256"], "inventory_sha256": report["inventory_sha256"]}))
+        manifest = {"schema_version": 1, "batches": [{"batch": 1,
+            "report": "batch-1/run/diagnostics.json.gz", "labels": "batch-1/labels.json",
+            "corpus_lock": "batch-1/corpus.lock.json"}],
+            "source_diversity_review": {"reviewed": True, "reason": "All sources mechanically skipped."}}
+        manifest_path = self.root / "manifest.json"
+        manifest_path.write_bytes(encode(manifest))
+        output = self.root / "summary.json"
+        fresh_links.summarize(manifest_path, output)
+        self.assertEqual(read(output)["overall"]["samples"], 0)
+        self.assertEqual(read(output)["by_batch"]["1"]["skipped"], lock["skipped"])
+        self.assertFalse(read(output)["gate"]["passes"])
 
     def test_profile_requires_exact_document_coverage_hashes_and_reasons(self):
         lock, profile, _ = self.cohort()
@@ -415,6 +488,74 @@ class FreshLinkTests(unittest.TestCase):
         fresh_links.summarize(manifest_path, second)
         self.assertTrue(read(second)["gate"]["passes"])
         self.assertFalse(read(second)["gate"]["promotes_rule"])
+
+    def test_summary_refuses_extra_batch_after_first_reaches_100_even_if_precision_improves(self):
+        manifest_path, manifest, labels_path, bundle = self.summary_inputs(100)
+        for label in bundle["labels"][-6:]:
+            label["label"] = "fp"
+            label["author_review"]["label"] = "fp"
+            label["independent_review"]["label"] = "fp"
+        labels_path.write_bytes(encode(bundle))
+        # A nonexistent second report must not even be opened. More favorable
+        # later labels cannot dilute this first batch's six false positives.
+        manifest["batches"].append({"batch": 2, "report": "forbidden-extra-report.json.gz",
+            "labels": "forbidden-extra-labels.json", "corpus_lock": "forbidden-extra-lock.json"})
+        manifest_path.write_bytes(encode(manifest))
+        with self.assertRaisesRegex(ValueError, "first batch reaching 100"):
+            fresh_links.summarize(manifest_path, self.root / "summary.json")
+        self.assertFalse((self.root / "summary.json").exists())
+
+    def test_complete_summary_at_threshold_counts_false_positives_without_adding_batches(self):
+        manifest_path, manifest, labels_path, bundle = self.summary_inputs(100)
+        for label in bundle["labels"][-6:]:
+            label["label"] = "fp"
+            label["author_review"]["label"] = "fp"
+            label["independent_review"]["label"] = "fp"
+        manifest["source_diversity_review"]["owner_accepted"] = True
+        manifest_path.write_bytes(encode(manifest))
+        labels_path.write_bytes(encode(bundle))
+        output = self.root / "summary.json"
+        fresh_links.summarize(manifest_path, output)
+        result = read(output)
+        self.assertEqual(result["overall"]["samples"], 100)
+        self.assertEqual(result["overall"]["fp"], 6)
+        self.assertEqual(result["overall"]["conservative_precision"], 0.94)
+        self.assertFalse(result["gate"]["passes"])
+
+    def test_summary_accepts_batch_that_first_brings_cumulative_count_to_exactly_100(self):
+        manifest_path, manifest, _, _ = self.summary_inputs(40)
+        self.append_summary_batch(manifest_path, manifest, 60)
+        output = self.root / "summary.json"
+        fresh_links.summarize(manifest_path, output)
+        result = read(output)
+        self.assertEqual(result["overall"]["samples"], 100)
+        self.assertEqual(result["by_batch"]["1"]["samples"], 40)
+        self.assertEqual(result["by_batch"]["2"]["samples"], 60)
+        self.assertTrue(result["gate"]["passes"])
+        manifest["batches"].append({"batch": 3, "report": "forbidden-third-report.json.gz",
+            "labels": "forbidden-third-labels.json", "corpus_lock": "forbidden-third-lock.json"})
+        manifest_path.write_bytes(encode(manifest))
+        with self.assertRaisesRegex(ValueError, "first batch reaching 100"):
+            fresh_links.summarize(manifest_path, self.root / "forbidden-summary.json")
+
+    def test_summary_retains_every_diagnosis_in_batch_that_crosses_100(self):
+        manifest_path, manifest, _, _ = self.summary_inputs(99)
+        self.append_summary_batch(manifest_path, manifest, 2)
+        output = self.root / "summary.json"
+        fresh_links.summarize(manifest_path, output)
+        self.assertEqual(read(output)["overall"]["samples"], 101)
+        self.assertEqual(read(output)["overall"]["agreements"], 101)
+
+    def test_summary_accepts_zero_diagnosis_batch_before_first_threshold_batch(self):
+        manifest_path, manifest, _, _ = self.summary_inputs(0)
+        self.append_summary_batch(manifest_path, manifest, 100)
+        output = self.root / "summary.json"
+        fresh_links.summarize(manifest_path, output)
+        result = read(output)
+        self.assertEqual(result["by_batch"]["1"]["samples"], 0)
+        self.assertIsNone(result["by_batch"]["1"]["precision"])
+        self.assertEqual(result["overall"]["samples"], 100)
+        self.assertTrue(result["gate"]["passes"])
 
     def test_empty_samples_keep_unavailable_precision(self):
         manifest_path, _, _, _ = self.summary_inputs(0)

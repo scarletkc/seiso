@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "scope": "Historical main-corpus tooling compatibility; no fresh holdout or precision claim. Rule behavior remains at main 7f8371f before the independent heading-name fix.",
+  "baseline_commit": "7f8371f25ae438561c28ce99931b666b7723d629",
+  "main_corpus_sha256": "3904c6c396606d13a21de7296624bfff99054f60d872cb4da6a346ddb80487cb",
+  "documents": 1953,
+  "main_inventory_sha256": "8bb0be885bced01d9648b7eead154e349c477e19005d7ef5967f070cd3d9eba0",
+  "m2_raw_byte_identical": true,
+  "m2_raw_sha256": "167c842a507c2cf54abaa2d80a76245f20449342aa2641e301b6af40c9b2c249",
+  "m2_raw_bytes": 6668402,
+  "both_runs_reverse_byte_identical": true,
+  "oracle_default_byte_identical": true,
+  "oracle_default_sha256": "6fe36a13efe8ab63b7cd932f6577451c6591780d0def8195c9007ee455fd0acc",
+  "oracle_custom_lock_sha256": "783b38097b0e2a148de591a5b865b12c9b8fa606165eec6c08c7c72606ba8c3b",
+  "oracle_custom_inventory_sha256": "401e4d518c84af2281df064971c40ab76758761cec9cdea1b7454eaa8f806161",
+  "oracle_custom_sources": [
+    "ripgrep"
+  ],
+  "oracle_custom_labels": 32,
+  "oracle_custom_binding_verified": true,
+  "dependencies": {
+    "markdown-it-py": "4.0.0",
+    "github-slugger": "2.0.0"
+  },
+  "artifacts": {
+    "m2-after-raw.json.gz": "7250b636867d522ac1bdf2664fc610095df655bfccbcc19065bdafc32b9733a9",
+    "m2-after-run.json": "c02174516eb74a8e46f7d5fe269a57cdb4c9fecb4758b60e85ea763a7f3fe4e7",
+    "m2-before-raw.json.gz": "7250b636867d522ac1bdf2664fc610095df655bfccbcc19065bdafc32b9733a9",
+    "m2-before-run.json": "6ad1e4598599407169583a1be5856e33d17c04ea32061646fe5f837526f1bc54",
+    "oracle-after.json.gz": "a4532fadf50c58244aa2cc2fca9de5924831cf8dd653d08da3633a0aeee20e65",
+    "oracle-before.json.gz": "a4532fadf50c58244aa2cc2fca9de5924831cf8dd653d08da3633a0aeee20e65",
+    "oracle-custom-candidate.json.gz": "5cf8f8f41ec005d39853a26e3e80961e275cbf31aa4aba074541754eba33a48d",
+    "oracle-custom-corpus.lock.json.gz": "d35f75d77a9c7164965bc5f891e65e647053079d2bb3bb2218cb66850502c809",
+    "oracle-custom-inventory.lock.json": "401e4d518c84af2281df064971c40ab76758761cec9cdea1b7454eaa8f806161",
+    "oracle-custom-labels.json.gz": "40ad085390645dad7fc15ee069dfd23da1a8b258035ccc420b796f4d2ca7bd6c"
+  }
+}
