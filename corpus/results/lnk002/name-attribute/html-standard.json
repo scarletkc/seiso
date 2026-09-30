@@ -1,0 +1,7 @@
+{
+  "schema_version": 1,
+  "url": "https://html.spec.whatwg.org/multipage/browsing-the-web.html#the-indicated-part-of-the-document",
+  "checked_at": "2026-09-30T08:20:23.666892+00:00",
+  "response_sha256": "e2150579292f1702d64942b4adab9854d27b9ccf8e71154b06ba1bc3dc948aaf",
+  "interpretation": "Native HTML fragment selection first matches an element ID, then a name on an a element. A heading name alone is not a native fragment target. GitHub application scrolling accepts the name on the h3, as measured separately."
+}

@@ -505,9 +505,10 @@ fn document_anchors(document: &Document) -> BTreeMap<String, Span> {
                 .map_or(document.source.len(), |offset| matched.end() + offset);
         }
         for attr in ATTRIBUTE.captures_iter(matched.as_str()) {
-            if !(attr[1].eq_ignore_ascii_case("id")
-                || attr[1].eq_ignore_ascii_case("name") && capture[1].eq_ignore_ascii_case("a"))
-            {
+            // GitHub's repository viewer resolves name attributes on headings
+            // as well as legacy <a> anchors. Accept them on every element to
+            // avoid claiming a working reader destination is broken.
+            if !(attr[1].eq_ignore_ascii_case("id") || attr[1].eq_ignore_ascii_case("name")) {
                 continue;
             }
             let Some(value) = attr.get(2).or_else(|| attr.get(3)).or_else(|| attr.get(4)) else {
@@ -767,10 +768,10 @@ mod tests {
     #[test]
     fn html_ids_and_names_exclude_comments_code_frontmatter_and_escaped_tags() {
         let root = tempfile::tempdir().unwrap();
-        let source = "---\nnote: '<a id=frontmatter>'\n---\n# Title\n\n<a name='old'></a> <span ID=custom></span> <a id=two&amp;three></a>\n\n<div id=block></div>\n\n`<a id=inline>`\n\n```html\n<a id=fenced>\n```\n\n<!-- <a id=comment> -->\n\n\\<a id=escaped>\n\n<span name=not-an-anchor></span>\n\n<span title='the id=quoted'></span>\n";
+        let source = "---\nnote: '<a id=frontmatter>'\n---\n# Title\n\n<a name='old'></a> <span ID=custom></span> <a id=two&amp;three></a>\n\n<div id=block></div>\n\n`<a id=inline>`\n\n```html\n<a id=fenced>\n```\n\n<!-- <a id=comment> -->\n\n\\<a id=escaped>\n\n<span name=span-name></span>\n\n<span title='the id=quoted'></span>\n";
         let index = single_document(root.path(), source);
         let anchors = index.anchors("a.md").unwrap();
-        for expected in ["title", "old", "custom", "two&three", "block"] {
+        for expected in ["title", "old", "custom", "two&three", "block", "span-name"] {
             assert!(anchors.contains(expected), "{expected}: {anchors:?}");
         }
         for absent in [
@@ -779,10 +780,31 @@ mod tests {
             "fenced",
             "comment",
             "escaped",
-            "not-an-anchor",
             "quoted",
         ] {
             assert!(!anchors.contains(absent), "{absent}: {anchors:?}");
+        }
+    }
+
+    #[test]
+    fn name_attributes_on_headings_and_other_elements_resolve_exact_fragments() {
+        let root = tempfile::tempdir().unwrap();
+        let index = single_document(
+            root.path(),
+            "<h3 name=\"config\">\nConfiguration\n</h3>\n\n<SPAN NAME='two&amp;three'></SPAN>\n\n<custom-element name=安装></custom-element>\n\n`<h3 name=inline>`\n\n<!-- <h3 name=comment> -->\n\n```html\n<h3 name=fenced>\n```\n",
+        );
+        for anchor in ["config", "two&three", "安装"] {
+            assert_eq!(
+                index.resolve_link("a.md", &format!("#{anchor}")).status,
+                LinkStatus::AnchorFound
+            );
+            assert!(index.anchor_span("a.md", anchor).is_some());
+        }
+        for anchor in ["Config", "inline", "comment", "fenced"] {
+            assert_eq!(
+                index.resolve_link("a.md", &format!("#{anchor}")).status,
+                LinkStatus::AnchorMissing
+            );
         }
     }
 
