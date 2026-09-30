@@ -138,7 +138,11 @@ Before requesting review:
   on every update to the pull request, and its `check` job must pass.
 - When behavior changes, update the documentation, command help, and rule
   explanations in `docs/rules/` in the same pull request. Markdown in this
-  repository must pass `seiso check`.
+  repository must pass `seiso check`, which here includes preview rules. If a
+  preview diagnosis looks wrong, suppress it with a reason, as
+  [Explain an exception](docs/guides/checking.md#explain-an-exception) shows,
+  instead of rewording around it, and mention it in the pull request so
+  maintainers can review the rule.
 - Update the branch with the latest `main`; only an up-to-date branch can merge.
 - Change only what the issue asks for, and leave version numbers and release
   notes unchanged. Maintainers prepare them when
