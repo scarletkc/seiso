@@ -44,7 +44,7 @@ a rule. Use the [checking guide](checking.md) to exercise the CLI.
 
 ## Maintenance scripts
 
-The [`scripts/`](../../scripts/) package groups tools by responsibility:
+The `scripts/` package groups tools by responsibility:
 
 | Directory | Purpose |
 | --- | --- |

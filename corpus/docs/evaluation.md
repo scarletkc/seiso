@@ -69,6 +69,7 @@ not establish that the current implementation passes those tests. Keep the
 original report, annotations, acceptance receipt, and summary unchanged; use
 `--output` for a new replay summary.
 
+<!-- seiso: allow STL003 -- The M1 replay needs this fixed historical commit, which never changes. -->
 The checked-in M1 receipt predates `source_revision`. Its accepted test hashes
 match commit `b5651d290a261d603479d4b75538277a49dd0725`:
 

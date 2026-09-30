@@ -14,9 +14,11 @@ ripgrep's `FAQ.md` links to `#config`, and at commit `3fce3b5` the only
 matching element is `<h3 name="config">`. On GitHub's page for that commit,
 `#config` scrolls the heading into view just as its ordinary slug does, and a
 fragment that matches nothing leaves the page at the top. The
-[evidence](../../corpus/results/lnk002/name-attribute/) holds the browser
-measurements, a screenshot, the Markdown API response, and `check_github.py`,
-which repeats the check.
+[browser measurements](../../corpus/results/lnk002/name-attribute/browser.json)
+and [screenshot](../../corpus/results/lnk002/name-attribute/name-config.png)
+record this, and
+[`check_github.py`](../../corpus/results/lnk002/name-attribute/check_github.py)
+repeats the check.
 
 ## Decision
 

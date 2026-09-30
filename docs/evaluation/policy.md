@@ -9,8 +9,8 @@ publication answer different questions. A passing test suite establishes
 tested behavior; a frozen natural evaluation establishes measured precision;
 a successful upload establishes distribution availability.
 The [evaluation procedure](../../corpus/docs/evaluation.md) defines how to collect,
-review, and replay evidence. Dated decisions and results remain in
-[`docs/evaluation/`](./) as individual records.
+review, and replay evidence. Dated decisions and results remain as individual
+records, listed in the [documentation index](../README.md#evaluation).
 
 ## Stable promotion
 
