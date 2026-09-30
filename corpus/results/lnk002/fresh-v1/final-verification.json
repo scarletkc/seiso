@@ -1,0 +1,53 @@
+{
+  "delivery_artifacts": {
+    "decision.json": "b83273e15ad5a00b20baf3866d99534b4466a4ccc7a5d692f3709a4463edbfab",
+    "findings.json": "5ab285582bbe1585fc30b04b2e22e9d910d5b1f87e0589b7fd32320d7dfc2efe",
+    "manifest.json": "2d5d0064597d2d7cd7cceee56f2a6c4c7a0c0a8f6a7555b0853db8f3deb285da",
+    "summary.json": "b9fa4b49f62a5851cad95974f67ea193609f2b2ecaf420d1c1acb5b6c697f56f"
+  },
+  "exact_delivered_head_ci": "Verify after committing and pushing this receipt; commit-specific result is recorded in PR55 and final delivery response.",
+  "freeze_commit": "136585a72b7317df0a9893348350d04f70b8de91",
+  "gate_result": "failed; conservative precision96/451 <95%; diversity owner acceptance pending",
+  "human_reviewers": 0,
+  "implementation_fingerprints_unchanged": true,
+  "independent_reviews": {
+    "batch-1/stage-6-independent-review.json": "f9849c26c67af2eebb61a39c83e14a9f697214ba6d8e5e7436801199845425bd",
+    "stage-7-independent-review.json": "a75b179e7e69d569c91444ee913839ff46feb25de3d3989adb7483b0c3172fe3"
+  },
+  "local_checks": {
+    "corpus_tests": {
+      "failed": 0,
+      "passed": 10
+    },
+    "frozen_fresh_raw_byte_identical": {
+      "passed": true,
+      "sha256": "143c270d70e714faf1285729f885b66fe937d5befee2f1a6477c96a0ead4e28e"
+    },
+    "historical_tooling_m2_raw_byte_identical": {
+      "passed": true,
+      "sha256": "167c842a507c2cf54abaa2d80a76245f20449342aa2641e301b6af40c9b2c249"
+    },
+    "oracle_tests": {
+      "failed": 0,
+      "log_sha256": "0c5f413e984e4530f5b95f5efd5b78f6a2949c89e4ee7f2f767c9d0460d3463e",
+      "passed": 11
+    },
+    "repository_markdown_check": {
+      "log_sha256": "efa7365b79f1fb9239d97f098621f558aa4d85db7ce85247e577363ce6bd5f44",
+      "passed": true
+    },
+    "rust_tests": {
+      "existing_ignored": 2,
+      "failed": 0,
+      "passed": 284
+    },
+    "script_tests_including_32_focused": {
+      "failed": 0,
+      "passed": 176
+    }
+  },
+  "main_integration_replay_performed": false,
+  "promotion_performed": false,
+  "protected_paths_unchanged": true,
+  "schema_version": 1
+}

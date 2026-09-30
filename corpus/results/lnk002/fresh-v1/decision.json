@@ -1,0 +1,20 @@
+{
+  "conservative_precision_gate_met": false,
+  "decision": "retain_preview",
+  "dual_review_gate_met": true,
+  "future_fix_requires_another_fresh_cohort": true,
+  "future_main_integration_replay_required": true,
+  "gate_passes": false,
+  "human_reviewers": 0,
+  "main_changed": false,
+  "product_code_changed_after_freeze": false,
+  "promotion_performed": false,
+  "pull_requests_merged": false,
+  "reason": "Conservative precision is 96/451 (21.286%), below 95%; source concentration also remains pending owner acceptance.",
+  "rule": "LNK002",
+  "sample_size_gate_met": true,
+  "schema_version": 1,
+  "source_diversity_gate_met": false,
+  "source_diversity_owner_accepted": null,
+  "summary_sha256": "b9fa4b49f62a5851cad95974f67ea193609f2b2ecaf420d1c1acb5b6c697f56f"
+}

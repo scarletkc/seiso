@@ -1,0 +1,325 @@
+{
+  "checks": [
+    {
+      "check": "exact manifest, first-batch stopping, precommitted four-batch specification and report/label/input bindings",
+      "passed": true
+    },
+    {
+      "check": "independent arithmetic for overall/batch/source/language/agreement and honest failed gate with pending diversity",
+      "passed": true
+    },
+    {
+      "check": "frozen summarizer replay byte-identical to recorded summary after independent recomputation",
+      "passed": true
+    },
+    {
+      "check": "unchanged complete stage6 hash-chain, sealed originals, exact nested reviews and all eight resolutions",
+      "passed": true
+    },
+    {
+      "check": "all306FP and49uncertain findings unique, complete and exact bound-label projections",
+      "passed": true
+    },
+    {
+      "check": "record source/result/cause tables exact; four-batch correction; plan deletion/procedure and future-main replay/PR56 overlap wording consistent",
+      "passed": true
+    },
+    {
+      "check": "all60 frozen implementation fingerprints, protected paths, actual main and both unmerged draft PRs verified",
+      "passed": true
+    },
+    {
+      "check": "retained test counts and historical compatibility/raw hashes verified; CI wording explicitly pending rather than fabricated",
+      "passed": true
+    }
+  ],
+  "delivery_checks": {
+    "final_commit_exact_head_ci": "pending; parent must verify after final commits",
+    "stage7_artifact_review": "passed"
+  },
+  "errors": [],
+  "facts": {
+    "blind_protocol_personally_preserved": true,
+    "findings_categories": {
+      "fp:cli-build-generated-heading": 13,
+      "fp:custom-block-id": 3,
+      "fp:custom-container-id": 1,
+      "fp:custom-heading-id": 7,
+      "fp:generated-footnote-id": 3,
+      "fp:github-raw-html-heading": 1,
+      "fp:pinned-shortcode-id": 51,
+      "fp:renderer-deprecation-id": 3,
+      "fp:renderer-duplicate-id": 1,
+      "fp:renderer-link-normalization": 5,
+      "fp:renderer-slug-policy": 216,
+      "fp:template-generated-id": 2,
+      "uncertain:production-renderer-not-pinned": 48,
+      "uncertain:tab-plugin-version": 1
+    },
+    "findings_total": 355,
+    "fresh_evaluation_rerun_by_stage7_reviewer": false,
+    "frozen_summary_replay_byte_identical": true,
+    "future_main_replay_performed": false,
+    "human_reviewers": 0,
+    "implementation_fingerprints_verified": 60,
+    "independently_recomputed_overall": {
+      "agreement_rate": 0.9822616407982262,
+      "agreements": 443,
+      "conservative_precision": 0.21286031042128603,
+      "fp": 306,
+      "precision": 0.23880597014925373,
+      "samples": 451,
+      "tp": 96,
+      "uncertain": 49
+    },
+    "individual_context_reviews_repeated_in_stage7": false,
+    "literal_retained_raw_results_sha256": "143c270d70e714faf1285729f885b66fe937d5befee2f1a6477c96a0ead4e28e",
+    "original_disagreements": 8,
+    "originals_unchanged_and_blind_protocol_preserved": true,
+    "per_language": {
+      "en": {
+        "agreement_rate": 0.9822616407982262,
+        "agreements": 443,
+        "conservative_precision": 0.21286031042128603,
+        "fp": 306,
+        "precision": 0.23880597014925373,
+        "samples": 451,
+        "tp": 96,
+        "uncertain": 49
+      },
+      "ja": {
+        "agreement_rate": null,
+        "agreements": 0,
+        "conservative_precision": null,
+        "fp": 0,
+        "precision": null,
+        "samples": 0,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "zh": {
+        "agreement_rate": null,
+        "agreements": 0,
+        "conservative_precision": null,
+        "fp": 0,
+        "precision": null,
+        "samples": 0,
+        "tp": 0,
+        "uncertain": 0
+      }
+    },
+    "per_source": {
+      "cargo": {
+        "agreement_rate": null,
+        "agreements": 0,
+        "batch": 1,
+        "conservative_precision": null,
+        "fp": 0,
+        "precision": null,
+        "repository": "rust-lang/cargo",
+        "samples": 0,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "electron": {
+        "agreement_rate": null,
+        "agreements": 0,
+        "batch": 1,
+        "conservative_precision": null,
+        "fp": 0,
+        "precision": null,
+        "repository": "electron/electron",
+        "samples": 0,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "eslint": {
+        "agreement_rate": 0.8571428571428571,
+        "agreements": 6,
+        "batch": 1,
+        "conservative_precision": 0.5714285714285714,
+        "fp": 3,
+        "precision": 0.5714285714285714,
+        "repository": "eslint/eslint",
+        "samples": 7,
+        "tp": 4,
+        "uncertain": 0
+      },
+      "fastapi": {
+        "agreement_rate": null,
+        "agreements": 0,
+        "batch": 1,
+        "conservative_precision": null,
+        "fp": 0,
+        "precision": null,
+        "repository": "fastapi/fastapi",
+        "samples": 0,
+        "tp": 0,
+        "uncertain": 0
+      },
+      "mkdocs-material": {
+        "agreement_rate": 0.9864864864864865,
+        "agreements": 73,
+        "batch": 1,
+        "conservative_precision": 0.0945945945945946,
+        "fp": 66,
+        "precision": 0.0958904109589041,
+        "repository": "squidfunk/mkdocs-material",
+        "samples": 74,
+        "tp": 7,
+        "uncertain": 1
+      },
+      "node": {
+        "agreement_rate": 1.0,
+        "agreements": 25,
+        "batch": 1,
+        "conservative_precision": 0.88,
+        "fp": 3,
+        "precision": 0.88,
+        "repository": "nodejs/node",
+        "samples": 25,
+        "tp": 22,
+        "uncertain": 0
+      },
+      "rustc-dev-guide": {
+        "agreement_rate": 1.0,
+        "agreements": 21,
+        "batch": 1,
+        "conservative_precision": 1.0,
+        "fp": 0,
+        "precision": 1.0,
+        "repository": "rust-lang/rustc-dev-guide",
+        "samples": 21,
+        "tp": 21,
+        "uncertain": 0
+      },
+      "traefik": {
+        "agreement_rate": 1.0,
+        "agreements": 8,
+        "batch": 1,
+        "conservative_precision": 0.25,
+        "fp": 6,
+        "precision": 0.25,
+        "repository": "traefik/traefik",
+        "samples": 8,
+        "tp": 2,
+        "uncertain": 0
+      },
+      "vitest": {
+        "agreement_rate": 0.9776119402985075,
+        "agreements": 262,
+        "batch": 1,
+        "conservative_precision": 0.14925373134328357,
+        "fp": 228,
+        "precision": 0.14925373134328357,
+        "repository": "vitest-dev/vitest",
+        "samples": 268,
+        "tp": 40,
+        "uncertain": 0
+      },
+      "vscode-docs": {
+        "agreement_rate": 1.0,
+        "agreements": 48,
+        "batch": 1,
+        "conservative_precision": 0.0,
+        "fp": 0,
+        "precision": null,
+        "repository": "microsoft/vscode-docs",
+        "samples": 48,
+        "tp": 0,
+        "uncertain": 48
+      }
+    },
+    "protected_paths_unchanged": true,
+    "pull_requests": [
+      {
+        "baseRefName": "main",
+        "headRefName": "feat/issue-11-lnk002-holdout",
+        "headRefOid": "96577100666c5cd8e31609c46c0b9699c0113f1c",
+        "isDraft": true,
+        "mergedAt": null,
+        "number": 55,
+        "state": "OPEN",
+        "url": "https://github.com/scarletkc/seiso/pull/55"
+      },
+      {
+        "baseRefName": "main",
+        "headRefName": "fix/issue-11-heading-name-anchors",
+        "headRefOid": "1ccf91cb953b98eb9f4060bfa4ba595269be991d",
+        "isDraft": true,
+        "mergedAt": null,
+        "number": 56,
+        "state": "OPEN",
+        "url": "https://github.com/scarletkc/seiso/pull/56"
+      }
+    ],
+    "remote_main": "7f8371f25ae438561c28ce99931b666b7723d629",
+    "resolved_labels_sha256": "29fa5f78b40212a994eb32e41105cded73738c422d0384ac8b4c9f1033e44c23",
+    "retained_validation_counts": {
+      "corpus_tests": 10,
+      "oracle_tests": 11,
+      "rust_ignored": 2,
+      "rust_passed": 284,
+      "script_tests_including32focused": 176
+    },
+    "summary_replay_path": "/tmp/seiso-stage7-independent-summary.json",
+    "summary_sha256": "b9fa4b49f62a5851cad95974f67ea193609f2b2ecaf420d1c1acb5b6c697f56f"
+  },
+  "hashes": {
+    ".github/workflows/ci.yml": "ef544442b63bf68fa24b53aabbafe811f778d0bf072dd999f2bcc9db4c0c5d82",
+    "corpus/docs/evaluation.md": "ce55fad4e3080d195d74b7d9877604432ff4b1ba443fb2a45a00f4f527650696",
+    "corpus/results/lnk002/fresh-v1/batch-1/annotations/archive-receipt.json": "4fd8b0e6b193e96d63e5a08b40c30c54c0652d38cc96b7be9cc13fcafc5a0326",
+    "corpus/results/lnk002/fresh-v1/batch-1/annotations/author-labels.json.gz": "b13cf7f249601803afc38caa8e05ef04cdb29879923ad0fbf26739c08a8a971d",
+    "corpus/results/lnk002/fresh-v1/batch-1/annotations/independent-evidence.tar.gz": "8d48bd76f20ebbfd8f089f9979b85e3f0fbd256a906e2457597a536265c83320",
+    "corpus/results/lnk002/fresh-v1/batch-1/annotations/independent-labels.json.gz": "867184dc9d30e4fdfa6962954ce04ea014db27b799ed6808278f4de57e1e66f0",
+    "corpus/results/lnk002/fresh-v1/batch-1/annotations/independent-reconciliation-proposal.json": "fc04ba9512b1d9b704ed6691909a424824124273f15c67bbdcd96a86a87c7cb4",
+    "corpus/results/lnk002/fresh-v1/batch-1/annotations/labels-links.json": "29fa5f78b40212a994eb32e41105cded73738c422d0384ac8b4c9f1033e44c23",
+    "corpus/results/lnk002/fresh-v1/batch-1/annotations/reconciliation.json": "2a86c4cb9264c1058b52e6d9184b93f77291f19e79bec7da32760f181d82546d",
+    "corpus/results/lnk002/fresh-v1/batch-1/annotations/verify-stage6-bundle.py": "5618e92335fddb61eaa05a66fca0ec1e615507fd3c37cb30d7e962b4c1df47b2",
+    "corpus/results/lnk002/fresh-v1/batch-1/author-annotation-seal.json": "f3550b51c2ff6e634f7225c0780ddc299d85d73a97739eaadc69d5fa96dfd9f1",
+    "corpus/results/lnk002/fresh-v1/batch-1/corpus.lock.json": "8affea1f5c672343c851b0861192ba3b64315999288509ce849a78d08aa75f8a",
+    "corpus/results/lnk002/fresh-v1/batch-1/independent-annotation-seal.json": "deb41dee61def7132d04b71084f0140c04431031ffcc5e7eadc3fbef444e7b77",
+    "corpus/results/lnk002/fresh-v1/batch-1/inventory/inventory.lock.json": "c5c99a61cf12a807d502dd67284fe08ad3f4b7076ef32890e56e6d95e25401ae",
+    "corpus/results/lnk002/fresh-v1/batch-1/kinds.json": "89adb5c9a6732d878b886a5c028521cf65950ad11743315a4dc7bd42d39e1078",
+    "corpus/results/lnk002/fresh-v1/batch-1/run/diagnostics.json.gz": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+    "corpus/results/lnk002/fresh-v1/batch-1/run/raw-replay.json": "d977dd11069d9c4133abaa4415f90f844596cf3cce7254716395703ec4e6bd96",
+    "corpus/results/lnk002/fresh-v1/batch-1/run/raw-results.json.gz": "a79c5ca9a9eabda0f4df62bd39221513cdc7ce5c810be22a5553c649c9647f6f",
+    "corpus/results/lnk002/fresh-v1/batch-1/run/run.json": "798a971b1acd5c1ec3aa9f8357f67d769ef36bf7d6746fe08e145a6311549271",
+    "corpus/results/lnk002/fresh-v1/batch-1/sites.json": "5c1c81da352415b1f3c550b49cd9ead8d2d2fd15dbc446af17bb851f002471f4",
+    "corpus/results/lnk002/fresh-v1/batch-1/stage-6-checkpoint.json": "8eded5672e0a457a9e1a158d274d5414bf19bed131f45c19e90d6ebdb89b5fa7",
+    "corpus/results/lnk002/fresh-v1/batch-1/stage-6-independent-review.json": "f9849c26c67af2eebb61a39c83e14a9f697214ba6d8e5e7436801199845425bd",
+    "corpus/results/lnk002/fresh-v1/decision.json": "b83273e15ad5a00b20baf3866d99534b4466a4ccc7a5d692f3709a4463edbfab",
+    "corpus/results/lnk002/fresh-v1/findings.json": "5ab285582bbe1585fc30b04b2e22e9d910d5b1f87e0589b7fd32320d7dfc2efe",
+    "corpus/results/lnk002/fresh-v1/freeze.json": "e566a25fdf6404a92ac05485eac0ce09859557d542ad1c2167963a955ce10919",
+    "corpus/results/lnk002/fresh-v1/manifest.json": "2d5d0064597d2d7cd7cceee56f2a6c4c7a0c0a8f6a7555b0853db8f3deb285da",
+    "corpus/results/lnk002/fresh-v1/source-diversity-checkpoint.json": "c5af83aedcf0588d16533dd862c0c25bb8b5f0e0b3afcdfd960c1b55a20ce395",
+    "corpus/results/lnk002/fresh-v1/sources.json": "d153f8b3594a95a166d4b46267d1d3ec1417ded2f8fcea165777ad0c545304e0",
+    "corpus/results/lnk002/fresh-v1/summary.json": "b9fa4b49f62a5851cad95974f67ea193609f2b2ecaf420d1c1acb5b6c697f56f",
+    "corpus/results/lnk002/validation/final-oracle-tests.log.gz": "0c5f413e984e4530f5b95f5efd5b78f6a2949c89e4ee7f2f767c9d0460d3463e",
+    "corpus/results/lnk002/validation/heading-name-regression.json": "47bc3a58ae3a97fa90c1d74205811c555cf73424e058970581fff366208498d3",
+    "corpus/results/lnk002/validation/seiso-fresh-links-tests.log.gz": "a7dcbecb0f063797c05ce4c31626567b96cace28494d67df5e7a0bd6a1dc706c",
+    "corpus/results/lnk002/validation/seiso-python-corpus-tests.log.gz": "6d5058444a0d837e0910907e0e2d4e916e9e7fe1de8f3858ceaea6783a84946e",
+    "corpus/results/lnk002/validation/seiso-python-scripts-tests.log.gz": "3c57e78fe4f89fac605556e0938508ef3211ca90d00914d191ed29bdfe61686c",
+    "corpus/results/lnk002/validation/seiso-tooling-build.log.gz": "c2ee1cd7582b7798519ba1cb39aad1f402ca2c9660d929243a6236f8de7be937",
+    "corpus/results/lnk002/validation/seiso-tooling-clippy.log.gz": "525497ac0ce4925aada2bce6910d75995d86503c287b85f48bd30e2fdece4d4d",
+    "corpus/results/lnk002/validation/seiso-tooling-docs.log.gz": "efa7365b79f1fb9239d97f098621f558aa4d85db7ce85247e577363ce6bd5f44",
+    "corpus/results/lnk002/validation/seiso-tooling-rust-tests-isolated.log.gz": "c868a554608761b1464388b6e2f54fcbec83fb0ed949da627b257d2046e8bc38",
+    "corpus/results/lnk002/validation/tooling-regression.json": "6cdf90f2b7bc1dcd5177d32fedbb0888402208f1f17f4fc644adce8641ebfb1f",
+    "docs/evaluation/lnk002-2026-09-30.md": "7834ede110754063e9681ce4a4d2a9f8f4ede64ac4999090afabfe5314352167"
+  },
+  "limitations": [
+    "Source-diversity owner acceptance remains null; numeric gate independently fails, so preview retention is valid without that approval.",
+    "The49 renderer uncertainties remain unchanged:48 VSCode production-renderer cases and one exact Material tab-build case.",
+    "Existing complete stage6 proof archive and original review hash-chain were checked for immutability; the451 individually reviewed contexts were not repeated.",
+    "Retained test logs and prior raw/reverse receipts were audited. This review does not claim a new browser observation, upstream build, fresh evaluation or final-head CI run."
+  ],
+  "pass": true,
+  "review_scope": "Prepared stage7 artifacts and record/procedure; final exact-head CI follows the receipt and final artifact commits.",
+  "reviewed_at_utc": "2026-09-30T12:03:53.843473+00:00",
+  "reviewed_head": "96577100666c5cd8e31609c46c0b9699c0113f1c",
+  "reviewer": "/root/blind_lnk002_reviewer",
+  "schema_version": 1,
+  "stage": 7,
+  "verification_script_path": "/tmp/seiso-stage7-independent-verifier.py",
+  "verification_script_sha256": "a7ab4aa0382c44fae8499fbca8ede673e44d747423d5a292d99cd886104b4a67"
+}

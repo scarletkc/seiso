@@ -318,7 +318,7 @@ files to review sites. Bind `sites.json` to the batch lock with
 source; each review has `sites` and a `reason`. Each site records `path`,
 `root`, optional `public` and `base`, and the review fields `generator`,
 `evidence`, `evidence_path`, and `evidence_git_blob`. The evidence must name a
-configuration blob in the pinned tree. Sources without a site get an empty
+configuration or navigation blob in the pinned tree. Sources without a site get an empty
 list and the review reason.
 
 Bind `kinds.json` to the same lock with `schema_version: 1`, `corpus_sha256`,

@@ -1,0 +1,94 @@
+{
+  "checks": [
+    {
+      "check": "frozen report, corpus, inventory and profiles exact hashes",
+      "passed": true
+    },
+    {
+      "check": "all compressed original/archive byte hashes and both annotation seals",
+      "passed": true
+    },
+    {
+      "check": "451 exact report bindings and unchanged complete nested agent reviews",
+      "passed": true
+    },
+    {
+      "check": "all eight resolutions exact accepted proposal and conservative tab uncertainty",
+      "passed": true
+    },
+    {
+      "check": "bound-label payload and original decision-byte binding",
+      "passed": true
+    },
+    {
+      "check": "exact frozen candidate files and explicitly preliminary oracle binding",
+      "passed": true
+    },
+    {
+      "check": "complete deterministic archive, original manifests and all post-seal proof hashes",
+      "passed": true
+    },
+    {
+      "check": "all60 implementation fingerprints equal freeze; protected paths and main unchanged",
+      "passed": true
+    },
+    {
+      "check": "stage6 checkpoint claims independently supported",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "facts": {
+    "archive_members": 1389,
+    "archive_metadata": "path-component-sorted regular files; uid/gid/mtime0; empty owner names; mode0644; no links/unsafe paths/bytecode cache",
+    "blind_protocol_preserved": true,
+    "human_reviewers": 0,
+    "implementation_files": 60,
+    "individual_context_reviews_repeated": false,
+    "labels": 451,
+    "original_agreements": 443,
+    "original_disagreements": 8,
+    "original_manifest_files": 1333,
+    "originals_byte_identical_to_seals": true,
+    "reconciliation_proof_files": 21,
+    "remote_main": "7f8371f25ae438561c28ce99931b666b7723d629"
+  },
+  "hashes": {
+    "annotations/archive-receipt.json": "4fd8b0e6b193e96d63e5a08b40c30c54c0652d38cc96b7be9cc13fcafc5a0326",
+    "annotations/author-labels.json.gz": "b13cf7f249601803afc38caa8e05ef04cdb29879923ad0fbf26739c08a8a971d",
+    "annotations/author-target-facts.json.gz": "674b3004e3bd8eb790b92cdd16770f35bcc9302c3f13c2167fb1a78fe1950147",
+    "annotations/candidate.json.gz": "8086279bb5ec8ebab3928e12cd16be04ceb01f4ebce9f8f7137312e2e97ed342",
+    "annotations/decisions-links.json.gz": "3593eb4dfc07cd0f81ebb84b47ecacfde7dcd1e12ec1372780accbd3651b1df0",
+    "annotations/independent-evidence-manifest.json": "35900bcbba20461ee349456a489937f3abeb136fbdce4c4f7f759e50aae48070",
+    "annotations/independent-evidence.tar.gz": "8d48bd76f20ebbfd8f089f9979b85e3f0fbd256a906e2457597a536265c83320",
+    "annotations/independent-labels.json.gz": "867184dc9d30e4fdfa6962954ce04ea014db27b799ed6808278f4de57e1e66f0",
+    "annotations/independent-reconciliation-proposal.json": "fc04ba9512b1d9b704ed6691909a424824124273f15c67bbdcd96a86a87c7cb4",
+    "annotations/independent-stage-6-independent-reconciliation-receipt.json": "24a984a73058a890c6b8037b109d1751bd62ffcc9e35e9d2a198f5ab86abc1ee",
+    "annotations/independent-validation.json": "c8cc4cd7636d666c32b31f2169229b3278225c145e899207738c725258c6e587",
+    "annotations/labels-links.json": "29fa5f78b40212a994eb32e41105cded73738c422d0384ac8b4c9f1033e44c23",
+    "annotations/oracle.json.gz": "ddfc65e65fcb85a7d9dc0c01a4f9c5e258969b87c8b781762a887b2360bd8773",
+    "annotations/reconciliation.json": "2a86c4cb9264c1058b52e6d9184b93f77291f19e79bec7da32760f181d82546d",
+    "archive_reconciliation_evidence_inputs": "9eb02f0d5b6c9d8d5d6c208436fbbe1825c08180c4a7cbd55fb1260ddaf9bc64",
+    "original_uncompressed_author_labels": "4aa71a2ca33d84281d5212797f5a864a17668128254a7ae7930d65b85aa1879c",
+    "original_uncompressed_decisions": "7003b3d8e31b1914734963d1a04e0f1073349557008805b4da8eeec25678ebd7",
+    "original_uncompressed_independent_labels": "19f7eddd358f311910b0504485d10219279a1219057d79c4431dd3b63541cc0d",
+    "run/diagnostics.json.gz": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+    "stage-6-checkpoint.json": "8eded5672e0a457a9e1a158d274d5414bf19bed131f45c19e90d6ebdb89b5fa7"
+  },
+  "limitations": [
+    "VS Code production-renderer uncertainty and exact Material tab-build uncertainty remain explicit in the accepted labels.",
+    "This validates the assembled evidence and bindings; it does not repeat the451 original individual reviews or run upstream build/config code."
+  ],
+  "pass": true,
+  "reviewed_at_utc": "2026-09-30T11:44:45.785236+00:00",
+  "reviewed_head": "96577100666c5cd8e31609c46c0b9699c0113f1c",
+  "reviewer": "/root/blind_lnk002_reviewer",
+  "schema_version": 1,
+  "stage": 6,
+  "verification_notes": [
+    "Resolved disagreement evidence preserves the exact accepted proposal plus an archive-location suffix; nested original reviews remain exact.",
+    "Archive ordering is deterministic by POSIX path components, with normalized metadata."
+  ],
+  "verification_script_path": "/tmp/seiso-stage6-bundle-verifier.py",
+  "verification_script_sha256": "5618e92335fddb61eaa05a66fca0ec1e615507fd3c37cb30d7e962b4c1df47b2"
+}
