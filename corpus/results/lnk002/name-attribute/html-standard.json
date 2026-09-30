@@ -1,0 +1,8 @@
+{
+  "reviewed_on": "2026-09-30",
+  "url": "https://html.spec.whatwg.org/multipage/browsing-the-web.html#the-indicated-part-of-the-document",
+  "section": "7.4.6.4 Scrolling to a fragment; find a potential indicated element",
+  "retrieval": "Hosted web tool opened the official HTML Standard and located the indicated-element algorithm. Direct shell HTTPS was blocked by the environment proxy.",
+  "summary": "Native fragment navigation first selects a matching element ID, then a matching name on an a element, in document order. A name on an h3 element alone is not a native fragment target. GitHub application behavior must still be established separately by a live browser with functioning controls.",
+  "github_behavior_established": false
+}

@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-30T07:58:35.335139+00:00",
+  "command": [
+    "gh",
+    "api",
+    "markdown",
+    "--method",
+    "POST",
+    "--input",
+    "corpus/results/lnk002/name-attribute/markdown-request.json"
+  ],
+  "exit_code": 1,
+  "stdout_bytes": 0,
+  "stderr_sha256": "a830379d06f7d73ede0f3abbac5e905c483a197a2d4f493976bd50c4b1a77c93"
+}
