@@ -23,31 +23,32 @@ class InstallationTests(unittest.TestCase):
                                     ("1.2.3-rc.1", "1.2.3rc1"), ("1.2.3", "1.2.3")]:
             with self.subTest(version=version):
                 self.manifest(version)
-                output.return_value = f"seiso {version}\n"
+                output.return_value = f"seiso {version} (Seiso Convention 0.1.0)\n"
                 metadata.return_value = normalized
                 verify_installation.verify(self.root, ["seiso"], python_package=True)
                 metadata.assert_called_with("seiso")
                 self.assertEqual(output.call_args.args[0][-1], "--version")
 
     @patch("scripts.release.verify_installation.installed_version")
-    @patch("scripts.release.verify_installation.subprocess.check_output", return_value="seiso 1.2.3a1\n")
+    @patch("scripts.release.verify_installation.subprocess.check_output")
     def test_cli_rejects_normalized_or_stale_version(self, output, metadata):
         self.manifest("1.2.3-alpha.1")
-        for actual in ["seiso 1.2.3a1\n", "seiso 1.2.2\n"]:
+        for actual in ["seiso 1.2.3a1 (Seiso Convention 0.1.0)\n", "seiso 1.2.2 (Seiso Convention 0.1.0)\n",
+                       "seiso 1.2.3-alpha.1\n"]:
             output.return_value = actual
             with self.assertRaisesRegex(ValueError, "CLI version mismatch"):
                 verify_installation.verify(self.root, ["seiso"], python_package=True)
         metadata.assert_not_called()
 
     @patch("scripts.release.verify_installation.installed_version", return_value="1.2.3-alpha.1")
-    @patch("scripts.release.verify_installation.subprocess.check_output", return_value="seiso 1.2.3-alpha.1\n")
+    @patch("scripts.release.verify_installation.subprocess.check_output", return_value="seiso 1.2.3-alpha.1 (Seiso Convention 0.1.0)\n")
     def test_python_metadata_must_match_normalized_version(self, output, metadata):
         self.manifest("1.2.3-alpha.1")
         with self.assertRaisesRegex(ValueError, "Python version mismatch"):
             verify_installation.verify(self.root, ["seiso"], python_package=True)
 
     @patch("scripts.release.verify_installation.installed_version")
-    @patch("scripts.release.verify_installation.subprocess.check_output", return_value="seiso 1.2.3-rc.1\n")
+    @patch("scripts.release.verify_installation.subprocess.check_output", return_value="seiso 1.2.3-rc.1 (Seiso Convention 0.1.0)\n")
     def test_npm_command_does_not_require_python_installation(self, output, metadata):
         self.manifest("1.2.3-rc.1")
         command = ["npm", "exec", "--yes", "--package", "./seiso.tgz", "--", "seiso"]

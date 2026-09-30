@@ -58,6 +58,12 @@ After each release, advance explicitly to `1.2.3-alpha.2`, `1.2.3-beta.1`,
 or `1.2.3-rc.1` using the same command. Each bump requires a version greater
 than the current Cargo version.
 
+When [`spec/CHANGELOG.md`](../../spec/CHANGELOG.md) lists entries under
+`Unreleased`, [release a specification version](#release-a-specification-version)
+first, so that seiso checks a released version. The release note names the
+specification version the release checks, which `SPECIFICATION_VERSION` in
+[`src/lib.rs`](../../src/lib.rs) holds.
+
 `--note` creates `docs/release-notes/VERSION.md` with a `## Release title`
 heading. Fill in its body with user-facing changes and migration instructions
 before committing. Existing notes are never overwritten. The note is optional,
@@ -252,7 +258,8 @@ python -m pip install 'seiso==1.2.3rc1'
 For the most recent release in an npm channel, use `@scarletkc/seiso@alpha`,
 `@scarletkc/seiso@beta`, or `@scarletkc/seiso@rc`. For Python, `python -m pip
 install --upgrade --pre seiso` allows prereleases. Verify the installed CLI with
-`seiso --version`; even the Python installation reports `seiso 1.2.3-rc.1`.
+`seiso --version`; even the Python installation reports
+`seiso 1.2.3-rc.1 (Seiso Convention X.Y.Z)`.
 
 From `1.2.3-rc.1`, promote to `1.2.3` with:
 
@@ -274,8 +281,9 @@ publishes no package. Choose the number by its
 
 1. On a `release/spec-vX.Y.Z` branch, rename the `Unreleased` heading in
    [`spec/CHANGELOG.md`](../../spec/CHANGELOG.md) to `X.Y.Z - YYYY-MM-DD` and
-   add an empty `Unreleased` heading above it. Title the pull request
-   `chore(release): prepare spec-vX.Y.Z`.
+   add an empty `Unreleased` heading above it. Set `SPECIFICATION_VERSION` in
+   [`src/lib.rs`](../../src/lib.rs) to `X.Y.Z`; a test fails while the two
+   differ. Title the pull request `chore(release): prepare spec-vX.Y.Z`.
 2. After the squash merge, tag the merge commit on `main` and push the tag:
 
    ```sh

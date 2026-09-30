@@ -63,6 +63,26 @@ fn rule_documentation_links_are_versioned_and_point_to_existing_pages() {
 }
 
 #[test]
+fn specification_version_is_the_newest_released_version() {
+    let changelog = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("spec/CHANGELOG.md"),
+    )
+    .unwrap();
+    let newest = changelog
+        .lines()
+        .filter_map(|line| line.strip_prefix("## "))
+        .find(|heading| *heading != "Unreleased")
+        .and_then(|heading| heading.split(" - ").next())
+        .unwrap();
+    assert_eq!(seiso::SPECIFICATION_VERSION, newest);
+    let sarif: serde_json::Value = serde_json::from_str(&render_sarif(&[]).unwrap()).unwrap();
+    assert_eq!(
+        sarif["runs"][0]["tool"]["driver"]["properties"]["conventionVersion"],
+        newest
+    );
+}
+
+#[test]
 fn unknown_diagnostic_codes_do_not_link_to_nonexistent_rule_pages() {
     let diagnostic = Diagnostic::new("page.md", "", "X001", Span::new(0, 0), "Problem", "Fix");
     assert!(diagnostic.url.is_none());

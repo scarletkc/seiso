@@ -16,7 +16,8 @@ authorship, check spelling or formatting, or rewrite meaning. The convention
 is independent of any writing skill or prompt; its original motivation is
 recorded in the [design history](../design/history.md).
 
-seiso checks the specification text of the revision it was built from.
+`seiso --version` and the `conventionVersion` property of the SARIF
+`tool.driver` name the specification version seiso checks.
 
 ## Kind assignment
 
@@ -121,8 +122,8 @@ rows a default check covers.
 | `EXCEPTION-2` an exception is a judgment | SUP001 | Partial: a missing reason or an invalid code; the reason's adequacy is reviewed |
 | `EXCEPTION-3` remove unused exceptions | SUP002 | Complete for enabled rules that completed; `--fix` removes them |
 
-For the requirements the specification places on checkers, this page and
-`seiso rule --all` state the version and coverage (`CONFORMANCE-2`), the basis
+For the requirements the specification places on checkers, the version named
+above and the coverage table state what seiso checks (`CONFORMANCE-2`), the basis
 table above distinguishes evidence (`CONFORMANCE-3`), an incomplete check
 exits with code 2 and keeps exceptions incomplete (`CONFORMANCE-4`), and tie
 diagnostics name the owner decision (`CONFORMANCE-5`). Thresholds, lexicons,

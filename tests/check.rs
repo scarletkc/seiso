@@ -1196,6 +1196,21 @@ fn rule_documents_are_available_and_future_features_are_rejected() {
 }
 
 #[test]
+fn version_names_the_specification_version() {
+    let workspace = workspace("");
+    let output = run(workspace.path(), &["--version"], None);
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout),
+        format!(
+            "seiso {} (Seiso Convention {})
+",
+            env!("CARGO_PKG_VERSION"),
+            seiso::SPECIFICATION_VERSION
+        )
+    );
+}
+
+#[test]
 fn rule_documents_link_into_this_versions_repository() {
     let workspace = workspace("");
     let root = workspace.path();
@@ -1208,13 +1223,13 @@ fn rule_documents_link_into_this_versions_repository() {
             link.destination
         );
     }
-    let repository = format!(
-        "https://github.com/scarletkc/seiso/blob/v{}/",
-        env!("CARGO_PKG_VERSION")
+    let specification = format!(
+        "https://github.com/scarletkc/seiso/blob/spec-v{}/spec/",
+        seiso::SPECIFICATION_VERSION
     );
     let stl001 = run(root, &["rule", "STL001"], None);
     assert!(String::from_utf8_lossy(&stl001.stdout).contains(&format!(
-        "[long-lived documents]({repository}spec/convention.md#document-kinds)"
+        "[long-lived documents]({specification}convention.md#document-kinds)"
     )));
     // Links inside examples are part of the example.
     let dup001 = run(root, &["rule", "DUP001"], None);

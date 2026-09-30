@@ -99,9 +99,6 @@ Planned work:
 - A GitHub Pages site built with VitePress from `spec/` at each `spec-v` tag,
   with one path per version. Links that leave `spec/` point to the same tag,
   and each requirement identifier gets an anchor.
-- Each seiso release states the specification version it checks in
-  `seiso --version`, in machine-readable output, and in its release notes. The
-  two version numbers are not aligned.
 
 Open questions:
 

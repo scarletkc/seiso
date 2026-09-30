@@ -77,6 +77,7 @@ pub fn render_sarif(diagnostics: &[Diagnostic]) -> Result<String, serde_json::Er
                 "version": env!("CARGO_PKG_VERSION"),
                 "informationUri": "https://github.com/scarletkc/seiso",
                 "rules": rules,
+                "properties": {"conventionVersion": crate::SPECIFICATION_VERSION},
             }},
             "columnKind": "unicodeCodePoints",
             "defaultEncoding": "utf-8",

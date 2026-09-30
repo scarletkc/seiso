@@ -269,8 +269,8 @@ impl Rule {
         repository_url(&format!("docs/rules/{}.md", self.code))
     }
 
-    /// The embedded page with its relative links pointing at this version's
-    /// tag, so they still open outside a seiso checkout.
+    /// The embedded page with its relative links pointing at a release tag,
+    /// so they still open outside a seiso checkout.
     pub fn standalone_documentation(&self) -> String {
         let source = self.documentation;
         let Ok(document) = crate::md::parse(source) else {
@@ -315,12 +315,15 @@ impl Rule {
     }
 }
 
-/// A repository file at the tag of this seiso version.
+/// A repository file at the tag of the specification version this build
+/// implements for `spec/`, and at the tag of this seiso version otherwise.
 fn repository_url(path: &str) -> String {
-    format!(
-        "https://github.com/scarletkc/seiso/blob/v{}/{path}",
-        env!("CARGO_PKG_VERSION")
-    )
+    let tag = if path.starts_with("spec/") {
+        format!("spec-v{}", crate::SPECIFICATION_VERSION)
+    } else {
+        format!("v{}", env!("CARGO_PKG_VERSION"))
+    };
+    format!("https://github.com/scarletkc/seiso/blob/{tag}/{path}")
 }
 
 #[derive(Debug, PartialEq, Eq)]

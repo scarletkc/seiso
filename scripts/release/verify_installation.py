@@ -4,6 +4,7 @@ import argparse
 from importlib.metadata import version as installed_version
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tomllib
@@ -21,8 +22,10 @@ def verify(root, command, python_package=False):
         [shutil.which(command[0]) or command[0], *command[1:], "--version"],
         cwd=root, text=True, encoding="utf-8",
     ).strip()
-    if output != f"seiso {version}":
-        raise ValueError(f"CLI version mismatch: expected 'seiso {version}', got {output!r}")
+    if not re.fullmatch(rf"seiso {re.escape(version)} \(Seiso Convention \d+\.\d+\.\d+\)", output):
+        raise ValueError(
+            f"CLI version mismatch: expected 'seiso {version} (Seiso Convention X.Y.Z)', got {output!r}"
+        )
     if python_package:
         actual = installed_version("seiso")
         if actual != expected_python:

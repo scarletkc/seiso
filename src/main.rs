@@ -1,15 +1,24 @@
 use clap::{Parser, Subcommand};
 use std::process::ExitCode;
+use std::sync::LazyLock;
 
 mod commands;
 
 #[global_allocator]
 static ALLOCATOR: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
+static VERSION: LazyLock<String> = LazyLock::new(|| {
+    format!(
+        "{} (Seiso Convention {})",
+        env!("CARGO_PKG_VERSION"),
+        seiso::SPECIFICATION_VERSION
+    )
+});
+
 #[derive(Parser)]
 #[command(
     name = "seiso",
-    version,
+    version = VERSION.as_str(),
     about = "A Markdown convention and linter for project docs written by AI and read by humans and agents"
 )]
 struct Cli {
