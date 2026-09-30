@@ -1,0 +1,287 @@
+{
+  "created_at_utc": "2026-09-30T11:28:37.107014+00:00",
+  "evidence_inputs_path": "/tmp/seiso-independent-lnk002/reconciliation-evidence/inputs.json",
+  "evidence_inputs_sha256": "9eb02f0d5b6c9d8d5d6c208436fbbe1825c08180c4a7cbd55fb1260ddaf9bc64",
+  "human_reviewers": 0,
+  "original_author_sha256": "4aa71a2ca33d84281d5212797f5a864a17668128254a7ae7930d65b85aa1879c",
+  "original_independent_sha256": "19f7eddd358f311910b0504485d10219279a1219057d79c4431dd3b63541cc0d",
+  "originals_modified": false,
+  "proposals": [
+    {
+      "agent_context_reviewed": true,
+      "code": "LNK002",
+      "diagnostic_sha256": "cfed67091ae39b333f913586a8bc56afc545d173f5681d0d68d462d964c57273",
+      "evidence": "Exact page HTML SHA256305f8df411f309a05604eeb1eb3fdeb488240a043d94719eb4d903cbd4139048; retained heading fact/excerpt plus source/target Git blob d47571e41dfc80060d783bfffeb33ba13bcba057. Primary proof receipts: reconciliation-evidence/inputs.json. Post-seal parent browser receipt and three DOM hashes were independently verified; baseline and missing control scrollY=0, target fragment scrollY=7977 brings the same documentY8569 heading into viewportY592. Target screenshot was visually inspected. See reconciliation-evidence/eslint-browser/independent-inspection.json.",
+      "id": "5ae349267ca18b86e38c1e3d725aba221cda612e55d20f055a843afb9fe917b1",
+      "input_sha256": "48d59088e38e4ee7b4b5b7d2cb9f9b0ae5c1a83dd5a2d978f074166336207f47",
+      "limitations": "Independent reviewer did not rerun the browser. Reader scrolling is corroborated by verified parent post-seal browser/DOM/screenshot observations at the exact commit URL; no frozen GitHub renderer binary or human review is claimed.",
+      "original_author_label": "tp",
+      "original_independent_label": "fp",
+      "path": "README.md",
+      "proposed_resolved_label": "fp",
+      "reason": "Pinned README line359 has raw <h3>Technology Sponsors</h3>. The actual GitHub repository page at the exact pinned commit wraps it with a heading permalink whose id is user-content-technology-sponsors and href is #technology-sponsors. That direct repository-page output supplies the source TOC fragment; the Markdown API/plain-heading inventory misses this raw-HTML heading.",
+      "related_inputs": [
+        {
+          "git_blob": "d47571e41dfc80060d783bfffeb33ba13bcba057",
+          "path": "README.md",
+          "sha256": "48d59088e38e4ee7b4b5b7d2cb9f9b0ae5c1a83dd5a2d978f074166336207f47",
+          "span": {
+            "end": 0,
+            "start": 0
+          }
+        }
+      ],
+      "renderer": "GitHub repository page at pinned ESLint commit d166567901e09940c1de4ad0e95d572eeab5c927",
+      "review_index": 0,
+      "reviewer": "/root/blind_lnk002_reviewer",
+      "source": "eslint",
+      "span": {
+        "end": 2032,
+        "start": 1989
+      },
+      "split": "holdout"
+    },
+    {
+      "agent_context_reviewed": true,
+      "code": "LNK002",
+      "diagnostic_sha256": "08a3d050d7996b6c94a754e4f4d7d6c4701055699780cd2f28565ab711874008",
+      "evidence": "Integrity-checked published PyMdown10.2/10.21 wheel bytes and tabbed.py/slugs.py; pinned mkdocs.yml combine_header_slug=true, lowercase slugify; pinned Material tabs client consumes input.id rather than proving generation. Primary proof receipts: reconciliation-evidence/inputs.json.",
+      "id": "648a2f2fafda04b3965695127d6104833a490e3c2144815f053e5cae6d351c60",
+      "input_sha256": "43282d128dafdb31b2536519281d22375b25ff9fb2f6228af63aaec1328039fe",
+      "limitations": "Exact installed PyMdown/Markdown dependency lock and generated DOM for the pinned page are missing. Published package versions are supporting evidence, not an invented exact build lock.",
+      "original_author_label": "uncertain",
+      "original_independent_label": "fp",
+      "path": "docs/reference/content-tabs.md",
+      "proposed_resolved_label": "uncertain",
+      "reason": "The pinned page defines third tab \"... or even me\" below Anchor links. Static PyMdown10.2 and10.21 code removes dots after trimming, leaving a leading separator in -or-even-me, then combines the parent anchor-links plus separator to produce anchor-links--or-even-me. This strongly supports the independent FP interpretation for those versions, but requirements only say pymdown-extensions>=10.2 and no exact production build version or pinned generated tab DOM is retained. The production tab anchor cannot be conclusively bound to this input.",
+      "related_inputs": [
+        {
+          "git_blob": "fd8f73f91bb8aa19ac734a2c841b742b4d4c4563",
+          "path": "docs/reference/content-tabs.md",
+          "sha256": "43282d128dafdb31b2536519281d22375b25ff9fb2f6228af63aaec1328039fe",
+          "span": {
+            "end": 0,
+            "start": 0
+          }
+        }
+      ],
+      "renderer": "Pinned Material configuration with Python Markdown/PyMdown; exact build dependency version unavailable",
+      "review_index": 45,
+      "reviewer": "/root/blind_lnk002_reviewer",
+      "source": "mkdocs-material",
+      "span": {
+        "end": 1323,
+        "start": 1272
+      },
+      "split": "holdout"
+    },
+    {
+      "agent_context_reviewed": true,
+      "code": "LNK002",
+      "diagnostic_sha256": "4705309a774164335804211b24c7e1d536342197467b231938534771330c0d2c",
+      "evidence": "Exact bundle link-plugin/default-slugify/markdown-plugin-options excerpts; source/target bindings for index188; no slugify override in reviewed config/theme. Primary proof receipts: reconciliation-evidence/inputs.json.",
+      "id": "eb2f7747bbfa20fdfd2a1d4153484bb2e52487fde84f435ebe436226b0935c1d",
+      "input_sha256": "f87a56316e413c1e028a431f90a24721b93f5d89fa1606d6b8d78c7dcf61337c",
+      "limitations": "Static source proof only; no upstream generator executed or built DOM claimed.",
+      "original_author_label": "tp",
+      "original_independent_label": "fp",
+      "path": "docs/api/mock.md",
+      "proposed_resolved_label": "fp",
+      "reason": "The target heading ## mockClear at line118 generates mockclear. The pinned link_open rule explicitly handles url.startsWith(\"#\") by decodeURI(normalizeHash(...)); normalizeHash applies the configured slugify. The literal source href #mockClear is therefore emitted as #mockclear, which exists. The internal-anchor skip condition skips normalizeHref, not the separate normalizeHash branch.",
+      "related_inputs": [
+        {
+          "git_blob": "a7dd8f46dc01530f10f165b1f45f173906d75b18",
+          "path": "docs/api/mock.md",
+          "sha256": "f87a56316e413c1e028a431f90a24721b93f5d89fa1606d6b8d78c7dcf61337c",
+          "span": {
+            "end": 0,
+            "start": 0
+          }
+        }
+      ],
+      "renderer": "VitePress2.0.0-alpha.19 with pinned Vitest config",
+      "review_index": 188,
+      "reviewer": "/root/blind_lnk002_reviewer",
+      "source": "vitest",
+      "span": {
+        "end": 8059,
+        "start": 8034
+      },
+      "split": "holdout"
+    },
+    {
+      "agent_context_reviewed": true,
+      "code": "LNK002",
+      "diagnostic_sha256": "be5bc1198b298ae65660405d207b6ee3ba9bd910b44822143310b17f0574d1f0",
+      "evidence": "Exact bundle link-plugin/treat-as-html/default-slugify/markdown-plugin-options excerpts plus index301 source and target bindings. Primary proof receipts: reconciliation-evidence/inputs.json.",
+      "id": "eb5ac0d0d813d922169c1f3ca8721eca84c92147e6599aecaab5a01a063b152f",
+      "input_sha256": "141ae464b9568a13ee9efc2343d4f6131eab66e13fcc869f1f9b2fa830e9d723",
+      "limitations": "Static source proof only; no upstream generator executed or built DOM claimed.",
+      "original_author_label": "tp",
+      "original_independent_label": "fp",
+      "path": "docs/guide/browser/playwright-traces.md",
+      "proposed_resolved_label": "fp",
+      "reason": "The source internal page link /api/vi#vi-defineHelper has HTTP-relative protocol, no target/download attributes and an HTML-style path. link_open invokes normalizeHref, whose parsed.hash is passed to normalizeHash. The emitted fragment is vi-definehelper; target vi.md line1493 explicitly sets {#vi-definehelper}.",
+      "related_inputs": [
+        {
+          "git_blob": "c8b3c2b80b88dbaf87e01eb7505b198fb36a8e99",
+          "path": "docs/api/vi.md",
+          "sha256": "876eee184d429a98613624c5a40d78a93216606db1e7e200a7e5433954d6a51c",
+          "span": {
+            "end": 0,
+            "start": 0
+          }
+        }
+      ],
+      "renderer": "VitePress2.0.0-alpha.19 with pinned Vitest config",
+      "review_index": 301,
+      "reviewer": "/root/blind_lnk002_reviewer",
+      "source": "vitest",
+      "span": {
+        "end": 2858,
+        "start": 2812
+      },
+      "split": "holdout"
+    },
+    {
+      "agent_context_reviewed": true,
+      "code": "LNK002",
+      "diagnostic_sha256": "22617b270c72c914a82f845238a6b9502955cb7b5419625afabc11e8af8d9761",
+      "evidence": "Exact bundle link-plugin/treat-as-html/default-slugify/markdown-plugin-options excerpts plus index302 source and target bindings. Primary proof receipts: reconciliation-evidence/inputs.json.",
+      "id": "3bd33f8ab8bf9977dccd4fcf032c6e33aa26d542e7ad7aa6c83eb8e8200ca770",
+      "input_sha256": "0165e6d82134d4e7b90c1ef25781d57fc06abe2f63ec281c77b55f4635fef1f2",
+      "limitations": "Static source proof only; no upstream generator executed or built DOM claimed.",
+      "original_author_label": "tp",
+      "original_independent_label": "fp",
+      "path": "docs/guide/browser/trace-view.md",
+      "proposed_resolved_label": "fp",
+      "reason": "This separate internal page link /api/vi#vi-defineHelper follows link_open -> normalizeHref -> normalizeHash, emitting vi-definehelper. The target line1493 explicitly declares {#vi-definehelper}; the supplied mixed case is rewritten before reader navigation.",
+      "related_inputs": [
+        {
+          "git_blob": "c8b3c2b80b88dbaf87e01eb7505b198fb36a8e99",
+          "path": "docs/api/vi.md",
+          "sha256": "876eee184d429a98613624c5a40d78a93216606db1e7e200a7e5433954d6a51c",
+          "span": {
+            "end": 0,
+            "start": 0
+          }
+        }
+      ],
+      "renderer": "VitePress2.0.0-alpha.19 with pinned Vitest config",
+      "review_index": 302,
+      "reviewer": "/root/blind_lnk002_reviewer",
+      "source": "vitest",
+      "span": {
+        "end": 7918,
+        "start": 7872
+      },
+      "split": "holdout"
+    },
+    {
+      "agent_context_reviewed": true,
+      "code": "LNK002",
+      "diagnostic_sha256": "59a2fff7aa98c79b1cea676b051b0485cc783550447c6f9234064317912e35f3",
+      "evidence": "Exact bundle container-token, block-info-attrs, attr-id-parser, attrs-rule-registration, markdown-plugin-options and container-render excerpts; exact index317 target bytes line5. Primary proof receipts: reconciliation-evidence/inputs.json.",
+      "id": "22e3640960026495f58359d9ce164b016616cff3277e78dbf7033d63eb88d0d9",
+      "input_sha256": "ea3d1374e1de32edfbbfd9a43d6e6e35c0fb5c6a397202c829d4d745230a75e6",
+      "limitations": "Static source proves the complete token/attribute/render chain; no upstream generator executed or built DOM claimed.",
+      "original_author_label": "uncertain",
+      "original_independent_label": "fp",
+      "path": "docs/guide/in-source.md",
+      "proposed_resolved_label": "fp",
+      "reason": "For ::: warning In-Source Testing {#in-source-testing}, the pinned container parser creates container_warning_open with block=true and info containing the full trailing attribute. VitePress enables blockInfo. That attrs rule matches any non-fence block token with a trailing attribute, parses # into the id attribute, calls token.attrSet and removes the attribute text from info. createOpenRender then calls renderAttrs(token), emitting the id on the warning div. The source link resolves to this declared container ID.",
+      "related_inputs": [
+        {
+          "git_blob": "02dbf48ebd57384ad695d4f565a930ca35584695",
+          "path": "docs/api/assert.md",
+          "sha256": "65ad04968d5724e92c77bd0e77d6c6c3a39373ac6c1600b8ea6e4470f7bb0123",
+          "span": {
+            "end": 0,
+            "start": 0
+          }
+        }
+      ],
+      "renderer": "VitePress2.0.0-alpha.19 bundled @mdit/plugin-container and @mdit/plugin-attrs",
+      "review_index": 317,
+      "reviewer": "/root/blind_lnk002_reviewer",
+      "source": "vitest",
+      "span": {
+        "end": 3836,
+        "start": 3795
+      },
+      "split": "holdout"
+    },
+    {
+      "agent_context_reviewed": true,
+      "code": "LNK002",
+      "diagnostic_sha256": "716ec2ec87ac6e98c327e6d4034e1946aa51cc63d7847a22121e45444db0630d",
+      "evidence": "Exact bundle link-plugin/treat-as-html/default-slugify/markdown-plugin-options excerpts and exact index378 source/target bindings. Primary proof receipts: reconciliation-evidence/inputs.json.",
+      "id": "2b5430a1a54a4e0a0522360cdd7ef1a08affd74add05f98751cf06a674b6bf5a",
+      "input_sha256": "6806c5a9513156bc3ccecaa9579eb867b34d805ab2dc45f4d2af393ffbd89e20",
+      "limitations": "Static source proof only; no upstream generator executed or built DOM claimed.",
+      "original_author_label": "tp",
+      "original_independent_label": "fp",
+      "path": "docs/guide/recipes/custom-assertions.md",
+      "proposed_resolved_label": "fp",
+      "reason": "The source /api/vi#vi-defineHelper is an ordinary internal HTML-style page link. normalizeHref sends its hash to normalizeHash, which lowercases it to vi-definehelper. The target heading line1493 explicitly sets {#vi-definehelper}, so the rewritten fragment exists.",
+      "related_inputs": [
+        {
+          "git_blob": "c8b3c2b80b88dbaf87e01eb7505b198fb36a8e99",
+          "path": "docs/api/vi.md",
+          "sha256": "876eee184d429a98613624c5a40d78a93216606db1e7e200a7e5433954d6a51c",
+          "span": {
+            "end": 0,
+            "start": 0
+          }
+        }
+      ],
+      "renderer": "VitePress2.0.0-alpha.19 with pinned Vitest config",
+      "review_index": 378,
+      "reviewer": "/root/blind_lnk002_reviewer",
+      "source": "vitest",
+      "span": {
+        "end": 440,
+        "start": 396
+      },
+      "split": "holdout"
+    },
+    {
+      "agent_context_reviewed": true,
+      "code": "LNK002",
+      "diagnostic_sha256": "e6f0d45b5afe79bc604e11a90ecd33313d2db320a64cb153ea59b02e9a3f30a2",
+      "evidence": "Exact bundle link-plugin/treat-as-html/default-slugify/markdown-plugin-options excerpts and exact index379 source/target bindings. Primary proof receipts: reconciliation-evidence/inputs.json.",
+      "id": "6ffb97e636b2802a65ea3307571b4b2fdb637181a2e0e26644343b4478c434fc",
+      "input_sha256": "6806c5a9513156bc3ccecaa9579eb867b34d805ab2dc45f4d2af393ffbd89e20",
+      "limitations": "Static source proof only; no upstream generator executed or built DOM claimed.",
+      "original_author_label": "tp",
+      "original_independent_label": "fp",
+      "path": "docs/guide/recipes/custom-assertions.md",
+      "proposed_resolved_label": "fp",
+      "reason": "This separate See also link /api/vi#vi-defineHelper follows the same internal page-link branch and emits vi-definehelper through normalizeHash. The target explicitly declares that lowercase id at line1493.",
+      "related_inputs": [
+        {
+          "git_blob": "c8b3c2b80b88dbaf87e01eb7505b198fb36a8e99",
+          "path": "docs/api/vi.md",
+          "sha256": "876eee184d429a98613624c5a40d78a93216606db1e7e200a7e5433954d6a51c",
+          "span": {
+            "end": 0,
+            "start": 0
+          }
+        }
+      ],
+      "renderer": "VitePress2.0.0-alpha.19 with pinned Vitest config",
+      "review_index": 379,
+      "reviewer": "/root/blind_lnk002_reviewer",
+      "source": "vitest",
+      "span": {
+        "end": 1958,
+        "start": 1914
+      },
+      "split": "holdout"
+    }
+  ],
+  "report_sha256": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+  "schema_version": 1,
+  "stage": 6,
+  "status": "independent_reconciliation_proposal_after_both_originals_sealed"
+}

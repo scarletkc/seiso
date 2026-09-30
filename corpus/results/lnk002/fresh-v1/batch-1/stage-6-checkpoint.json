@@ -1,0 +1,17 @@
+{
+  "all_labels_context_reviewed_by_both_agents": true,
+  "both_originals_unchanged": true,
+  "freeze_commit": "136585a72b7317df0a9893348350d04f70b8de91",
+  "human_reviewers": 0,
+  "implementation_unchanged": true,
+  "labels": 451,
+  "oracle_labels_are_preliminary_only": true,
+  "original_agreements": 443,
+  "original_disagreements": 8,
+  "report_sha256": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+  "resolved_labels_sha256": "29fa5f78b40212a994eb32e41105cded73738c422d0384ac8b4c9f1033e44c23",
+  "schema_version": 1,
+  "stage": 6,
+  "stage_6_independent_reconciliation_receipt_sha256": "24a984a73058a890c6b8037b109d1751bd62ffcc9e35e9d2a198f5ab86abc1ee",
+  "unique_exact_identity_and_diagnostic_payload_binding": true
+}

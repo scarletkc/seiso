@@ -1,0 +1,42 @@
+{
+  "decision_uncompressed_sha256": "7003b3d8e31b1914734963d1a04e0f1073349557008805b4da8eeec25678ebd7",
+  "human_reviewers": 0,
+  "independent_archive_contents": "complete original context/proof/work provenance plus separate reconciliation, excluding only Python bytecode cache",
+  "independent_evidence_archive_bytes": 11783322,
+  "independent_evidence_archive_sha256": "8d48bd76f20ebbfd8f089f9979b85e3f0fbd256a906e2457597a536265c83320",
+  "oracle_status": "Preliminary GitHub-only labels; not substituted for independent per-renderer labels",
+  "original_annotations": {
+    "author-labels.json": {
+      "archive_bytes": 159627,
+      "archive_sha256": "b13cf7f249601803afc38caa8e05ef04cdb29879923ad0fbf26739c08a8a971d",
+      "bytes": 1258465,
+      "sha256": "4aa71a2ca33d84281d5212797f5a864a17668128254a7ae7930d65b85aa1879c"
+    },
+    "author-target-facts.json": {
+      "archive_bytes": 129960,
+      "archive_sha256": "674b3004e3bd8eb790b92cdd16770f35bcc9302c3f13c2167fb1a78fe1950147",
+      "bytes": 1126427,
+      "sha256": "232ab8d28f44b5c080f00f93a2c953c542a3d55784a163b840426abd3dcc19dc"
+    },
+    "candidate.json": {
+      "archive_bytes": 4088581,
+      "archive_sha256": "8086279bb5ec8ebab3928e12cd16be04ceb01f4ebce9f8f7137312e2e97ed342",
+      "bytes": 60550690,
+      "sha256": "3c78eda4911c077e71f29e6efcb7da79f98a2b5dda36768261050538bff92632"
+    },
+    "independent-labels.json": {
+      "archive_bytes": 91972,
+      "archive_sha256": "867184dc9d30e4fdfa6962954ce04ea014db27b799ed6808278f4de57e1e66f0",
+      "bytes": 913815,
+      "sha256": "19f7eddd358f311910b0504485d10219279a1219057d79c4431dd3b63541cc0d"
+    },
+    "oracle.json": {
+      "archive_bytes": 233768,
+      "archive_sha256": "ddfc65e65fcb85a7d9dc0c01a4f9c5e258969b87c8b781762a887b2360bd8773",
+      "bytes": 2104980,
+      "sha256": "a62c2b2317d30cab2f24682d92082e57be4bd5b50e69fe04bb27f0082b37afc3"
+    }
+  },
+  "schema_version": 1,
+  "upstream_build_code_executed": false
+}

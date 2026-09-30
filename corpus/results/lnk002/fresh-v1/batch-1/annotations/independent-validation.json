@@ -1,0 +1,33 @@
+{
+  "all_context_receipts_present": true,
+  "author_material_accessed": false,
+  "binding_fields": [
+    "id",
+    "code",
+    "source",
+    "path",
+    "span",
+    "input_sha256",
+    "related_inputs",
+    "split",
+    "diagnostic_sha256"
+  ],
+  "count": 451,
+  "explicit_vitepress_id_override_audit_passed": true,
+  "human_reviewers": 0,
+  "labels_sha256": "19f7eddd358f311910b0504485d10219279a1219057d79c4431dd3b63541cc0d",
+  "notes": [
+    "Every label was explicitly assigned after individual source context and target review; helpers only persisted explicit decisions and checked binding.",
+    "VS Code mapped production heading/alias renderer is unavailable; local Docsify evidence does not replace that contract.",
+    "Material/Traefik Python dependencies use ranges; static published source evidence and configured mechanisms are retained without claiming an exact installed build or execution.",
+    "No browser-scroll or built-site execution is claimed."
+  ],
+  "original_labels_modified": false,
+  "report_sha256": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+  "reviewer": "/root/blind_lnk002_reviewer",
+  "schema_version": 1,
+  "source_target_bytes_hash_verified": true,
+  "unique_exact_ids": true,
+  "upstream_code_executed": false,
+  "validated_at_utc": "2026-09-30T11:20:03.651497+00:00"
+}

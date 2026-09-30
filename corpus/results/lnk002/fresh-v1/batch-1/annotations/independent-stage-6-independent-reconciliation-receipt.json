@@ -1,0 +1,31 @@
+{
+  "author_labels_first_access": "Only after parent explicitly confirmed both originals sealed and authorized unblinding; exact initial read timestamp was not independently logged.",
+  "author_original_sha256_before_and_after": "4aa71a2ca33d84281d5212797f5a864a17668128254a7ae7930d65b85aa1879c",
+  "blind_protocol_preserved": true,
+  "browser_scroll_checked": false,
+  "created_at_utc": "2026-09-30T11:28:37.109148+00:00",
+  "disagreements_rechecked": 8,
+  "execution_statement_scope": "Independent reviewer did not execute upstream package/config/build code. Inspected parent Chromium observation loaded normal GitHub CSS/JS.",
+  "human_reviewers": 0,
+  "independent_browser_run": false,
+  "independent_original_count": 451,
+  "independent_original_read_before_author_labels": true,
+  "independent_original_sha256_before_and_after": "19f7eddd358f311910b0504485d10219279a1219057d79c4431dd3b63541cc0d",
+  "independent_sealed_at_utc": "2026-09-30T11:20:03.651497+00:00",
+  "originals_modified": false,
+  "parent_browser_receipt_independently_inspected": true,
+  "parent_observed_reader_scroll_corrobated": true,
+  "primary_evidence_path": "/tmp/seiso-independent-lnk002/reconciliation-evidence/inputs.json",
+  "primary_evidence_sha256": "9eb02f0d5b6c9d8d5d6c208436fbbe1825c08180c4a7cbd55fb1260ddaf9bc64",
+  "proposal_path": "/tmp/seiso-independent-lnk002/reconciliation-proposal.json",
+  "proposal_sha256": "fc04ba9512b1d9b704ed6691909a424824124273f15c67bbdcd96a86a87c7cb4",
+  "remaining_limitations": [
+    "Material third-tab case remains uncertain without exact production dependency/version or generated pinned DOM.",
+    "Production VS Code renderer uncertainty in the original451-record annotation remains unchanged and was not wholesale revisited."
+  ],
+  "reviewer": "/root/blind_lnk002_reviewer",
+  "schema_version": 1,
+  "stage": 6,
+  "updated_at_utc": "2026-09-30T11:30:31.914374+00:00",
+  "upstream_code_executed": false
+}
