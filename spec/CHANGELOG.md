@@ -14,6 +14,8 @@ repository. This file follows
 
 ## Unreleased
 
+## 0.1.0 - 2026-10-01
+
 ### Added
 
 - The specification, restating the convention that seiso has
