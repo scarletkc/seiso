@@ -18,7 +18,8 @@ the tool and another checker can claim to check it. It is provisional before
 1.0.0. [Worked examples](../spec/examples.md) read its requirements against a
 small documentation set, and the [adoption guide](../spec/adopting.md) applies
 them to an existing repository. Its [changelog](../spec/CHANGELOG.md) lists
-its versions, which are separate from seiso releases.
+its versions, which are separate from seiso releases, and
+[seiso.fog.moe](https://seiso.fog.moe/) publishes each released version.
 
 ## Guides
 

@@ -94,12 +94,6 @@ adds duplication or maintenance cost without improving clarity, independent
 adoption, or interoperability; improving the repository's own reference pages
 would then be the outcome.
 
-Planned work:
-
-- A GitHub Pages site built with VitePress from `spec/` at each `spec-v` tag,
-  with one path per version. Links that leave `spec/` point to the same tag,
-  and each requirement identifier gets an anchor.
-
 Open questions:
 
 - Whether specification identifiers such as `POINTER-1` should be accepted as

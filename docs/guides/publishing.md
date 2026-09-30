@@ -276,8 +276,11 @@ last prereleases. Subsequent `patch` bumps advance the patch number normally.
 ## Release a specification version
 
 The [specification](../../spec/convention.md) takes its own version number and
-publishes no package. Choose the number by its
-[Versioning](../../spec/convention.md#versioning) section, then:
+publishes no package. Pull requests that change `spec/` build its unreleased
+text with the site; after `npm ci` in `site/`, `SITE_UNRELEASED=1 npm run dev`
+serves it locally under `/unreleased/`. Choose the number by the
+specification's [Versioning](../../spec/convention.md#versioning) section,
+then:
 
 1. On a `release/spec-vX.Y.Z` branch, rename the `Unreleased` heading in
    [`spec/CHANGELOG.md`](../../spec/CHANGELOG.md) to `X.Y.Z - YYYY-MM-DD` and
@@ -291,5 +294,6 @@ publishes no package. Choose the number by its
    git push origin spec-vX.Y.Z
    ```
 
-Create no GitHub Release for the tag, so that the latest release stays a
-seiso build.
+Pushing the tag runs [Pages](../../.github/workflows/pages.yml), which adds
+the version to the site as the newest; check that the run deploys. Create no
+GitHub Release for the tag, so that the latest release stays a seiso build.

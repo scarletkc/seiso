@@ -1,0 +1,20 @@
+.version-banner {
+  margin: 0 0 16px;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+}
+
+.vp-doc p[id] {
+  scroll-margin-top: calc(var(--vp-nav-height) + 24px);
+}
+
+.vp-doc p[id]:target {
+  margin-inline: -8px;
+  padding: 4px 8px;
+  background-color: var(--vp-c-default-soft);
+  border-radius: 4px;
+}
+
+.vp-doc a.requirement {
+  text-decoration: none;
+}

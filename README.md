@@ -43,9 +43,9 @@ kinds, and `seiso init` suggests a starting point.
   exception without one is itself a violation.
 
 The convention is written up as a standalone
-[specification](https://github.com/scarletkc/seiso/blob/main/spec/convention.md),
-with [worked examples](https://github.com/scarletkc/seiso/blob/main/spec/examples.md)
-and an [adoption guide](https://github.com/scarletkc/seiso/blob/main/spec/adopting.md),
+[specification](https://seiso.fog.moe/latest/convention),
+with [worked examples](https://seiso.fog.moe/latest/examples)
+and an [adoption guide](https://seiso.fog.moe/latest/adopting),
 so a project can follow it without installing anything. The specification is
 provisional before 1.0.0 and versioned separately from seiso; its direction is
 open for discussion in [#37](https://github.com/scarletkc/seiso/issues/37).

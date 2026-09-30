@@ -1,4 +1,4 @@
-"""Select documentation checks only when every changed path is ordinary prose."""
+"""Select documentation checks only when every changed path is prose or site source that no Rust check reads."""
 
 import json
 import os
@@ -13,11 +13,15 @@ ROOT = Path(__file__).resolve().parents[2]
 def is_documentation(path):
     if "\\" in path or any(part in {"", ".", ".."} for part in path.split("/")):
         return False
-    # Rule pages are compiled into the binary; history is a parser test input.
-    if path.startswith("docs/rules/") or path == "docs/design/history.md":
+    # Rule pages are compiled into the binary; history is a parser test input,
+    # and the specification's changelog holds the version the tests compare.
+    if path.startswith("docs/rules/") or path in {"docs/design/history.md", "spec/CHANGELOG.md"}:
         return False
+    # The Pages workflow builds the site.
+    if path.startswith("site/"):
+        return True
     return path in {"README.md", "CONTRIBUTING.md", "LICENSE", "corpus/README.md"} or (
-        path.startswith(("docs/", "corpus/docs/")) and path.endswith(".md")
+        path.startswith(("docs/", "corpus/docs/", "spec/")) and path.endswith(".md")
     )
 
 

@@ -15,10 +15,12 @@ class DocumentationPathsTests(unittest.TestCase):
     def test_only_prose_paths_are_documentation(self):
         for path in ["README.md", "CONTRIBUTING.md", "LICENSE", "docs/README.md", "docs/guides/checking.md",
                      "docs/design/roadmap.md", "docs/日本語 guide.md", "corpus/README.md",
-                     "corpus/docs/evaluation.md"]:
+                     "corpus/docs/evaluation.md", "spec/convention.md", "spec/adopting.md",
+                     "site/package.json", "site/.vitepress/config.mts"]:
             with self.subTest(path=path):
                 self.assertTrue(ci_scope.is_documentation(path))
-        for path in ["docs/rules/KND001.md", "docs/design/history.md", "tests/fixtures/input.md",
+        for path in ["docs/rules/KND001.md", "docs/design/history.md", "spec/CHANGELOG.md",
+                     "spec/notes.txt", "tests/fixtures/input.md",
                      "corpus/data/example.md", "src/main.rs", "Cargo.toml", "Cargo.lock",
                      "seiso.toml", "docs/seiso.toml", ".github/workflows/ci.yml",
                      "scripts/ci/ci_scope.py", "docs/image.png", "unknown.md", "unknown/file.md",
