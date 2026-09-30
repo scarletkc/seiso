@@ -6,7 +6,7 @@ on:
     tags: ['spec-v*']
   pull_request:
     branches: [main]
-    paths: ['site/**', 'spec/**', '.github/workflows/pages.yml']
+    paths: ['site/**', 'spec/**', 'assets/logo.svg', '.github/workflows/pages.yml']
   workflow_dispatch:
 
 permissions:

@@ -61,6 +61,7 @@ export default defineConfig<DefaultTheme.Config & { versions: typeof versions }>
   description: 'A specification for the Markdown documents of software projects',
   srcDir: 'src',
   cleanUrls: true,
+  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }]],
   markdown: {
     // The sources are GitHub Markdown; `{...}` stays text.
     attrs: { disable: true },
@@ -69,6 +70,7 @@ export default defineConfig<DefaultTheme.Config & { versions: typeof versions }>
     },
   },
   themeConfig: {
+    logo: { src: '/logo.svg', alt: '' },
     logoLink: `/${newest}/convention`,
     nav: [
       {

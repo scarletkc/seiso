@@ -1,8 +1,9 @@
 // Writes the site's sources into src/: one directory per released
 // specification version, read from its spec-v<version> tag so that the
-// repository holds no copies, plus redirects to the newest version.
+// repository holds no copies, redirects to the newest version, and the
+// repository's logo.
 import { execFileSync } from 'node:child_process'
-import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -79,6 +80,8 @@ export function prepare({ unreleased = false } = {}) {
   if (unreleased) versions.push({ version: UNRELEASED, files: worktreeFiles() })
 
   rmSync(source, { recursive: true, force: true })
+  mkdirSync(join(source, 'public'), { recursive: true })
+  copyFileSync(join(site, '..', 'assets', 'logo.svg'), join(source, 'public', 'logo.svg'))
   const result = versions.map(({ version, files }) => {
     mkdirSync(join(source, version), { recursive: true })
     const pages = files.map(([file, markdown]) => {
