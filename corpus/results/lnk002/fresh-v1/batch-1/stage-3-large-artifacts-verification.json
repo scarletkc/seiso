@@ -1,0 +1,30 @@
+{
+  "corpus_lock_sha256": "8affea1f5c672343c851b0861192ba3b64315999288509ce849a78d08aa75f8a",
+  "inventory_lock_sha256": "c5c99a61cf12a807d502dd67284fe08ad3f4b7076ef32890e56e6d95e25401ae",
+  "markdown_text_read": false,
+  "node_inventory": {
+    "compressed_bytes": 1755058,
+    "entries": 56757,
+    "identity": {
+      "commit": "524eb248e55a7e2c65da6efaf9be1aa16f519045",
+      "id": "node",
+      "repository": "nodejs/node",
+      "tree": "00df49af3ccb571e221ad5f2c6a8168356278379"
+    },
+    "identity_matches_selection_corpus_and_inventory_locks": true,
+    "matches_inventory_lock_archive_sha256": true,
+    "path": "inventory/node.json.gz",
+    "payload_byte_structure_matches_same_resolution_selection_inventory": true,
+    "selected_document_and_license_metadata_matches_fetched_lock_except_added_sha256": true,
+    "sha256": "c339554f25422c1c5eb977cc15a56a572316bd09aa10ad3e7b3b258d7acf22a8"
+  },
+  "schema_version": 1,
+  "selection": {
+    "bytes": 23049380,
+    "matches_corpus_lock_pinned_selection_sha256": true,
+    "path": "selection.json",
+    "sha256": "0854e6e28360c89a70df568f65899819e5eb1f53b9f378764a90481197e60391"
+  },
+  "stage": 3,
+  "verified_by": "implementing-agent mechanical verification requested by parent reviewer for connector-size-limited files"
+}
