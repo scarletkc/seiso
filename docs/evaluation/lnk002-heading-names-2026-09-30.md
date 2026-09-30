@@ -58,5 +58,10 @@ on other elements is a conservative allowance: it can miss a broken link in
 another renderer. Site labels still require individual renderer review; the
 GitHub-only oracle does not establish site precision.
 
-The fresh holdout may freeze only after this independent rule fix is merged
-and stages 1 and 2 are reviewed. No merge is authorized by the current task.
+The owner's subsequent instruction replaces the original requirement to
+merge this independent fix into `main` before freezing. After stages 1 and 2
+are reviewed, the fresh holdout uses the exact working-branch commit that
+contains the verified fix and reviewed tooling. Record this branch baseline
+and the still-unmerged fix; `main` remains unchanged and both PRs stay drafts.
+Before future integration into `main`, replay every labeled batch and require
+byte-identical raw results, stopping on any difference without relabeling.

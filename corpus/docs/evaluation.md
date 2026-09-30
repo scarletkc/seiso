@@ -280,9 +280,15 @@ remain agent judgments unless their label bundles record human review.
 ## Fresh link cohorts
 
 Use `scripts.evaluation.fresh_links` for an independent LNK002 holdout.
-Review the heading-name renderer decision and cohort tooling first. Any rule
-fix required by that decision must land on `main` before freezing `main` plus
-the tooling. Commit the source specification before pinning or reading cohort
+Review the heading-name renderer decision and cohort tooling first. For issue
+11, the owner's instruction is to complete the work on
+`feat/issue-11-lnk002-holdout` and leave both PRs unmerged. Integrate the
+verified heading-name fix into that branch, then freeze the exact branch
+commit containing the fix and reviewed tooling. Record the full commit and
+that the fix is still unmerged; `main` remains unchanged. The original
+merge-before-freeze prerequisite is replaced by this branch baseline for
+this experiment. The replay required before future integration into `main`
+still applies. Commit the source specification before pinning or reading cohort
 Markdown or diagnostic text. Keep the approved repository scopes and batch
 order; mechanical failures are recorded as skips without replacement. No
 upstream code or configuration runs.
