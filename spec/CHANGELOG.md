@@ -14,6 +14,8 @@ the `spec-v<version>` tag of this repository. This file follows
 
 ## Unreleased
 
+## 0.1.1 - 2026-10-01
+
 ### Changed
 
 - The adoption guide's agent snippet links to the adopted version on

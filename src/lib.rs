@@ -17,4 +17,4 @@ pub mod workspace;
 /// The released version of the Seiso Convention Specification that this
 /// build's rules implement. A specification release updates it, and a test
 /// keeps it equal to the newest version in `spec/CHANGELOG.md`.
-pub const SPECIFICATION_VERSION: &str = "0.1.0";
+pub const SPECIFICATION_VERSION: &str = "0.1.1";
