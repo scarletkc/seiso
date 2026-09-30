@@ -1,0 +1,19 @@
+{
+  "author_material_accessed": false,
+  "count": 451,
+  "evidence_manifest_path": "/tmp/seiso-independent-lnk002/evidence-manifest.json",
+  "evidence_manifest_sha256": "35900bcbba20461ee349456a489937f3abeb136fbdce4c4f7f759e50aae48070",
+  "evidence_root": "/tmp/seiso-independent-lnk002",
+  "human_reviewers": 0,
+  "labels_bytes": 913815,
+  "labels_path": "/tmp/seiso-independent-lnk002/independent-labels.json",
+  "labels_sha256": "19f7eddd358f311910b0504485d10219279a1219057d79c4431dd3b63541cc0d",
+  "original_annotation_sealed_before_reconciliation": true,
+  "report_sha256": "5d674b83996528dfd4702bbd7c15732cc82be29a889e4edf7ab20eb07cd04cac",
+  "reviewer": "/root/blind_lnk002_reviewer",
+  "schema_version": 1,
+  "sealed_at_utc": "2026-09-30T11:20:03.651497+00:00",
+  "upstream_code_executed": false,
+  "validation_path": "/tmp/seiso-independent-lnk002/validation.json",
+  "validation_sha256": "c8cc4cd7636d666c32b31f2169229b3278225c145e899207738c725258c6e587"
+}
