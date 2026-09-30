@@ -1,0 +1,101 @@
+{
+  "all_original_blobs_git_sha1_sha256_and_size_verified": true,
+  "batch": 1,
+  "cohort_markdown_or_diagnostics_read": false,
+  "corpus_sha256": "8affea1f5c672343c851b0861192ba3b64315999288509ce849a78d08aa75f8a",
+  "document_and_license_records": 2244,
+  "documents": 2230,
+  "freeze_commit": "136585a72b7317df0a9893348350d04f70b8de91",
+  "implementation_unchanged_since_freeze": true,
+  "inventory_identity_and_archive_hashes_verified": true,
+  "inventory_sha256": "c5c99a61cf12a807d502dd67284fe08ad3f4b7076ef32890e56e6d95e25401ae",
+  "schema_version": 1,
+  "selection_sha256": "0854e6e28360c89a70df568f65899819e5eb1f53b9f378764a90481197e60391",
+  "skipped": [],
+  "sources": [
+    {
+      "commit": "524eb248e55a7e2c65da6efaf9be1aa16f519045",
+      "documents": 158,
+      "id": "node",
+      "repository": "nodejs/node",
+      "tree": "00df49af3ccb571e221ad5f2c6a8168356278379",
+      "tree_entries": 56757
+    },
+    {
+      "commit": "7af89da308fee1a45b0e6242a1be38ec22bd396c",
+      "documents": 300,
+      "id": "electron",
+      "repository": "electron/electron",
+      "tree": "4925a0c7c9cecc025e1d2eaab14c8c52621d194a",
+      "tree_entries": 3588
+    },
+    {
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "documents": 361,
+      "id": "vscode-docs",
+      "repository": "microsoft/vscode-docs",
+      "tree": "812f38910b51769b31b386c666286564104755d6",
+      "tree_entries": 9670
+    },
+    {
+      "commit": "3e33a03bdaa3a89f27d5e0c390c4ba9032f14b5e",
+      "documents": 157,
+      "id": "fastapi",
+      "repository": "fastapi/fastapi",
+      "tree": "33559cbaa523682582dc9b084850f00bc2fed496",
+      "tree_entries": 3605
+    },
+    {
+      "commit": "1c73dca3ff4909e4cddd0d3b6e272298e902dec7",
+      "documents": 97,
+      "id": "mkdocs-material",
+      "repository": "squidfunk/mkdocs-material",
+      "tree": "033aee5d15062a3f4bd931a612910c900eb55a1f",
+      "tree_entries": 15604
+    },
+    {
+      "commit": "fcbfb8aff229498eddc941ea47f7bd18cbc65078",
+      "documents": 173,
+      "id": "traefik",
+      "repository": "traefik/traefik",
+      "tree": "7be72fd13f3b973e9d86c091f0c69b4ec2a86ecc",
+      "tree_entries": 2702
+    },
+    {
+      "commit": "f3865b2a4d1acc5276f6b3c67d0e057f4dab3928",
+      "documents": 100,
+      "id": "cargo",
+      "repository": "rust-lang/cargo",
+      "tree": "16f9762671deb3e9f9ea2e955fff1a96a33b7792",
+      "tree_entries": 4710
+    },
+    {
+      "commit": "d70a58f9574c627cff6af7b4705ffa360835f7f6",
+      "documents": 247,
+      "id": "rustc-dev-guide",
+      "repository": "rust-lang/rustc-dev-guide",
+      "tree": "a2f1994af661c651914d688d6317197a7800d75b",
+      "tree_entries": 345
+    },
+    {
+      "commit": "62a7fe6791fcbe796fcbf58a17e0ee88663b9555",
+      "documents": 228,
+      "id": "vitest",
+      "repository": "vitest-dev/vitest",
+      "tree": "2b454a79c4f606787edfd0b5b8c647af2320bb77",
+      "tree_entries": 3881
+    },
+    {
+      "commit": "d166567901e09940c1de4ad0e95d572eeab5c927",
+      "documents": 409,
+      "id": "eslint",
+      "repository": "eslint/eslint",
+      "tree": "c9e881e3cdb4d793b26505367bc5fefd6725d426",
+      "tree_entries": 2746
+    }
+  ],
+  "spec_sha256": "d153f8b3594a95a166d4b46267d1d3ec1417ded2f8fcea165777ad0c545304e0",
+  "specification_commit": "6d2ad1431a17ec07beab8bba3c559a99553f78b5",
+  "stage": 3,
+  "tree_entries": 103608
+}
