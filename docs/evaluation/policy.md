@@ -14,19 +14,24 @@ review, and replay evidence. Dated decisions and results remain in
 
 ## Stable promotion
 
-New rules enter preview. Each rule requires its own evidence; results cannot
-be pooled across rules. Natural promotion requires at least 100 individually
-reviewed holdout diagnostics and precision of at least 95%. Uncertain judgments
-cannot improve the score. Report true positives, false positives, uncertainty,
-sample count, and precision separately for tuning and holdout, broken down by
-language and document kind. With no samples, precision is unavailable.
+New rules enter preview. Each rule requires its own evidence; results cannot be
+pooled across rules. Several rules can share a holdout cohort, but each rule's
+diagnoses are sampled, labeled, and scored separately. Natural promotion
+requires at least 100 individually reviewed holdout diagnostics and precision
+of at least 95%. Uncertain judgments cannot improve the score. One reviewer
+labels every diagnosis. A second reviewer independently labels a random fifth
+of them and every label other than a true positive, and the record reports
+their agreement. Report true positives, false positives, uncertainty, sample
+count, and precision separately for tuning and holdout, broken down by language
+and document kind. With no samples, precision is unavailable.
 
 Only tuning data may guide threshold changes. Changing behavior in response to
 holdout findings requires fresh independent evaluation before claiming holdout
-validation. Corpus repositories are version-pinned with original hashes and
-licenses; source diversity and annotation quality need review alongside scores.
-Missed diagnoses are reported without a recall gate: conservative reporting is
-preferred to unsupported diagnoses.
+validation. A rule enters a holdout only after it meets the precision
+requirement on tuning data. Corpus repositories are version-pinned with
+original hashes and licenses; source diversity and annotation quality need
+review alongside scores. Missed diagnoses are reported without a recall gate:
+conservative reporting is preferred to unsupported diagnoses.
 
 The [M1 protocol decision](m1-gate-proposal.md) grants a distinct
 conformance route only to the named seiso declaration rules. Its positive,
