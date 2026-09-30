@@ -63,12 +63,13 @@ def site_config(sites):
     return config
 
 
-def prepare_inputs(corpus, lock, profiles, inventory, sites=None):
+def prepare_inputs(corpus, lock, profiles, inventory, sites=None, *, inventory_dir=None, rules=None):
+    inventory_dir = inventory_dir if inventory_dir is not None else corpus / "inventory"
     records = {item["id"]: item for item in inventory["sources"]}
     sources = []
     for source in lock["sources"]:
         record = records[source["id"]]
-        tree_raw = (corpus / "inventory" / record["archive"]).read_bytes()
+        tree_raw = (inventory_dir / record["archive"]).read_bytes()
         if digest(tree_raw) != record["sha256"] or record["commit"] != source["commit"]:
             raise ValueError(f"Inventory changed: {source['id']}")
         tree = json.loads(gzip.decompress(tree_raw))
@@ -77,6 +78,8 @@ def prepare_inputs(corpus, lock, profiles, inventory, sites=None):
             config += f'\n[[kinds]]\npath={json.dumps(mapping["path"], ensure_ascii=False)}\nkind={json.dumps(mapping["kind"])}\n'
         if sites is not None:
             config += site_config(sites["profiles"].get(source["id"], {}).get("sites", []))
+        if rules is not None:
+            config += "\n[lint]\nselect=" + json.dumps(list(rules)) + "\n"
         documents = []
         for document in source["documents"]:
             blob = corpus / "data/blobs" / document["git_blob"]

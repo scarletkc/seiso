@@ -118,22 +118,34 @@ def resolve(source, destination, entries):
     return target, fragment, "file" if entry else "missing"
 
 
-def review(candidate, slugger):
+def review(candidate, slugger, corpus_lock=None, inventory=None):
     candidate_bytes = candidate.read_bytes()
-    corpus_bytes = (CORPUS / "corpus.lock.json").read_bytes()
-    inventory_bytes = (CORPUS / "inventory/inventory.lock.json").read_bytes()
+    corpus_lock = corpus_lock if corpus_lock is not None else CORPUS / "corpus.lock.json"
+    inventory = inventory if inventory is not None else CORPUS / "inventory/inventory.lock.json"
+    corpus_bytes = corpus_lock.read_bytes()
+    inventory_bytes = inventory.read_bytes()
     lock = json.loads(corpus_bytes)
     sources = {source["id"]: source for source in lock["sources"]}
     documents = {(source["id"], item["path"]): item for source in sources.values() for item in source["documents"]}
-    records = {source["id"]: source for source in json.loads(inventory_bytes)["sources"]}
+    inventory_lock = json.loads(inventory_bytes)
+    if inventory_lock["corpus_lock_sha256"] != digest(corpus_bytes):
+        raise ValueError("Inventory does not describe this corpus lock")
+    records = {source["id"]: source for source in inventory_lock["sources"]}
+    if len(records) != len(inventory_lock["sources"]) or records.keys() != sources.keys():
+        raise ValueError("Inventory sources differ from corpus lock")
     trees = {}
     for source_id, record in records.items():
-        payload = (CORPUS / "inventory" / record["archive"]).read_bytes()
+        if record["archive"] != f"{source_id}.json.gz":
+            raise ValueError(f"Invalid inventory archive: {source_id}")
+        payload = (inventory.parent / record["archive"]).read_bytes()
         if digest(payload) != record["sha256"]:
             raise ValueError(f"Inventory checksum mismatch: {source_id}")
         tree = json.loads(gzip.decompress(payload))
-        if tree["commit"] != sources[source_id]["commit"]:
-            raise ValueError(f"Inventory commit mismatch: {source_id}")
+        for key in ["id", "repository", "commit", "tree"]:
+            if tree[key] != sources[source_id][key] or record[key] != sources[source_id][key]:
+                raise ValueError(f"Inventory identity mismatch: {source_id}/{key}")
+        if record["entries"] != len(tree["entries"]):
+            raise ValueError(f"Inventory entry count mismatch: {source_id}")
         trees[source_id] = tree["entries"]
     cache = {}
 
@@ -245,13 +257,15 @@ def main():
     mode.add_argument("--candidate", type=Path)
     mode.add_argument("--bind-report", type=Path)
     parser.add_argument("--slugger", type=Path)
+    parser.add_argument("--corpus-lock", type=Path, help="Pinned corpus lock; defaults to the main corpus")
+    parser.add_argument("--inventory", type=Path, help="Inventory lock; archives are relative to this file")
     parser.add_argument("--decisions", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.candidate:
         if args.slugger is None:
             parser.error("--candidate requires --slugger")
-        result = review(args.candidate, args.slugger)
+        result = review(args.candidate, args.slugger, args.corpus_lock, args.inventory)
     else:
         if args.decisions is None:
             parser.error("--bind-report requires --decisions")
