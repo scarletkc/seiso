@@ -5,9 +5,9 @@ kind: adr
 # LNK002 heading name decision
 
 Recorded on 2026-09-30 for [issue 11](https://github.com/scarletkc/seiso/issues/11).
-This settles stage 1 of the approved fresh holdout plan. It changes anchor
-recognition before the implementation freeze; it does not supply fresh
-holdout evidence or promote LNK002.
+It decides how LNK002 treats heading `name` attributes before the fresh
+holdout freezes the implementation. It supplies no holdout evidence and does
+not promote LNK002.
 
 ## Evidence
 
@@ -23,9 +23,7 @@ retains the heading names with GitHub's `user-content-` prefix.
 The [browser measurements](../../corpus/results/lnk002/name-attribute/browser.json)
 use Chromium 151, a 1280 by 800 viewport, and fresh pages for each control.
 GitHub's CSS and JavaScript loaded with no failed resource requests. TLS
-certificate verification remained enabled. The
-[network receipt](../../corpus/results/lnk002/name-attribute/network-preflight.json)
-records the required API, raw-source, and asset requests.
+certificate verification remained enabled.
 
 | Fragment | Scroll Y | Configuration heading viewport Y |
 | --- | ---: | ---: |
@@ -36,10 +34,10 @@ records the required API, raw-source, and asset requests.
 
 The heading's document position is 1220.359375 in every case. The ordinary
 slug control works, and `#config` brings the name-only heading into view.
-The screenshots alongside the receipt show these positions. To reproduce
-the check, run `check_github.py --output NEW_DIRECTORY` with Playwright and
-Chromium installed and the environment CA available to Chromium's NSS trust
-database.
+The [screenshot](../../corpus/results/lnk002/name-attribute/name-config.png)
+shows the `#config` case. To reproduce the check, run
+`check_github.py --output NEW_DIRECTORY` with Playwright and its Chromium
+installed.
 
 The [HTML Standard](https://html.spec.whatwg.org/multipage/browsing-the-web.html#the-indicated-part-of-the-document)
 selects an element's `id`, then a matching `name` on an `a` element. The
@@ -48,8 +46,8 @@ records that native HTML navigation differs from GitHub application scrolling.
 
 ## Decision
 
-Accept `name` attributes on every HTML element, as the approved plan directs
-when GitHub scrolls to the heading. Keep the exclusions for comments, escaped
+Accept `name` attributes on every HTML element, since seiso prefers a missed
+diagnosis to a false one. Keep the exclusions for comments, escaped
 tags, code, frontmatter, and nested text in raw HTML elements. Update the
 independent oracle's extraction alongside the rule's documented anchors.
 
@@ -57,6 +55,3 @@ Only heading `name="config"` was tested in the live viewer. Accepting names
 on other elements is a conservative allowance: it can miss a broken link in
 another renderer. Site labels still require individual renderer review; the
 GitHub-only oracle does not establish site precision.
-
-The fresh holdout may freeze only after this independent rule fix is merged
-and stages 1 and 2 are reviewed. No merge is authorized by the current task.

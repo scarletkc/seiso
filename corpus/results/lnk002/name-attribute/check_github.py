@@ -54,8 +54,7 @@ cases = {
     'missing': '#seiso-fragment-control-that-does-not-exist',
 }
 with sync_playwright() as p:
-    browser = p.chromium.launch(executable_path='/usr/bin/chromium',
-                                headless=True, args=['--no-sandbox'])
+    browser = p.chromium.launch(headless=True)
     metadata['browser_version'] = browser.version
     metadata['viewport'] = {'width': 1280, 'height': 800}
     results = []
@@ -86,12 +85,15 @@ with sync_playwright() as p:
                     rendered_font: getComputedStyle(heading).fontFamily};
         }''')
         result = {'case': name, 'url': page.url, 'status': response.status,
-                  'measurement': measurement, 'assets': assets, 'request_failures': failures}
+                  'measurement': measurement, 'asset_responses': len(assets),
+                  'failed_assets': [a for a in assets if not 200 <= a['status'] < 400],
+                  'request_failures': failures}
         results.append(result)
         metadata['cases'] = results
         (OUT / 'browser.json').write_text(json.dumps(metadata, indent=2) + '\n')
-        page.screenshot(path=str(OUT / (name + '.png')))
-        print(json.dumps({k: v for k, v in result.items() if k != 'assets'}), flush=True)
+        if name == 'name-config':
+            page.screenshot(path=str(OUT / (name + '.png')))
+        print(json.dumps(result), flush=True)
         page.close()
     browser.close()
 metadata['cases'] = results
