@@ -1,0 +1,2677 @@
+{
+  "corpus_sha256": "8affea1f5c672343c851b0861192ba3b64315999288509ce849a78d08aa75f8a",
+  "profiles": {
+    "cargo": {
+      "reason": "Cargo Book source defaults to doc/book/src. The separate contributor book lies outside this precommitted scope.",
+      "sites": [
+        {
+          "evidence": "Pinned doc/book/book.toml declares The Cargo Book and output.html, with no book.src override, so src is relative to doc/book. Its explicit redirect table is preserved as later renderer evidence.",
+          "evidence_git_blob": "b6b59c056f58963e3eefc396fc694d327afcf3b8",
+          "evidence_path": "doc/book/book.toml",
+          "generator": "mdBook",
+          "path": "doc/book/src/**",
+          "root": "doc/book/src"
+        }
+      ]
+    },
+    "electron": {
+      "reason": "The pinned release workflow only triggers update-docs.yml in electron/website with a release SHA. This source tree has no documentation generator configuration/navigation establishing the imported site scope or root, so no site entry is inferred. Under the precommitted renderer rule, unmapped targets use the pinned GitHub repository view.",
+      "sites": []
+    },
+    "eslint": {
+      "reason": "The current-main documentation site is rooted at docs/src under /docs/head/. Nunjucks generation and custom plugins need individual renderer review; GitHub-only oracle labels are preliminary.",
+      "sites": [
+        {
+          "base": "/docs/head/",
+          "evidence": "Pinned docs/.eleventy.js sets dir.input to src, default pathPrefix to /docs/head/, markdownTemplateEngine to njk, and markdown-it-anchor slugify to github-slugger. Environment-specific release prefixes are read, not run.",
+          "evidence_git_blob": "99104e0e42bcac675cedae72f7d5998ed6bea452",
+          "evidence_path": "docs/.eleventy.js",
+          "generator": "Eleventy with markdown-it-anchor",
+          "path": "docs/src/**",
+          "root": "docs/src"
+        }
+      ]
+    },
+    "fastapi": {
+      "reason": "English site configuration and navigation cover docs/en/docs; the repository README stays unmapped. Renderer extensions must be checked individually during labeling.",
+      "sites": [
+        {
+          "base": "/",
+          "evidence": "Pinned docs/en/mkdocs.yml selects English documentation, uses Material with classic variant and zensical extensions, and lists index.md and tutorial paths. With no docs_dir override, docs is relative to docs/en.",
+          "evidence_git_blob": "3ec657ac8f08ec5fdc40c2768a2dbc66268e6cb2",
+          "evidence_path": "docs/en/mkdocs.yml",
+          "generator": "MkDocs-compatible / Zensical configuration",
+          "path": "docs/en/docs/**",
+          "root": "docs/en/docs"
+        }
+      ]
+    },
+    "mkdocs-material": {
+      "reason": "Read the pinned root MkDocs config, including site prefix and anchor-related extensions; no config tags were executed.",
+      "sites": [
+        {
+          "base": "/mkdocs-material/",
+          "evidence": "Pinned mkdocs.yml has no docs_dir override, so docs is the source, and site_url is https://squidfunk.github.io/mkdocs-material/. It enables attr_list and toc plus pymdownx extensions.",
+          "evidence_git_blob": "841804cd48ede17d836754e251a77ef6dc8d14c4",
+          "evidence_path": "mkdocs.yml",
+          "generator": "MkDocs Material",
+          "path": "docs/**",
+          "root": "docs"
+        }
+      ]
+    },
+    "node": {
+      "reason": "Only the configured API Markdown is mapped, with the explicit quic.md exclusion preserved. README and other doc scopes retain the repository viewer.",
+      "sites": [
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/addons.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/assert.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/async_context.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/async_hooks.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/bench.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/buffer.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/child_process.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/cli.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/cluster.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/console.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/crypto.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/debugger.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/deprecations.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/dgram.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/diagnostics_channel.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/dns.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/documentation.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/domain.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/dtls.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/embedding.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/environment_variables.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/errors.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/esm.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/events.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/ffi.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/fs.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/globals.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/http.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/http2.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/https.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/index.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/inspector.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/intl.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/module.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/modules.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/n-api.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/net.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/os.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/packages.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/path.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/perf_hooks.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/permissions.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/process.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/punycode.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/querystring.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/readline.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/repl.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/report.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/single-executable-applications.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/sqlite.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/stream.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/stream_iter.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/string_decoder.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/test.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/timers.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/tls.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/tracing.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/tty.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/typescript.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/url.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/util.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/v8.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/vfs.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/vm.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/wasi.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/webcrypto.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/webstreams.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/worker_threads.md",
+          "root": "doc/api"
+        },
+        {
+          "evidence": "Pinned doc-kit configuration selects doc/api/*.md, ignores doc/api/quic.md, and writes out/doc/api. Makefile invokes that config for the HTML section-pages target. Configuration was read without evaluating its memory/native-binding branches.",
+          "evidence_git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+          "evidence_path": "tools/doc/web.doc-kit.config.mjs",
+          "generator": "Node doc-kit section-pages",
+          "path": "doc/api/zlib.md",
+          "root": "doc/api"
+        }
+      ]
+    },
+    "rustc-dev-guide": {
+      "reason": "The root mdBook configuration covers src; the root README stays unmapped.",
+      "sites": [
+        {
+          "evidence": "Pinned book.toml declares the Rust Compiler Development Guide, HTML output, Mermaid preprocessor, and no book.src override, so the source defaults to src. Redirect settings remain individual renderer evidence.",
+          "evidence_git_blob": "a78cf231d00d377859c2d6d7e11202a63914fbc8",
+          "evidence_path": "book.toml",
+          "generator": "mdBook",
+          "path": "src/**",
+          "root": "src"
+        }
+      ]
+    },
+    "traefik": {
+      "reason": "The docs_dir is relative to docs/mkdocs.yml, establishing docs/content; root README stays unmapped.",
+      "sites": [
+        {
+          "base": "/traefik/",
+          "evidence": "Pinned docs/mkdocs.yml sets docs_dir: content and site_url: https://doc.traefik.io/traefik, with attr_list and toc extensions.",
+          "evidence_git_blob": "2a115bcdec4fd66e03e25b4b58947697a467f442",
+          "evidence_path": "docs/mkdocs.yml",
+          "generator": "MkDocs Material",
+          "path": "docs/content/**",
+          "root": "docs/content"
+        }
+      ]
+    },
+    "vitest": {
+      "reason": "Explicit per-document entries retain the configured exclusions rather than mapping excluded Markdown pages. The default source root is docs and public files are in docs/public.",
+      "sites": [
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/artifacts.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/import-example.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/metadata.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/plugin.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/reporters.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/runner.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/test-case.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/test-collection.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/test-module.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/test-project.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/test-specification.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/test-suite.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/advanced/vitest.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/assert-type.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/assert.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/browser/assertions.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/browser/commands.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/browser/context.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/browser/interactivity.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/browser/locators.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/browser/react.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/browser/svelte.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/browser/vue.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/describe.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/expect-typeof.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/expect.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/hooks.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/mock.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/test.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/api/vi.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/blog.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/blog/vitest-3-2.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/blog/vitest-3.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/blog/vitest-4-1.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/blog/vitest-4.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/blog/vitest-5.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/alias.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/allowonly.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/api.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/attachmentsdir.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/bail.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/benchmark.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/commands.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/connecttimeout.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/dependencysourcemaps.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/detailspanelposition.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/enabled.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/expect.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/headless.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/instances.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/locators.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/orchestratorscripts.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/playwright.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/preview.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/provider.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/screenshotdirectory.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/screenshotfailures.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/testerhtmlpath.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/trace.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/traceview.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/trackunhandlederrors.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/ui.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/viewport.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/browser/webdriverio.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/cache.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/chaiconfig.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/changed.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/clearmocks.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/coverage.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/css.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/dangerouslyignoreunhandlederrors.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/deps.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/detectasyncleaks.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/diff.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/dir.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/disableconsoleintercept.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/env.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/environment.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/environmentoptions.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/exclude.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/execargv.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/expandsnapshotdiff.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/expect.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/experimental.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/faketimers.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/fileparallelism.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/forcereruntriggers.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/fsmodulecache.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/fsmodulecachepath.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/globals.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/globalsetup.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/hideskippedtests.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/hooktimeout.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/include-source.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/include.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/includetasklocation.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/index.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/injectcjsglobals.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/isolate.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/logheapusage.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/maxconcurrency.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/maxworkers.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/mockreset.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/mode.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/name.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/onconsolelog.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/onstacktrace.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/onunhandlederror.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/open.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/outputfile.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/passwithnotests.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/pool.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/printconsoletrace.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/projects.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/provide.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/repeats.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/reporters.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/resolvesnapshotpath.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/restoremocks.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/retry.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/root.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/runner.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/sequence.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/server.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/setupfiles.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/sharedviteserver.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/silent.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/slowtestthreshold.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/snapshotenvironment.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/snapshotformat.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/snapshotserializers.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/stricttags.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/tags.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/tasktitlevalueformattruncate.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/teardowntimeout.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/testnamepattern.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/testtimeout.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/typecheck.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/ui.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/unstubenvs.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/unstubglobals.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/update.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/vmmemorylimit.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/watch.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/config/watchtriggerpatterns.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/advanced/benchmark-provider.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/advanced/index.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/advanced/pool.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/advanced/reporters.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/advanced/tests.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/benchmarking.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/browser/aria-snapshots.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/browser/component-testing.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/browser/index.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/browser/multiple-setups.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/browser/playwright-traces.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/browser/trace-view.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/browser/visual-regression-testing.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/browser/why.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/cli.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/common-errors.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/comparisons.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/coverage.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/debugging.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/environment.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/extending-matchers.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/features.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/filtering.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/ide.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/improving-performance.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/in-source.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/index.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/learn/async.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/learn/debugging-tests.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/learn/matchers.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/learn/mock-functions.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/learn/setup-teardown.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/learn/snapshots.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/learn/testing-in-practice.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/learn/writing-tests-with-ai.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/learn/writing-tests.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/lifecycle.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/migration/index.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/migration/jest.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/migration/mocha.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/mocking.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/mocking/classes.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/mocking/dates.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/mocking/file-system.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/mocking/functions.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/mocking/globals.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/mocking/modules.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/mocking/requests.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/mocking/timers.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/open-telemetry.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/parallelism.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/profiling-test-performance.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/projects.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/browser-locators.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/cancellable.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/conditional-mocking.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/custom-assertions.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/db-transaction.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/disable-isolation.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/explicit-resources.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/parallel-sequential.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/schema-matching.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/type-narrowing.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/wait-for.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/recipes/watch-templates.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/reporters.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/snapshot.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/test-annotations.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/test-context.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/test-tags.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/testing-types.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/ui.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/using-plugins.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/guide/why.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/index.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/releases.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/team.md",
+          "public": "docs/public",
+          "root": "docs"
+        },
+        {
+          "evidence": "Pinned VitePress configuration in docs/.vitepress has no srcDir/base override, enables cleanUrls, and excludes **/guide/examples/*, **/guide/cli-generated.md and AGENTS.md. Markdown tab/group-icon plugins and code transformers are declared but not executed.",
+          "evidence_git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+          "evidence_path": "docs/.vitepress/config.ts",
+          "generator": "VitePress",
+          "path": "docs/todo.md",
+          "public": "docs/public",
+          "root": "docs"
+        }
+      ]
+    },
+    "vscode-docs": {
+      "reason": "The documentation navigation establishes docs as the source root and /docs/ as its URL prefix. No generator implementation is assumed at this stage.",
+      "sites": [
+        {
+          "base": "/docs/",
+          "evidence": "Pinned docs/toc.json maps documentation pages to /docs/<scope>/<page>, including docs/getstarted/overview.md as /docs/getstarted/overview.",
+          "evidence_git_blob": "26450a514f69686064d8e2fd5dc9acd5eb1a21a6",
+          "evidence_path": "docs/toc.json",
+          "generator": "VS Code site navigation",
+          "path": "docs/**",
+          "root": "docs"
+        }
+      ]
+    }
+  },
+  "review_basis": "Pinned generator configuration or navigation only; source and target Markdown prose and diagnostics unread. No upstream code or configuration executed.",
+  "reviewer_kind": "agent",
+  "schema_version": 1
+}

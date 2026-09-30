@@ -1,0 +1,126 @@
+{
+  "files": [
+    {
+      "bytes": 64006,
+      "commit": "524eb248e55a7e2c65da6efaf9be1aa16f519045",
+      "git_blob": "0582e926d1f275cc8fff77e63ddbb944835adfcd",
+      "path": "Makefile",
+      "repository": "nodejs/node",
+      "retained_path": "site-evidence/node/Makefile",
+      "sha256": "7546032d738e8c79123164591affb430c6de61b6ca9878aeeb1ac32df00e9895",
+      "source": "node"
+    },
+    {
+      "bytes": 1324,
+      "commit": "7af89da308fee1a45b0e6242a1be38ec22bd396c",
+      "git_blob": "2517dedb2d74b07b176de1c0965ca34703efc1d7",
+      "path": ".github/workflows/update-website-docs.yml",
+      "repository": "electron/electron",
+      "retained_path": "site-evidence/electron/.github/workflows/update-website-docs.yml",
+      "sha256": "5f6419fb1a37c35b2b6203273434e3d7912ac9e559dca28f544415eda4422076",
+      "source": "electron"
+    },
+    {
+      "bytes": 16142,
+      "commit": "7519b6b39b0a05821d4cae2b42c2d6163b71717f",
+      "git_blob": "26450a514f69686064d8e2fd5dc9acd5eb1a21a6",
+      "path": "docs/toc.json",
+      "repository": "microsoft/vscode-docs",
+      "retained_path": "site-evidence/vscode-docs/docs/toc.json",
+      "sha256": "cab69119e29f0a0f796d66ebedd8c3fc07ff1bd0975448a57234968799b6d807",
+      "source": "vscode-docs"
+    },
+    {
+      "bytes": 9156,
+      "commit": "3e33a03bdaa3a89f27d5e0c390c4ba9032f14b5e",
+      "git_blob": "3ec657ac8f08ec5fdc40c2768a2dbc66268e6cb2",
+      "path": "docs/en/mkdocs.yml",
+      "repository": "fastapi/fastapi",
+      "retained_path": "site-evidence/fastapi/docs/en/mkdocs.yml",
+      "sha256": "1984280474186817947aa18f4d4b2a65f2544d5100ea68d464408593810ce875",
+      "source": "fastapi"
+    },
+    {
+      "bytes": 9299,
+      "commit": "1c73dca3ff4909e4cddd0d3b6e272298e902dec7",
+      "git_blob": "841804cd48ede17d836754e251a77ef6dc8d14c4",
+      "path": "mkdocs.yml",
+      "repository": "squidfunk/mkdocs-material",
+      "retained_path": "site-evidence/mkdocs-material/mkdocs.yml",
+      "sha256": "252558246c760af93d932565786e20848bcf246cb69b1c3b6bde8fc1e822e249",
+      "source": "mkdocs-material"
+    },
+    {
+      "bytes": 29954,
+      "commit": "fcbfb8aff229498eddc941ea47f7bd18cbc65078",
+      "git_blob": "2a115bcdec4fd66e03e25b4b58947697a467f442",
+      "path": "docs/mkdocs.yml",
+      "repository": "traefik/traefik",
+      "retained_path": "site-evidence/traefik/docs/mkdocs.yml",
+      "sha256": "6a2f70378a2ca614d7de4e12ef5c5548564f7baea3da19271b0cf6ab3a4af893",
+      "source": "traefik"
+    },
+    {
+      "bytes": 5818,
+      "commit": "f3865b2a4d1acc5276f6b3c67d0e057f4dab3928",
+      "git_blob": "b6b59c056f58963e3eefc396fc694d327afcf3b8",
+      "path": "doc/book/book.toml",
+      "repository": "rust-lang/cargo",
+      "retained_path": "site-evidence/cargo/doc/book/book.toml",
+      "sha256": "ba2a415ee45f7324502ed6444c302521880f82fa5a80f8bce693bb31f9f29421",
+      "source": "cargo"
+    },
+    {
+      "bytes": 4617,
+      "commit": "d70a58f9574c627cff6af7b4705ffa360835f7f6",
+      "git_blob": "a78cf231d00d377859c2d6d7e11202a63914fbc8",
+      "path": "book.toml",
+      "repository": "rust-lang/rustc-dev-guide",
+      "retained_path": "site-evidence/rustc-dev-guide/book.toml",
+      "sha256": "4f0fcec6bfa4229fba16528a431be0975d717d26656f9e02568f3b57c1a6a40f",
+      "source": "rustc-dev-guide"
+    },
+    {
+      "bytes": 47774,
+      "commit": "62a7fe6791fcbe796fcbf58a17e0ee88663b9555",
+      "git_blob": "6e3ea4d9c14398bbf571afea1c1ac365a9246adb",
+      "path": "docs/.vitepress/config.ts",
+      "repository": "vitest-dev/vitest",
+      "retained_path": "site-evidence/vitest/docs/.vitepress/config.ts",
+      "sha256": "c91f83a4d7711f59801910627310772d05adf926e0593d4cbb8ea5ac0a7dbeac",
+      "source": "vitest"
+    },
+    {
+      "bytes": 21274,
+      "commit": "d166567901e09940c1de4ad0e95d572eeab5c927",
+      "git_blob": "99104e0e42bcac675cedae72f7d5998ed6bea452",
+      "path": "docs/.eleventy.js",
+      "repository": "eslint/eslint",
+      "retained_path": "site-evidence/eslint/docs/.eleventy.js",
+      "sha256": "f1b44628d9445bbfa3ff2dc44fd9363c6646232d7c300d67d2d1160fb6129df7",
+      "source": "eslint"
+    },
+    {
+      "bytes": 19,
+      "commit": "d166567901e09940c1de4ad0e95d572eeab5c927",
+      "git_blob": "e7918441959b060125c1e2225e8ecb8cec4cf64d",
+      "path": "docs/src/_data/config.json",
+      "repository": "eslint/eslint",
+      "retained_path": "site-evidence/eslint/docs/src/_data/config.json",
+      "sha256": "8607dce99dfe63e7e16f490ccdec0e27bd6669a81fd0161a79673b0d0a871f96",
+      "source": "eslint"
+    },
+    {
+      "bytes": 1490,
+      "commit": "524eb248e55a7e2c65da6efaf9be1aa16f519045",
+      "git_blob": "ad8a9ee21be0591dadf7c65554c18f4eff51faba",
+      "path": "tools/doc/web.doc-kit.config.mjs",
+      "repository": "nodejs/node",
+      "retained_path": "site-evidence/node/tools/doc/web.doc-kit.config.mjs",
+      "sha256": "818f4c7c00241ac0d6eb5897dcc2e417d717a302c14c02957833bc04b911e9eb",
+      "source": "node"
+    }
+  ],
+  "read_scope": "Only generator/build configuration and navigation files; never executed. No cohort document prose or diagnostic text was inspected.",
+  "schema_version": 1
+}

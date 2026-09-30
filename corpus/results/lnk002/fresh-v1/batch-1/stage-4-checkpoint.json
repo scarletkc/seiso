@@ -1,0 +1,30 @@
+{
+  "all_kind_reasons_exact": true,
+  "all_kinds_unknown": true,
+  "all_site_evidence_bound_to_same_pinned_tree": true,
+  "batch": 1,
+  "cohort_document_prose_or_diagnostics_read": false,
+  "configuration_executed": false,
+  "corpus_sha256": "8affea1f5c672343c851b0861192ba3b64315999288509ce849a78d08aa75f8a",
+  "documents": 2230,
+  "every_source_site_reviewed": true,
+  "implementation_unchanged_since_freeze": true,
+  "kinds_sha256": "89adb5c9a6732d878b886a5c028521cf65950ad11743315a4dc7bd42d39e1078",
+  "schema_version": 1,
+  "site_entries_per_source": {
+    "cargo": 1,
+    "electron": 0,
+    "eslint": 1,
+    "fastapi": 1,
+    "mkdocs-material": 1,
+    "node": 69,
+    "rustc-dev-guide": 1,
+    "traefik": 1,
+    "vitest": 223,
+    "vscode-docs": 1
+  },
+  "site_evidence_inputs_sha256": "4fafc6d280ba921263bdcf07fb0692db6c4bbffe0eff47f67de873973f2df04a",
+  "sites_sha256": "ab1c76b24414a655a7c949a1e4549c2fd052cc4dc30514fe28aac48fb283455f",
+  "stage": 4,
+  "unknown_kind_mappings_empty": true
+}
