@@ -20,6 +20,13 @@ the `spec-v<version>` tag of this repository. This file follows
   request restated as a negative clause, its revision, and a negative
   statement that stays. The judgments name the `KIND-6` decision.
 
+### Changed
+
+- `KIND-6` also forbids narrating how the work a long-lived document
+  describes was produced, including attempts and options that the result
+  replaced, and permits describing earlier behavior that the reader can still
+  meet. The worked examples show both.
+
 ## 0.1.1 - 2026-10-01
 
 ### Changed

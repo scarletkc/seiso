@@ -205,6 +205,25 @@ separate the two sentences. A reviewer who never saw the conversation
 separates them by asking: without the sentence, would the reader assume or do
 the excluded thing?
 
+Narrating how the work was produced breaks `KIND-6` even when nobody asked
+for anything. This sentence in `docs/install.md` describes a cache the reader
+can never meet:
+
+```markdown
+An early build kept the cache in SQLite; files replaced it before the first
+release.
+```
+
+The repair deletes the sentence. The decision record holds the alternatives
+(`KIND-7`), and the how-to points to it where a step needs the reason.
+Earlier behavior that the reader can still meet is current content, which
+`KIND-6` permits:
+
+```markdown
+`example` 2.0 does not read caches written by 1.x. Delete `.example_cache`
+after upgrading.
+```
+
 ## A reference page
 
 `docs/reference/settings.md` is the authoritative home of the settings

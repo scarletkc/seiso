@@ -104,7 +104,10 @@ while the output remains a link target and a possible authoritative home.
 
 `KIND-6` A long-lived document MUST address its reader directly and stand on
 its own. It MUST NOT address whoever requested it, report what that requester
-asked for or approved, or narrate how the document was produced.
+asked for or approved, or narrate how the document or the work it describes
+was produced, including attempts and options that the result replaced. It MAY
+describe earlier behavior that the reader can still meet, such as a deprecated
+option or a migration from an earlier version.
 
 `KIND-7` A `howto`, `reference`, or `runbook` MUST NOT argue for a design
 choice. A sentence of rationale that a step or definition needs in order to be
