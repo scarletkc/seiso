@@ -205,6 +205,8 @@ separate the two sentences. A reviewer who never saw the conversation
 separates them by asking: without the sentence, would the reader assume or do
 the excluded thing?
 
+### Abandoned attempts
+
 Narrating how the work was produced breaks `KIND-6` even when nobody asked
 for anything. This sentence in `docs/install.md` describes a cache the reader
 can never meet:
