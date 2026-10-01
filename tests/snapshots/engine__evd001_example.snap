@@ -22,6 +22,6 @@ expression: result.diagnostics
     "fix": null,
     "url": "https://github.com/scarletkc/seiso/blob/v[version]/docs/rules/EVD001.md",
     "related": [],
-    "suggestion": "Add a measurement or source in this or an adjacent block, or replace the judgment with the specific behavior."
+    "suggestion": "Link the source, or the dated record that holds the measurement, in this or an adjacent block, or replace the judgment with the specific behavior."
   }
 ]

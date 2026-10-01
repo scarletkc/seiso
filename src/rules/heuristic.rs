@@ -683,7 +683,7 @@ impl Findings<'_> {
                     "EVD001",
                     span,
                     "This evaluative claim has no nearby measurement or source.",
-                    "Add a measurement or source in this or an adjacent block, or replace the judgment with the specific behavior.",
+                    "Link the source, or the dated record that holds the measurement, in this or an adjacent block, or replace the judgment with the specific behavior.",
                 );
             }
         }
