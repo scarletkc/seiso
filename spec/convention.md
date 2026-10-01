@@ -126,6 +126,11 @@ Once behavior ships, its definitions move from the plan to a reference page,
 and the plan points to that page. `prd` and `spec` describe content, not kinds.
 This version of the specification defines no mechanism for additional kinds.
 
+A record of measurements or of an investigation, such as a benchmark run or
+the evaluation of a candidate tool, is a dated record. It is a `changelog`,
+which answers what happened at its date, unless its subject is a decision and
+its tradeoffs, which make it an `adr`.
+
 ## Facts and authority
 
 `FACT-1` Within a comparison scope, each fact MUST have exactly one

@@ -22,6 +22,9 @@ the `spec-v<version>` tag of this repository. This file follows
 - A worked example of a measurement beside a comparative claim in a
   long-lived document: an undated figure that breaks `POINTER-1`, a revision
   that points to the dated record, and a dated figure that stays.
+- A record of measurements or of an investigation is classified as a
+  `changelog`, or as an `adr` when its subject is a decision and its
+  tradeoffs.
 
 ### Changed
 

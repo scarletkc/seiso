@@ -1,5 +1,5 @@
 ---
-kind: reference
+kind: adr
 ---
 
 # Design history
