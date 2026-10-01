@@ -2,9 +2,10 @@ use std::collections::BTreeSet;
 use std::path::Path;
 use std::sync::LazyLock;
 
+use super::lexicon::{self, Guard, Phrase, marker};
 use crate::config::{Config, Lexicon};
 use crate::diagnostics::{Diagnostic, Span};
-use crate::md::prose::{Run, marker, marker_if, occurrences, runs};
+use crate::md::prose::{Run, runs};
 use crate::md::{BlockKind, Document, Fragment, FragmentKind, Language};
 use crate::paths::{local_link_target, normalize};
 use regex::Regex;
@@ -41,132 +42,6 @@ enum Words {
     Conversation,
 }
 
-fn defaults(words: Words, language: Language) -> &'static [&'static str] {
-    match (words, language) {
-        (Words::Stale, Language::En) => &["currently", "latest", "at present"],
-        (Words::Stale, Language::Zh) => &["目前", "当前", "最新", "现在"],
-        (Words::Stale, Language::Ja) => &["現在", "最新", "現時点"],
-        (Words::Constraint, Language::En) => &[
-            "or later", "or newer", "at least", "at most", "minimum", "maximum", "requires",
-            "required",
-        ],
-        (Words::Constraint, Language::Zh) => {
-            &["以上", "以下", "至少", "最多", "要求", "不低于", "不高于"]
-        }
-        (Words::Constraint, Language::Ja) => {
-            &["以上", "以下", "以降", "少なくとも", "必要", "要件"]
-        }
-        (Words::Commit, Language::En) => &["commit", "sha", "build"],
-        (Words::Commit, Language::Zh) => &["commit", "sha", "build", "提交", "构建"],
-        (Words::Commit, Language::Ja) => &["commit", "sha", "build", "コミット", "ビルド"],
-        (Words::Pointer, Language::En) => &["see", "defined in", "refer to"],
-        (Words::Pointer, Language::Zh) => &["见", "参见", "参考", "定义在"],
-        (Words::Pointer, Language::Ja) => &["参照", "定義", "をご覧"],
-        (Words::Source, Language::En) => &[
-            "see the source",
-            "see source",
-            "refer to the source",
-            "see the code",
-        ],
-        (Words::Source, Language::Zh) => {
-            &["见源码", "见源代码", "参见源码", "参见源代码", "参考源码"]
-        }
-        (Words::Source, Language::Ja) => &["ソースを参照", "ソースコードを参照", "コードを参照"],
-        (Words::Rationale, Language::En) => {
-            &["why we chose", "why we choose", "why we use", "why not use"]
-        }
-        (Words::Rationale, Language::Zh) => &[
-            "为什么选择",
-            "为何选择",
-            "为什么不用",
-            "为何不用",
-            "为什么采用",
-        ],
-        (Words::Rationale, Language::Ja) => &["採用した理由", "選択した理由"],
-        (Words::Conversation, Language::En) => &[
-            "as you requested",
-            "as requested by you",
-            "here's the updated",
-            "here’s the updated",
-            "here is the updated",
-            "i hope this helps",
-            "hope this helps",
-            "as the user requested",
-            "the user confirmed",
-            "the user has confirmed",
-            "the user approved",
-            "the user has approved",
-            "the user authorized",
-            "the user has authorized",
-        ],
-        (Words::Conversation, Language::Zh) => &[
-            "根据你的要求",
-            "根据您的要求",
-            "按你的要求",
-            "按照你的要求",
-            "希望对你有帮助",
-            "希望对您有帮助",
-            "根据用户的要求",
-            "按照用户的要求",
-            "经用户确认",
-            "已与用户确认",
-            "用户已确认",
-            "经用户授权",
-            "已获用户授权",
-            "已获得用户授权",
-            "用户已授权",
-            "经用户同意",
-            "已征得用户同意",
-            "用户已同意",
-        ],
-        (Words::Conversation, Language::Ja) => &[
-            "ご要望に応じて",
-            "ご依頼のとおり",
-            "ご依頼どおり",
-            "お役に立てれば幸い",
-        ],
-    }
-}
-
-/// Product documentation describes its own end users with the same words as a
-/// report about the requester: "未经用户授权", "Verify that the user has
-/// authorized the app", "用户已授权的应用", "经用户确认后". A condition,
-/// negation, requirement, or check earlier in the same clause, or an
-/// attributive or temporal clause after the phrase, marks that use. Earlier
-/// clauses do not count, so "After the review, the user confirmed" remains a
-/// report.
-const END_USER_ADJACENT: &[&str] = &["未", "需", "须", "应", "不", "待", "等", "请", "若", "当"];
-const END_USER_CLAUSE_PHRASES: &[&str] = &[
-    "如果", "一旦", "只有", "除非", "确认", "确保", "检查", "验证", "核实", "必须", "需要", "要求",
-    "是否", "判断",
-];
-const END_USER_CLAUSE_WORDS: &[&str] = &[
-    "if", "once", "when", "whenever", "after", "until", "unless", "before", "whether", "verify",
-    "ensure", "check", "confirm", "sure", "require", "requires", "required", "must", "should",
-    "need", "needs", "only", "wait",
-];
-const END_USER_AFTER: &[&str] = &["的", "后", "之后", "以后", "时"];
-const CLAUSE_BOUNDARIES: &[char] = &[
-    ',', ';', ':', '.', '!', '?', '，', '；', '：', '。', '！', '？', '、',
-];
-
-fn end_user_behavior(before: &str, after: &str) -> bool {
-    let before = before.trim_end();
-    let clause = before
-        .rfind(CLAUSE_BOUNDARIES)
-        .map_or(before, |index| &before[index..]);
-    END_USER_ADJACENT.iter().any(|word| before.ends_with(word))
-        || END_USER_CLAUSE_PHRASES
-            .iter()
-            .any(|phrase| clause.contains(phrase))
-        || clause
-            .split(|ch: char| !ch.is_alphanumeric())
-            .any(|word| END_USER_CLAUSE_WORDS.contains(&word.to_ascii_lowercase().as_str()))
-        || END_USER_AFTER
-            .iter()
-            .any(|word| after.trim_start().starts_with(word))
-}
-
 fn extensions(words: Words, lexicon: &Lexicon) -> &[String] {
     match words {
         Words::Stale => &lexicon.extend_stale_markers,
@@ -179,10 +54,22 @@ fn extensions(words: Words, lexicon: &Lexicon) -> &[String] {
     }
 }
 
-fn words(config: &Config, language: Language, kind: Words) -> Vec<&str> {
-    let mut values = defaults(kind, language).to_vec();
+fn words(config: &Config, language: Language, kind: Words) -> Vec<Phrase<'_>> {
+    let group = match kind {
+        Words::Stale => "stale",
+        Words::Constraint => "constraint",
+        Words::Commit => "commit",
+        Words::Pointer => "pointer",
+        Words::Source => "source",
+        Words::Rationale => "rationale",
+        Words::Conversation => "conversation",
+    };
+    let mut values = lexicon::phrases(group, language).to_vec();
     if let Some(lexicon) = config.settings.lint.lexicon.get(language.as_str()) {
-        values.extend(extensions(kind, lexicon).iter().map(String::as_str));
+        values.extend(extensions(kind, lexicon).iter().map(|text| Phrase {
+            text,
+            guard: matches!(kind, Words::Conversation).then_some(Guard::EndUser),
+        }));
     }
     values
 }
@@ -317,10 +204,12 @@ impl NormativeChecks<'_> {
             for run in with_code {
                 let mut seen = BTreeSet::new();
                 for context in words(self.config, sentence.language, Words::Commit) {
-                    for occurrence in occurrences(&run.text, context) {
+                    for occurrence in context.occurrences(&run.text) {
                         let tail = &run.text[occurrence.end..];
                         // Require a separator: `commitdeadbee` is one identifier, not a context and hash.
-                        if context.ends_with(|ch: char| ch.is_ascii_alphanumeric())
+                        if context
+                            .text
+                            .ends_with(|ch: char| ch.is_ascii_alphanumeric())
                             && !tail
                                 .starts_with(|ch: char| ch.is_whitespace() || ":=#".contains(ch))
                         {
@@ -420,7 +309,8 @@ impl NormativeChecks<'_> {
                 words(self.config, sentence.language, Words::Rationale)
                     .iter()
                     .find_map(|phrase| {
-                        occurrences(&run.text, phrase)
+                        phrase
+                            .occurrences(&run.text)
                             .into_iter()
                             .find(|range| range.start == start)
                             .and_then(|range| run.span(range))
@@ -452,10 +342,9 @@ impl NormativeChecks<'_> {
         diagnostics: &mut Vec<Diagnostic>,
     ) {
         if self.enabled.contains("VOX001")
-            && let Some(span) = marker_if(
+            && let Some(span) = marker(
                 prose,
                 &words(self.config, sentence.language, Words::Conversation),
-                |before, after| !end_user_behavior(before, after),
             )
         {
             diagnostics.push(emit(
