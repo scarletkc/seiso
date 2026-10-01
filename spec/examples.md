@@ -201,8 +201,8 @@ access.
 ```
 
 `without` and `does not` are ordinary contract prose, so a checker cannot
-separate the two sentences. A reviewer separates them with a question the
-document alone answers: without the sentence, would the reader assume or do
+separate the two sentences. A reviewer who never saw the conversation
+separates them by asking: without the sentence, would the reader assume or do
 the excluded thing?
 
 ## A reference page
