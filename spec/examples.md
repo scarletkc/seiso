@@ -175,6 +175,36 @@ As you asked, the verification step is now included below.
 A checker recognizes some of these phrases. A paragraph that narrates the
 document's own production in other words is a judgment.
 
+A request also survives without a requester phrase. A review of
+`docs/install.md` asked that the verification step not pin a release number,
+and the request became part of the step:
+
+```markdown
+Run `example --version`. The command prints the installed version, without
+comparing it to a pinned release number.
+```
+
+The final clause reports what the reviewer asked for, with the reviewer left
+out, and `KIND-6` excludes that report whether or not it names the requester.
+A reader who never saw the review learns what the step does not do, about an
+option nobody offered them. The verification step above states what the
+command does and nothing else.
+
+A negative statement stays when it tells the reader something they would
+otherwise assume or do. A reader of a Markdown checker may expect external
+links to be fetched and grant the check network access; this sentence states
+the constraint and its consequence:
+
+```markdown
+`example` does not fetch external links, so a check runs without network
+access.
+```
+
+`without` and `does not` are ordinary contract prose, so a checker cannot
+separate the two sentences. A reviewer separates them with a question the
+document alone answers: without the sentence, would the reader assume or do
+the excluded thing?
+
 ## A reference page
 
 `docs/reference/settings.md` is the authoritative home of the settings
@@ -400,6 +430,9 @@ the requirement on the strength of the exception (`EXCEPTION-2`).
 No checker establishes these from the documents alone; a conformance claim
 covers them through review (`CONFORMANCE-1`):
 
+- Whether a negative clause in a long-lived document tells the reader about
+  something they would otherwise assume or do, or answers an option that only
+  the conversation behind the document raised (`KIND-6`).
 - Whether a paragraph in a how-to is the sentence of rationale a step needs
   or the beginning of a design argument (`KIND-7`).
 - Whether two paragraphs that explain the same behavior in different words are

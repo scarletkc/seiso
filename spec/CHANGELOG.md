@@ -14,6 +14,12 @@ the `spec-v<version>` tag of this repository. This file follows
 
 ## Unreleased
 
+### Added
+
+- A worked example of a conversation remnant without a requester phrase: a
+  request restated as a negative clause, its revision, and a negative
+  statement that stays. The judgments name the `KIND-6` decision.
+
 ## 0.1.1 - 2026-10-01
 
 ### Changed
