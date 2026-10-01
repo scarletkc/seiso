@@ -19,6 +19,9 @@ the `spec-v<version>` tag of this repository. This file follows
 - A worked example of a conversation remnant without a requester phrase: a
   request restated as a negative clause, its revision, and a negative
   statement that stays. The judgments name the `KIND-6` decision.
+- A worked example of a measurement beside a comparative claim in a
+  long-lived document: an undated figure that breaks `POINTER-1`, a revision
+  that points to the dated record, and a dated figure that stays.
 
 ### Changed
 

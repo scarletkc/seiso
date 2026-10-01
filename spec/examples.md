@@ -325,7 +325,8 @@ Date: 2026-03-14
 ## Context
 
 Checks parse every document on each run. At the time of this decision the
-corpus held 1,240 documents and a cold run took 9 seconds on the CI runner.
+corpus held 1,240 documents and a cold run took 9 seconds on the CI runner. A
+prototype file cache brought a warm run to 1.5 seconds.
 
 ## Decision
 
@@ -340,7 +341,7 @@ a service or a dependency for a workload that a filesystem serves within the
 latency target.
 ```
 
-The document count and the duration are values observed on the date of the
+The document count and the durations are values observed on the date of the
 record, which `FACT-5` permits. The rejected alternatives are the content
 `KIND-7` sends here. `cache.dir` is a pointer to the setting the reference
 owns, not a second definition.
@@ -351,6 +352,37 @@ definitions by responsibility and the record would be restating them
 to this record for the cache directory's current default is a judgment with
 one answer: the record holds history, and the reference holds the current
 contract (`FACT-5`).
+
+### A measurement in a long-lived document
+
+`FACT-6` asks a comparative claim to identify its evidence, and a measurement
+beside the claim does. Stated in the present tense in a long-lived document,
+the same figure is also a volatile value, so this sentence in
+`docs/install.md` satisfies `FACT-6` and breaks `POINTER-1`:
+
+```markdown
+A warm run is six times faster than a cold run.
+```
+
+The ratio changes whenever the parser or the corpus does, and nothing on the
+page prompts a new measurement. The repair keeps the claim and points to the
+record that holds the measurement at its date (`FACT-5`):
+
+```markdown
+The file cache shortens warm runs;
+[decision 0001](decisions/0001-file-based-cache.md) records the measurement.
+```
+
+A figure tied to the occasion that measured it is a historical fact, which
+`POINTER-1` permits:
+
+```markdown
+When the file cache was adopted, a warm run took 1.5 seconds against 9 seconds
+for a cold run ([decision 0001](decisions/0001-file-based-cache.md)).
+```
+
+A checker can observe that a figure stands beside a claim. Whether the figure
+is dated, and whether it supports the claim, is a judgment.
 
 ## A plan
 
