@@ -9,6 +9,34 @@ use std::process::{Command, Stdio};
 use serde_json::{Value, json};
 use tempfile::TempDir;
 
+/// Adding an inheriting child preserves diagnostics and exposes path provenance.
+#[test]
+fn parent_inheritance_preserves_check_coverage_and_reports_bases() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    write(
+        root,
+        "seiso.toml",
+        "include = ['README.md', 'docs/**/*.md']\n[lint]\nselect = ['KND001']",
+    );
+    write(root, "README.md", "---\nkind: readme\n---\n# Readme\n");
+    write(root, "docs/guide.md", "# No kind\n");
+    let before = run(root, &["check", "--output-format", "json"], None);
+    assert_eq!(before.status.code(), Some(1));
+    write(root, "docs/seiso.toml", "extend = '../seiso.toml'");
+    let after = run(root, &["check", "--output-format", "json"], None);
+    assert_eq!(after.status.code(), Some(1));
+    assert_eq!(before.stdout, after.stdout);
+    let report = value(&run(root, &["policy"], None));
+    let bases = &report["configurations"]["docs/seiso.toml"]["pattern_bases"]["include"];
+    assert_eq!(
+        bases[1],
+        json!({"pattern": "docs/**/*.md", "base_directory": "."})
+    );
+    let child = value(&run(&root.join("docs"), &["policy"], None));
+    assert_eq!(child, report);
+}
+
 #[test]
 fn preview_is_opt_in_even_when_a_rule_is_explicitly_selected() {
     let workspace = TempDir::new().unwrap();

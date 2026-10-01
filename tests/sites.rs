@@ -44,6 +44,23 @@ fn site_workspace(sites: &str) -> TempDir {
 
 const SITE: &str = "\n[[sites]]\npath = 'site/**'\nroot = 'site'\npublic = 'site/public'\n";
 
+/// A child policy retains the parent's site root and public asset directory.
+#[test]
+fn inherited_sites_resolve_routes_and_public_assets_from_the_parent() {
+    let workspace = site_workspace(SITE);
+    let root = workspace.path();
+    let before = run(root, &["check", "--output-format", "json"]);
+    write(root, "site/seiso.toml", "extend = '../seiso.toml'");
+    let after = run(root, &["check", "--output-format", "json"]);
+    assert_eq!(before.status.code(), after.status.code());
+    assert_eq!(value(&before), value(&after));
+    let policy = value(&run(root, &["policy"]));
+    assert_eq!(
+        policy["configurations"]["site/seiso.toml"]["pattern_bases"]["sites"][0],
+        json!({"pattern": "site/**", "base_directory": "."})
+    );
+}
+
 fn diagnostics(root: &Path) -> Vec<(String, String, String)> {
     let output = run(root, &["check", "--output-format", "json"]);
     assert_eq!(
@@ -388,4 +405,71 @@ fn invalid_site_entries_are_configuration_errors() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         assert!(stderr.contains(expected), "{stderr}");
     }
+}
+
+#[test]
+fn child_cwd_keeps_inherited_site_pages_and_sibling_sites_in_the_workspace() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    write(
+        root,
+        "seiso.toml",
+        &format!(
+            "{LINKS}\n[[kinds]]\npath = '**/*.md'\nkind = 'reference'\n\n[[sites]]\npath = 'docs/**'\nroot = 'docs'\npublic = 'assets'\n\n[[sites]]\npath = 'website/**'\nroot = 'website'\n"
+        ),
+    );
+    write(root, "docs/index.md", "# Home\n\n## Install\n");
+    write(root, "assets/logo.png", "image");
+    write(
+        root,
+        "docs/guide/page.md",
+        "# Page\n\n[Home](/index#install) [Asset](/logo.png) [Relative](../index#install)\n",
+    );
+    write(root, "notes/page.md", "# Notes\n");
+    write(root, ".gitignore", "docs/guide/private.md\n");
+    write(root, "docs/guide/private.md", "[Missing](missing.md)\n");
+    let cwd = root.join("docs/guide");
+    let before = run(&cwd, &["check", "--no-cache", "--output-format", "json"]);
+    assert!(
+        before.status.success(),
+        "{}",
+        String::from_utf8_lossy(&before.stderr)
+    );
+    assert_eq!(value(&before), json!([]));
+    write(root, "docs/seiso.toml", "extend = '../seiso.toml'\n");
+    write(root, "docs/guide/seiso.toml", "extend = '../seiso.toml'\n");
+    write(root, "notes/seiso.toml", "extend = '../seiso.toml'\n");
+    for directory in [&cwd, &root.join("notes")] {
+        let policy = run(directory, &["policy"]);
+        assert!(
+            policy.status.success(),
+            "{}",
+            String::from_utf8_lossy(&policy.stderr)
+        );
+        let after = run(
+            directory,
+            &["check", "--no-cache", "--output-format", "json"],
+        );
+        assert!(
+            after.status.success(),
+            "{}",
+            String::from_utf8_lossy(&after.stderr)
+        );
+        assert_eq!(value(&after), value(&before));
+    }
+    // Prove that the ancestor page is actually indexed for anchor checks.
+    write(root, "docs/index.md", "# Home\n");
+    let broken = run(
+        &cwd,
+        &["check", "page.md", "--no-cache", "--output-format", "json"],
+    );
+    assert_eq!(broken.status.code(), Some(1));
+    let diagnostics = value(&broken);
+    let diagnostics = diagnostics.as_array().unwrap();
+    assert_eq!(diagnostics.len(), 2, "{diagnostics:?}");
+    assert!(
+        diagnostics
+            .iter()
+            .all(|d| d["code"] == "LNK002" && d["filename"] == "docs/guide/page.md")
+    );
 }

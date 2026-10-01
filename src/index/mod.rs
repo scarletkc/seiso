@@ -229,13 +229,10 @@ impl WorkspaceIndex {
             status: LinkStatus::AnchorUnknown,
             error: None,
         };
-        let site = self.file(source).and_then(|file| {
-            file.policy
-                .site
-                .as_ref()
-                .map(|site| file.config.site_routes(site))
-        });
-        let link = match local_link(&self.root, Path::new(source), destination, site.as_ref()) {
+        let site = self
+            .file(source)
+            .and_then(|file| file.policy.site_routes.as_ref());
+        let link = match local_link(&self.root, Path::new(source), destination, site) {
             Ok(link) => link,
             Err(error) => {
                 result.status = match error {

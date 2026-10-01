@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use clap::{Args, Subcommand, ValueEnum};
 use seiso::analysis::{self, Analysis};
-use seiso::config::{CliOverrides, Settings, Workspace};
+use seiso::config::{CliOverrides, EffectiveSettings, Workspace};
 use seiso::diagnostics::{
     Diagnostic, render_concise, render_github, render_json, render_sarif, render_text,
 };
@@ -126,7 +126,7 @@ pub enum HookCommand {
 
 #[derive(Serialize)]
 struct PolicyReport<'a> {
-    configurations: &'a BTreeMap<String, Settings>,
+    configurations: &'a BTreeMap<String, EffectiveSettings>,
     files: Vec<PolicyRecord<'a>>,
     errors: &'a [InputError],
 }
@@ -249,7 +249,7 @@ fn inactive_preview_selectors(snapshot: &Snapshot, selection: &SelectionArgs) ->
         || snapshot
             .configurations
             .values()
-            .any(|settings| settings.preview)
+            .any(|settings| settings.settings.preview)
     {
         return Vec::new();
     }

@@ -33,28 +33,20 @@ impl WorkspaceFiles for LocalWorkspaceFiles {
 
 pub(crate) fn check(context: &CheckContext<'_>, files: &dyn WorkspaceFiles) -> LinkResult {
     let mut result = LinkResult::default();
-    let site = context
-        .policy
-        .site
-        .as_ref()
-        .map(|site| context.config.site_routes(site));
+    let site = context.policy.site_routes.as_ref();
     let root = normalize(context.workspace_root);
     let current = normalize(context.path);
     for link in &context.document.links {
         let destination = link.destination.as_str();
-        let targets = match local_link_targets(
-            context.workspace_root,
-            context.path,
-            destination,
-            site.as_ref(),
-        ) {
-            Ok(targets) => targets,
-            Err(LinkPathError::External) => continue,
-            Err(_) => {
-                result.incomplete = true;
-                continue;
-            }
-        };
+        let targets =
+            match local_link_targets(context.workspace_root, context.path, destination, site) {
+                Ok(targets) => targets,
+                Err(LinkPathError::External) => continue,
+                Err(_) => {
+                    result.incomplete = true;
+                    continue;
+                }
+            };
         let (_, status) = select_target(&root, &targets, TargetPreference::Existing, |target| {
             // The current document can be a new stdin overlay with no disk entry.
             if target.path == current {
