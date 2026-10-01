@@ -117,6 +117,80 @@ fn selected_reports_are_deterministic_subsets_of_full_reports() {
 }
 
 #[test]
+fn github_annotations_use_absolute_paths_from_a_standalone_nested_workspace() {
+    let checkout = TempDir::new().unwrap();
+    let root = checkout.path();
+    std::fs::create_dir(root.join(".git")).unwrap();
+    write(
+        root,
+        "docs/seiso.toml",
+        "[[kinds]]\npath = '**/*.md'\nkind = 'reference'\n",
+    );
+    write(
+        root,
+        "docs/guides/a.md",
+        "# Guide\n\nSee [missing](missing.md).\n",
+    );
+
+    let args = [
+        "check",
+        "--no-cache",
+        "--select",
+        "LNK001",
+        "--output-format",
+        "github",
+    ];
+    let from_root = run(root, &args, None);
+    let from_docs = run(&root.join("docs"), &args, None);
+    assert_eq!(from_root.status.code(), Some(1));
+    assert_eq!(from_docs.status.code(), Some(1));
+    assert_eq!(from_root.stdout, from_docs.stdout);
+    let filename = root.join("docs/guides/a.md");
+    // Unix current_dir resolves directory symlinks, including macOS /var.
+    #[cfg(unix)]
+    let filename = filename.canonicalize().unwrap();
+    let filename = filename.to_string_lossy().replace('\\', "/");
+    let escaped_filename = filename
+        .replace('%', "%25")
+        .replace('\r', "%0D")
+        .replace('\n', "%0A")
+        .replace(':', "%3A")
+        .replace(',', "%2C");
+    let expected = format!(
+        "::error file={escaped_filename},line=3,endLine=3,title=LNK001,col=5,endColumn=25::"
+    );
+    let annotations = String::from_utf8_lossy(&from_docs.stdout);
+    assert!(annotations.starts_with(&expected), "{annotations}");
+
+    let json = run(
+        &root.join("docs"),
+        &[
+            "check",
+            "--no-cache",
+            "--select",
+            "LNK001",
+            "--output-format",
+            "json",
+        ],
+        None,
+    );
+    assert_eq!(value(&json)[0]["filename"], "guides/a.md");
+    let root_json = run(
+        root,
+        &[
+            "check",
+            "--no-cache",
+            "--select",
+            "LNK001",
+            "--output-format",
+            "json",
+        ],
+        None,
+    );
+    assert_eq!(value(&root_json)[0]["filename"], "docs/guides/a.md");
+}
+
+#[test]
 fn incomplete_checks_preserve_diagnostics_and_override_exit_zero() {
     let workspace = workspace("");
     let root = workspace.path();

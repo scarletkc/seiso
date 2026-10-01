@@ -157,7 +157,22 @@ fn render(evaluation: &Analysis, format: CheckFormat) -> Result<String, String> 
         CheckFormat::Sarif => {
             render_sarif(&evaluation.diagnostics).map_err(|error| error.to_string())
         }
-        CheckFormat::Github => Ok(render_github(&evaluation.diagnostics)),
+        CheckFormat::Github => {
+            let root = &evaluation.snapshot.index.root;
+            let diagnostics = evaluation
+                .diagnostics
+                .iter()
+                .cloned()
+                .map(|mut diagnostic| {
+                    diagnostic.filename = root
+                        .join(&diagnostic.filename)
+                        .to_string_lossy()
+                        .replace('\\', "/");
+                    diagnostic
+                })
+                .collect::<Vec<_>>();
+            Ok(render_github(&diagnostics))
+        }
     }
 }
 
