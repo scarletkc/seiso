@@ -120,6 +120,37 @@ checks, warm checks, and the warm hook including process startup. Preview
 rules are timed separately. Use a native Linux filesystem for local Linux
 measurements; the acceptance thresholds apply to the standard Linux CI runner.
 
+To isolate DUP003/OWN002 prefix sorting with mostly distinct prose shingles,
+run:
+
+```sh
+python -m scripts.evaluation.benchmark_prefix_sort --binary target/release/seiso
+```
+
+Pass `--baseline PATH` to compare a release binary with the same package version;
+the benchmark checks that their diagnostics match across cold, warm, no-cache,
+and selected-file runs.
+
+Cached keys add temporary storage proportional to the shingles in the paragraph
+being sorted. To compare whole-process peak memory on Linux, generate the same
+200-file fixture in an empty directory and run each same-version release binary
+with GNU time (replace both absolute binary paths):
+
+```sh
+mkdir prefix-memory
+python -c "from pathlib import Path; from scripts.evaluation.benchmark_prefix_sort import fixture; fixture(Path('prefix-memory'), 200)"
+cd prefix-memory
+/usr/bin/time -v /absolute/path/to/baseline/seiso check --no-cache --select DUP003,OWN002 --output-format json > baseline.json
+/usr/bin/time -v /absolute/path/to/current/seiso check --no-cache --select DUP003,OWN002 --output-format json > current.json
+cmp baseline.json current.json
+```
+
+The duplicate pair deliberately makes `seiso check` exit with status 1; other
+nonzero statuses indicate a failed measurement. Compare the `Maximum resident
+set size (kbytes)` values over repeated, alternating runs. This measures the
+whole process, so small cached-key allocations may be hidden by other memory
+use; it does not isolate their exact size or establish a universal memory bound.
+
 The [CI workflow](../../.github/workflows/ci.yml) runs on pull requests targeting
 `main` and pushes to `main`. Ordinary documentation changes run only the
 repository's document checks on Linux. Other changes and manual runs also
