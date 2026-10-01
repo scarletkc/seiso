@@ -48,7 +48,14 @@ jobs:
           path: site/.vitepress/dist
 
   deploy:
-    if: github.event_name != 'pull_request'
+    # Pages identifies a deployment by its commit, so a second deploy of the
+    # same commit changes nothing. A specification release commit is deployed
+    # by its spec-v tag push, whose build includes the new version, and not by
+    # the earlier push to main, whose build cannot.
+    if: >-
+      github.event_name != 'pull_request' &&
+      !(github.ref == 'refs/heads/main' &&
+        startsWith(github.event.head_commit.message, 'chore(release): prepare spec-v'))
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
