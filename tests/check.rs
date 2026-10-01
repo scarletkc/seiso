@@ -9,6 +9,34 @@ use std::process::{Command, Stdio};
 use serde_json::{Value, json};
 use tempfile::TempDir;
 
+/// Adding an inheriting child preserves diagnostics and exposes path provenance.
+#[test]
+fn parent_inheritance_preserves_check_coverage_and_reports_bases() {
+    let workspace = TempDir::new().unwrap();
+    let root = workspace.path();
+    write(
+        root,
+        "seiso.toml",
+        "include = ['README.md', 'docs/**/*.md']\n[lint]\nselect = ['KND001']",
+    );
+    write(root, "README.md", "---\nkind: readme\n---\n# Readme\n");
+    write(root, "docs/guide.md", "# No kind\n");
+    let before = run(root, &["check", "--output-format", "json"], None);
+    assert_eq!(before.status.code(), Some(1));
+    write(root, "docs/seiso.toml", "extend = '../seiso.toml'");
+    let after = run(root, &["check", "--output-format", "json"], None);
+    assert_eq!(after.status.code(), Some(1));
+    assert_eq!(before.stdout, after.stdout);
+    let report = value(&run(root, &["policy"], None));
+    let bases = &report["configurations"]["docs/seiso.toml"]["pattern_bases"]["include"];
+    assert_eq!(
+        bases[1],
+        json!({"pattern": "docs/**/*.md", "base_directory": "."})
+    );
+    let child = value(&run(&root.join("docs"), &["policy"], None));
+    assert_eq!(child, report);
+}
+
 #[test]
 fn preview_is_opt_in_even_when_a_rule_is_explicitly_selected() {
     let workspace = TempDir::new().unwrap();
@@ -1274,4 +1302,204 @@ fn hook_uses_event_cwd_converts_exit_codes_and_keeps_stdout_empty() {
         assert_eq!(malformed.status.code(), Some(1));
         assert!(malformed.stdout.is_empty());
     }
+}
+
+#[test]
+fn init_extend_preserves_parent_policy_and_writes_only_additions() {
+    let dir = TempDir::new().unwrap();
+    let root = dir.path();
+    write(
+        root,
+        "seiso.toml",
+        r#"
+preview = true
+exclude = ['docs/hidden/**']
+extend-exclude = ['docs/archived/**']
+[[kinds]]
+path = '**/*.md'
+kind = 'reference'
+[[kinds]]
+path = '**/generated/**'
+kind = 'generated'
+[[sites]]
+path = 'docs/**'
+root = 'docs'
+[lint]
+select = ['KND', 'LNK']
+"#,
+    );
+    for file in [
+        "docs/api.md",
+        "docs/generated/client.md",
+        "docs/hidden/a.md",
+        "docs/archived/a.md",
+    ] {
+        write(root, file, "# Page\n");
+    }
+    let before = value(&run(root, &["policy"], None));
+    let output = run(&root.join("docs"), &["init", "--extend"], None);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let contents = std::fs::read_to_string(root.join("docs/seiso.toml")).unwrap();
+    let generated: toml::Value = toml::from_str(&contents).unwrap();
+    assert_eq!(generated["extend"].as_str(), Some("../seiso.toml"));
+    for key in generated.as_table().unwrap().keys() {
+        assert!(
+            ["extend", "extend-exclude", "extend-kinds", "extend-sites"].contains(&key.as_str()),
+            "{key}"
+        );
+    }
+    let output = run(root, &["policy"], None);
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let after = value(&output);
+    // Configuration filenames change, but effective file policies must not.
+    let policies = |report: &Value| {
+        report["files"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|file| {
+                let mut file = file.clone();
+                file.as_object_mut().unwrap().remove("configuration");
+                file
+            })
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(policies(&before), policies(&after));
+    assert!(run(&root.join("docs"), &["policy"], None).status.success());
+    assert_eq!(
+        run(&root.join("docs"), &["init", "--extend"], None)
+            .status
+            .code(),
+        Some(2)
+    );
+    assert_eq!(
+        std::fs::read_to_string(root.join("docs/seiso.toml")).unwrap(),
+        contents
+    );
+}
+
+#[test]
+fn init_extend_uses_nearest_parent_and_suggests_additive_mappings() {
+    let dir = TempDir::new().unwrap();
+    let root = dir.path();
+    write(root, "seiso.toml", "");
+    write(
+        root,
+        "docs/.seiso.toml",
+        "extend = '../seiso.toml'\n[[kinds]]\npath = '**'\nkind = 'reference'",
+    );
+    write(root, "docs/sub/README.md", "# Readme");
+    write(root, "docs/sub/.vitepress/config.ts", "export default {}");
+    write(root, "docs/sub/vendor/a.md", "# Dependency");
+    let child = root.join("docs/sub");
+    assert!(run(&child, &["init", "--extend"], None).status.success());
+    let contents = std::fs::read_to_string(child.join("seiso.toml")).unwrap();
+    let generated: toml::Value = toml::from_str(&contents).unwrap();
+    assert_eq!(generated["extend"].as_str(), Some("../.seiso.toml"));
+    assert_eq!(
+        generated["extend-kinds"][0]["kind"].as_str(),
+        Some("readme")
+    );
+    assert_eq!(generated["extend-sites"][0]["root"].as_str(), Some("."));
+    assert_eq!(generated["extend-exclude"][0].as_str(), Some("vendor/**"));
+    assert!(run(&child, &["policy"], None).status.success());
+}
+
+#[test]
+fn init_extend_requires_parent() {
+    let dir = TempDir::new().unwrap();
+    assert_eq!(
+        run(dir.path(), &["init", "--extend"], None).status.code(),
+        Some(2)
+    );
+    assert!(!dir.path().join("seiso.toml").exists());
+}
+
+#[test]
+fn init_extend_preserves_child_cwd_git_ignores_and_inherited_routes() {
+    let dir = TempDir::new().unwrap();
+    let root = dir.path();
+    write(
+        root,
+        "seiso.toml",
+        "preview = true\n[lint]\nselect = ['LNK001', 'LNK002']\n[[kinds]]\npath = '**/*.md'\nkind = 'reference'\n[[sites]]\npath = 'docs/**'\nroot = 'docs'\n[[sites]]\npath = 'website/**'\nroot = 'website'\n",
+    );
+    write(
+        root,
+        ".gitignore",
+        "docs/guide/private.md\ndocs/guide/AGENTS.md\n",
+    );
+    write(root, "docs/index.md", "# Home\n\n## Install\n");
+    write(
+        root,
+        "docs/guide/page.md",
+        "# Guide\n\n[Home](/index#install)\n",
+    );
+    write(root, "docs/guide/private.md", "[Missing](missing.md)\n");
+    write(root, "docs/guide/AGENTS.md", "[Missing](missing.md)\n");
+    write(root, "notes/page.md", "# Notes\n");
+    // Include a non-matching sibling site as well as a matching ancestor site.
+    for child in [root.join("docs/guide"), root.join("notes")] {
+        let args = &["check", "--no-cache", "--output-format", "json"];
+        let before = run(&child, args, None);
+        assert!(
+            before.status.success(),
+            "{}",
+            String::from_utf8_lossy(&before.stderr)
+        );
+        assert_eq!(value(&before), json!([]));
+        let init = run(&child, &["init", "--extend"], None);
+        assert!(
+            init.status.success(),
+            "{}",
+            String::from_utf8_lossy(&init.stderr)
+        );
+        let contents = std::fs::read_to_string(child.join("seiso.toml")).unwrap();
+        let generated: toml::Value = toml::from_str(&contents).unwrap();
+        assert_eq!(generated.as_table().unwrap().len(), 1, "{contents}");
+        let policy = run(&child, &["policy"], None);
+        assert!(
+            policy.status.success(),
+            "{}",
+            String::from_utf8_lossy(&policy.stderr)
+        );
+        assert!(!String::from_utf8_lossy(&policy.stdout).contains("private.md"));
+        let after = run(&child, args, None);
+        assert!(
+            after.status.success(),
+            "{}",
+            String::from_utf8_lossy(&after.stderr)
+        );
+        assert_eq!(value(&after), value(&before));
+    }
+    let child = root.join("docs/guide");
+    let ignored = run(&child, &["check", "private.md", "--no-cache"], None);
+    assert!(ignored.status.success());
+    assert!(String::from_utf8_lossy(&ignored.stderr).contains(".gitignore"));
+    let stdin = run(
+        &child,
+        &["check", "--stdin-filename", "private.md"],
+        Some("# Draft\n"),
+    );
+    assert_eq!(stdin.status.code(), Some(2));
+    assert!(String::from_utf8_lossy(&stdin.stderr).contains(".gitignore"));
+    write(root, "docs/index.md", "# Home\n");
+    let broken = run(
+        &child,
+        &["check", "page.md", "--no-cache", "--output-format", "json"],
+        None,
+    );
+    assert_eq!(broken.status.code(), Some(1));
+    let diagnostics = value(&broken);
+    assert_eq!(diagnostics.as_array().unwrap().len(), 1);
+    assert_eq!(diagnostics[0]["code"], "LNK002");
+    assert_eq!(diagnostics[0]["filename"], "docs/guide/page.md");
 }

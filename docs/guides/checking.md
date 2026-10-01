@@ -28,6 +28,32 @@ Language-specific rules use each sentence's detected language. Declare `lang`
 in frontmatter when detection picks the wrong one; see
 [document language](../reference/configuration.md#document-language).
 
+## Initialize a child configuration
+
+Run `seiso init --extend` in a directory below an existing configuration:
+
+```sh
+cd docs
+seiso init --extend
+seiso policy
+seiso check
+```
+
+The command creates `seiso.toml` in the calling directory and inherits the
+nearest parent configuration. Without a parent, run `seiso init` at the
+repository root first. Existing configurations are never overwritten.
+
+Review the suggested additive exclusions, kind mappings, and site entries.
+A matching added mapping overrides the parent's mapping for those files.
+The generated file preserves inherited lists and preview settings; the
+[merging reference](../reference/configuration.md#merging) defines ordering
+and precedence.
+
+Inspect `seiso policy` from the child directory, then run `seiso check` there.
+The inherited workspace retains ancestor Git ignore rules and site pages.
+Use `seiso check .` to select only documents below the calling directory;
+without paths, the check covers the inherited workspace.
+
 ## Select files and rules
 
 ```sh

@@ -6,10 +6,10 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use crate::cache::ParseCache;
-use crate::config::{CliOverrides, Config, Settings, SiteMapping, Workspace};
+use crate::config::{CliOverrides, Config, EffectiveSettings, SiteMapping, Workspace};
 use crate::index::{IndexedFile, WorkspaceIndex};
 use crate::md::Document;
-use crate::paths::normalize;
+use crate::paths::{SiteRoutes, normalize};
 use crate::rules::{KindOutcome, SuppressionRecord, resolve_kind};
 use serde::Serialize;
 
@@ -45,6 +45,7 @@ pub struct FilePolicy {
     pub kind: KindOutcome,
     pub domain: Option<String>,
     pub site: Option<SiteMapping>,
+    pub(crate) site_routes: Option<SiteRoutes>,
     pub enabled_rules: Vec<String>,
     pub suppressions: Vec<SuppressionRecord>,
 }
@@ -63,11 +64,16 @@ impl FilePolicy {
             .into_iter()
             .map(str::to_owned)
             .collect();
+        let (site, site_routes) = config
+            .resolved_site(path)
+            .map(|(site, routes)| (Some(site), Some(routes)))
+            .unwrap_or_default();
         Ok(Self {
             filename,
             kind,
             domain: config.domain_for(path).map(str::to_owned),
-            site: config.site_for(path).cloned(),
+            site,
+            site_routes,
             enabled_rules,
             suppressions: Vec::new(),
         })
@@ -108,7 +114,7 @@ pub struct Snapshot {
     pub index: WorkspaceIndex,
     pub selected: BTreeSet<String>,
     pub requested: BTreeSet<PathBuf>,
-    pub configurations: BTreeMap<String, Settings>,
+    pub configurations: BTreeMap<String, EffectiveSettings>,
     pub excluded_policies: BTreeMap<String, ExcludedPolicy>,
     pub errors: Vec<InputError>,
     /// Requested paths, or the whole workspace, that selected no document to check.
@@ -363,7 +369,7 @@ fn discover(root: &Path, overlay: Option<(PathBuf, String)>) -> Discovery {
 
 struct LoadPlan {
     pending: Vec<PendingDocument>,
-    configurations: BTreeMap<String, Settings>,
+    configurations: BTreeMap<String, EffectiveSettings>,
     excluded_policies: BTreeMap<String, ExcludedPolicy>,
     errors: Vec<InputError>,
     deferred_errors: Vec<InputError>,
@@ -676,7 +682,7 @@ fn discovery_error_path(error: &ignore::Error) -> Option<&Path> {
 }
 
 fn record_configuration(
-    configurations: &mut BTreeMap<String, Settings>,
+    configurations: &mut BTreeMap<String, EffectiveSettings>,
     root: &Path,
     config: &Config,
     overrides: &CliOverrides,
@@ -689,7 +695,10 @@ fn record_configuration(
             settings.lint.select.clone_from(select);
         }
         settings.lint.select.extend(overrides.extend_select.clone());
-        settings
+        EffectiveSettings {
+            settings,
+            pattern_bases: config.pattern_bases(root),
+        }
     });
     name
 }

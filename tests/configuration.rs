@@ -394,6 +394,148 @@ fn recursive_extend_paths_use_each_declaring_directory() {
     assert_eq!(config.settings.lint.ignore, ["DUP"]);
 }
 
+/// Extending a governing parent preserves every inherited path-based policy.
+#[test]
+fn inherited_parent_patterns_keep_their_original_bases() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    write(
+        root,
+        "seiso.toml",
+        r#"
+include = ['docs/**/*.md']
+exclude = ['docs/private/**']
+[[kinds]]
+path = 'docs/reference/**'
+kind = 'reference'
+[[domains]]
+path = 'docs/**'
+name = 'manual'
+[[sites]]
+path = 'docs/**'
+root = 'docs'
+public = 'docs/public'
+[lint]
+select = ['KND', 'LNK']
+[lint.per-file-ignores]
+'docs/reference/**' = ['LNK']
+"#,
+    );
+    write(root, "docs/seiso.toml", "extend = '../seiso.toml'");
+    let config = Config::load(&root.join("docs/seiso.toml")).unwrap();
+    let path = Path::new("reference/config.md");
+    assert!(config.includes(path));
+    assert!(config.excludes(Path::new("private/secret.md")));
+    assert_eq!(config.kind_for(path), Some(Kind::Reference));
+    assert_eq!(config.domain_for(path), Some("manual"));
+    assert_eq!(config.site_for(path).unwrap().root, "docs");
+    assert_eq!(
+        config
+            .selected_rules(path, &CliOverrides::default())
+            .unwrap(),
+        ["KND001", "KND002"]
+    );
+    let bases = config.pattern_bases(&root.join("docs"));
+    for field in [
+        "include",
+        "exclude",
+        "kinds",
+        "domains",
+        "sites",
+        "lint.per-file-ignores",
+    ] {
+        assert_eq!(bases[field][0].base_directory, "..", "{field}");
+    }
+}
+
+/// A template adopts the extending parent's base, which survives later inheritance.
+#[test]
+fn mixed_template_and_parent_chains_preserve_per_entry_origins() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    write(
+        root,
+        "shared/template.toml",
+        "include = ['docs/**/*.md']\n[lint.per-file-ignores]\n'docs/old/**' = ['LNK']",
+    );
+    write(
+        root,
+        "seiso.toml",
+        "extend = 'shared/template.toml'\nexclude = ['docs/private/**']",
+    );
+    write(
+        root,
+        "docs/seiso.toml",
+        "extend = '../seiso.toml'\nexclude = ['local/**']\n[lint.per-file-ignores]\n'reference/**' = ['KND']",
+    );
+    write(
+        root,
+        "docs/reference/seiso.toml",
+        "extend = '../seiso.toml'",
+    );
+    let config = Config::load(&root.join("docs/reference/seiso.toml")).unwrap();
+    assert!(config.includes(Path::new("a.md")));
+    assert_eq!(
+        config
+            .selected_rules(Path::new("a.md"), &CliOverrides::default())
+            .unwrap(),
+        ["LNK001", "SUP001", "SUP002"]
+    );
+    let bases = config.pattern_bases(root);
+    assert_eq!(bases["include"][0].base_directory, ".");
+    assert_eq!(bases["exclude"][0].base_directory, "docs");
+    assert_eq!(bases["lint.per-file-ignores"][0].base_directory, ".");
+    assert_eq!(bases["lint.per-file-ignores"][1].base_directory, "docs");
+}
+
+/// Shared bases and non-governing files keep the existing caller-relative semantics.
+#[test]
+fn non_governing_bases_are_reusable_at_the_selected_directory() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    write(root, ".seiso.toml", "");
+    write(root, "seiso.toml", "include = ['reference/*.md']");
+    write(root, "docs/seiso.toml", "extend = '../seiso.toml'");
+    let config = Config::load(&root.join("docs/seiso.toml")).unwrap();
+    assert!(config.includes(Path::new("reference/a.md")));
+    assert_eq!(
+        config.pattern_bases(root)["include"][0].base_directory,
+        "docs"
+    );
+    write(
+        root,
+        "docs/base/template.toml",
+        "include = ['reference/*.md']",
+    );
+    write(root, "docs/seiso.toml", "extend = 'base/template.toml'");
+    let config = Config::load(&root.join("docs/seiso.toml")).unwrap();
+    assert!(config.includes(Path::new("reference/a.md")));
+}
+
+/// Governing pyproject tables retain their base; explicit config still rebases own entries.
+#[test]
+fn pyproject_parents_and_explicit_config_have_distinct_bases() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    write(
+        root,
+        "pyproject.toml",
+        "[tool.seiso]\nexclude = ['docs/private/**']",
+    );
+    write(
+        root,
+        "docs/seiso.toml",
+        "extend = '../pyproject.toml'\ninclude = ['docs/**/*.md']",
+    );
+    let config = Config::load_from(&root.join("docs/seiso.toml"), root).unwrap();
+    assert!(config.includes(Path::new("docs/page.md")));
+    assert!(config.excludes(Path::new("docs/private/page.md")));
+    assert_eq!(config.pattern_bases(root)["include"][0].base_directory, ".");
+    let ordinary = Config::load(&root.join("docs/seiso.toml")).unwrap();
+    assert!(!ordinary.includes(Path::new("page.md")));
+    assert!(ordinary.excludes(Path::new("private/page.md")));
+}
+
 #[test]
 fn inheritance_cycles_report_the_files() {
     let dir = tempdir().unwrap();
@@ -730,4 +872,206 @@ extend-stale-markers = ["截至目前"]
     assert_eq!(config.settings.lint.dup.min_paragraph_similarity, 0.95);
     assert_eq!(config.settings.lint.dup.min_paragraph_chars, 100);
     assert_eq!(config.settings.lint.dup.shingle_size, 7);
+}
+
+#[test]
+fn inherited_additive_exclusions_keep_each_declaring_base() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    write(
+        root,
+        "seiso.toml",
+        "exclude = ['unused/**']\nextend-exclude = ['docs/api/generated/**']",
+    );
+    write(
+        root,
+        "docs/seiso.toml",
+        "extend = '../seiso.toml'\nexclude = ['api/private/**']\nextend-exclude = ['api/legacy/**']",
+    );
+    write(
+        root,
+        "docs/api/seiso.toml",
+        "extend = '../seiso.toml'\nextend-exclude = ['draft/**']",
+    );
+    let config = Config::load(&root.join("docs/api/seiso.toml")).unwrap();
+    for path in [
+        "private/a.md",
+        "generated/a.md",
+        "legacy/a.md",
+        "draft/a.md",
+    ] {
+        assert!(config.excludes(Path::new(path)), "{path}");
+    }
+    assert!(!config.excludes(Path::new("unused/a.md")));
+    let bases = config.pattern_bases(root);
+    assert_eq!(
+        bases["exclude"]
+            .iter()
+            .map(|entry| entry.base_directory.as_str())
+            .collect::<Vec<_>>(),
+        ["docs", ".", "docs", "docs/api"]
+    );
+}
+
+#[test]
+fn governing_inheritance_keeps_workspace_even_without_inherited_path_entries() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    write(root, "seiso.toml", "");
+    write(root, "docs/seiso.toml", "extend = '../seiso.toml'\n");
+    write(root, "docs/guide/seiso.toml", "extend = '../seiso.toml'\n");
+    let workspace = Workspace::discover(&root.join("docs/guide"), None).unwrap();
+    assert_eq!(workspace.root, root);
+    assert_eq!(
+        workspace
+            .config_for(&root.join("docs/guide/page.md"))
+            .unwrap()
+            .directory,
+        root.join("docs/guide")
+    );
+    assert_eq!(
+        workspace
+            .config_for(&root.join("index.md"))
+            .unwrap()
+            .directory,
+        root
+    );
+}
+
+#[test]
+fn extending_a_template_does_not_expand_the_workspace() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    write(root, ".seiso.toml", "");
+    write(root, "seiso.toml", "");
+    // The shadowed file is a template, not the governing ancestor.
+    write(root, "docs/seiso.toml", "extend = '../seiso.toml'\n");
+    let workspace = Workspace::discover(&root.join("docs"), None).unwrap();
+    assert_eq!(workspace.root, root.join("docs"));
+}
+
+#[test]
+fn mapping_extensions_accumulate_after_replacements_with_individual_bases() {
+    let dir = tempdir().unwrap();
+    let root = dir.path();
+    write(
+        root,
+        "seiso.toml",
+        r#"
+extend-exclude = ['docs/hidden/**']
+[[kinds]]
+path = '**'
+kind = 'readme'
+[[extend-kinds]]
+path = 'docs/**'
+kind = 'reference'
+[[extend-domains]]
+path = 'docs/**'
+name = 'parent'
+[[extend-sites]]
+path = 'docs/**'
+root = 'docs'
+"#,
+    );
+    write(
+        root,
+        "docs/seiso.toml",
+        r#"
+extend = '../seiso.toml'
+extend-exclude = ['private/**']
+[[kinds]]
+path = '**'
+kind = 'howto'
+[[domains]]
+path = '**'
+name = 'replacement'
+[[sites]]
+path = '**'
+root = '.'
+[[extend-kinds]]
+path = 'api/**'
+kind = 'generated'
+[[extend-domains]]
+path = 'api/**'
+name = 'child'
+[[extend-sites]]
+path = 'api/**'
+root = 'api'
+"#,
+    );
+    write(
+        root,
+        "docs/api/seiso.toml",
+        r#"
+extend = '../seiso.toml'
+[[extend-kinds]]
+path = 'special.md'
+kind = 'plan'
+[[extend-domains]]
+path = 'special.md'
+name = 'grandchild'
+[[extend-sites]]
+path = 'special.md'
+root = '.'
+base = '/special/'
+"#,
+    );
+    let config = Config::load(&root.join("docs/api/seiso.toml")).unwrap();
+    assert_eq!(
+        config
+            .settings
+            .kinds
+            .iter()
+            .map(|m| m.kind.as_str())
+            .collect::<Vec<_>>(),
+        ["howto", "reference", "generated", "plan"]
+    );
+    assert_eq!(config.kind_for(Path::new("page.md")), Some(Kind::Generated));
+    assert_eq!(config.kind_for(Path::new("special.md")), Some(Kind::Plan));
+    assert_eq!(config.domain_for(Path::new("page.md")), Some("child"));
+    assert_eq!(
+        config.domain_for(Path::new("special.md")),
+        Some("grandchild")
+    );
+    assert_eq!(config.site_for(Path::new("page.md")).unwrap().root, "api");
+    assert_eq!(
+        config.site_for(Path::new("special.md")).unwrap().base,
+        "/special/"
+    );
+    let bases = config.pattern_bases(root);
+    assert_eq!(
+        bases["kinds"]
+            .iter()
+            .map(|p| p.base_directory.as_str())
+            .collect::<Vec<_>>(),
+        ["docs", ".", "docs", "docs/api"]
+    );
+    assert_eq!(
+        bases["exclude"]
+            .iter()
+            .map(|p| p.base_directory.as_str())
+            .collect::<Vec<_>>(),
+        [".", "docs"]
+    );
+    let child = Config::load(&root.join("docs/seiso.toml")).unwrap();
+    assert!(child.excludes(Path::new("hidden/a.md")));
+    assert!(child.excludes(Path::new("private/a.md")));
+    assert_eq!(child.kind_for(Path::new("guide.md")), Some(Kind::Reference));
+}
+
+#[test]
+fn mapping_extensions_validate_entries_and_globs() {
+    let dir = tempdir().unwrap();
+    for source in [
+        "extend-kinds = 'wrong'",
+        "[[extend-kinds]]\npath = '**'\nkind = 'unknown'",
+        "[[extend-kinds]]\npath = '['\nkind = 'reference'",
+        "[[extend-domains]]\npath = '**'\nname = ''",
+        "[[extend-domains]]\npath = '**'\nunknown = 'x'",
+        "[[extend-sites]]\npath = '**'\nroot = '/absolute'",
+        "[[extend-sites]]\npath = '**'\nroot = '.'\nbase = 'invalid'",
+        "[[extend-sites]]\npath = '['\nroot = '.'",
+    ] {
+        assert!(Config::parse(source, dir.path()).is_err(), "{source}");
+    }
 }

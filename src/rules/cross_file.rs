@@ -5,7 +5,6 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::diagnostics::{Diagnostic, RelatedLocation, Span, sorted_diagnostics};
 use crate::index::{IndexedFile, LinkStatus, WorkspaceIndex};
 use crate::md::{BlockKind, Document, FragmentKind, Language};
-use crate::paths::normalize;
 use crate::rules::Kind;
 
 const DUPLICATION_RULES: [&str; 5] = ["DUP001", "DUP002", "DUP003", "OWN001", "OWN002"];
@@ -129,17 +128,7 @@ fn check_links(index: &WorkspaceIndex, file: &IndexedFile, report: &mut CrossRep
                     continue;
                 };
                 let path = index.root.join(target);
-                let allowed = file
-                    .config()
-                    .settings
-                    .lint
-                    .ptr
-                    .catalog_dirs
-                    .iter()
-                    .any(|catalog| {
-                        normalize(file.config().directory.join(catalog.trim_end_matches('/')))
-                            == path
-                    });
+                let allowed = file.config().is_catalog(&path);
                 if !allowed {
                     let mut diagnostic = Diagnostic::new(
                         file.filename(),

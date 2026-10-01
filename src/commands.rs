@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use clap::{Args, Subcommand, ValueEnum};
 use seiso::analysis::{self, Analysis};
-use seiso::config::{CliOverrides, Settings, Workspace};
+use seiso::config::{CliOverrides, EffectiveSettings, Workspace};
 use seiso::diagnostics::{
     Diagnostic, render_concise, render_github, render_json, render_sarif, render_text,
 };
@@ -126,7 +126,7 @@ pub enum HookCommand {
 
 #[derive(Serialize)]
 struct PolicyReport<'a> {
-    configurations: &'a BTreeMap<String, Settings>,
+    configurations: &'a BTreeMap<String, EffectiveSettings>,
     files: Vec<PolicyRecord<'a>>,
     errors: &'a [InputError],
 }
@@ -249,7 +249,7 @@ fn inactive_preview_selectors(snapshot: &Snapshot, selection: &SelectionArgs) ->
         || snapshot
             .configurations
             .values()
-            .any(|settings| settings.preview)
+            .any(|settings| settings.settings.preview)
     {
         return Vec::new();
     }
@@ -524,19 +524,49 @@ fn render_rule(rule: &seiso::rules::Rule) -> String {
     output.trim_end().to_owned()
 }
 
-pub fn init() -> Result<u8, String> {
+pub fn init(extend: bool) -> Result<u8, String> {
     let cwd = current_dir()?;
     let workspace = Workspace::discover(&cwd, None).map_err(|error| error.to_string())?;
-    if let Some(path) = workspace.config.source {
+    let nearest = workspace
+        .config_for(&cwd.join("seiso.toml"))
+        .map_err(|error| error.to_string())?;
+    if let Some(path) = &nearest.source
+        && (!extend || nearest.directory == cwd)
+    {
         return Err(format!(
             "Configuration already exists at {}; edit that file instead.",
             path.display()
         ));
     }
     // Without a configuration, discovery stops at the repository root.
-    let root = workspace.root.clone();
-    let suggested = suggest_configuration(&workspace);
-    let contents = suggested.render();
+    let root = if extend {
+        cwd.clone()
+    } else {
+        workspace.root.clone()
+    };
+    let parent = if extend {
+        let parent = nearest.source.as_ref().ok_or(
+            "No parent configuration found; run `seiso init` to create a repository configuration.",
+        )?;
+        let mut relative = PathBuf::new();
+        for _ in cwd
+            .strip_prefix(&nearest.directory)
+            .map_err(|error| error.to_string())?
+            .components()
+        {
+            relative.push("..");
+        }
+        relative.push(
+            parent
+                .file_name()
+                .ok_or("Parent configuration has no filename")?,
+        );
+        Some(relative.to_string_lossy().replace('\\', "/"))
+    } else {
+        None
+    };
+    let suggested = suggest_configuration(&workspace, &root);
+    let contents = suggested.render(parent.as_deref());
     let path = write_configuration(&root, &contents)?;
     let created = if root == seiso::paths::normalize(&cwd) {
         "seiso.toml".to_owned()
@@ -564,8 +594,7 @@ struct SuggestedConfig {
     sites: Vec<SiteSuggestion>,
 }
 
-fn suggest_configuration(workspace: &Workspace) -> SuggestedConfig {
-    let root = &workspace.root;
+fn suggest_configuration(workspace: &Workspace, root: &Path) -> SuggestedConfig {
     let mut excludes: Vec<String> = [
         ".github/ISSUE_TEMPLATE",
         ".github/DISCUSSION_TEMPLATE",
@@ -580,32 +609,27 @@ fn suggest_configuration(workspace: &Workspace) -> SuggestedConfig {
     .collect();
     excludes.extend(community_files(root, "PULL_REQUEST_TEMPLATE.md"));
     excludes.extend(community_files(root, "CODE_OF_CONDUCT.md"));
-    let mut kinds: Vec<(String, &str)> = [
-        ("**/README.md", "readme", root.join("README.md").is_file()),
-        (
-            "**/CHANGELOG.md",
-            "changelog",
-            root.join("CHANGELOG.md").is_file(),
-        ),
-        ("docs/guides/**", "howto", root.join("docs/guides").is_dir()),
-        ("docs/howto/**", "howto", root.join("docs/howto").is_dir()),
-        (
-            "docs/reference/**",
-            "reference",
-            root.join("docs/reference").is_dir(),
-        ),
-        (
-            "docs/runbooks/**",
-            "runbook",
-            root.join("docs/runbooks").is_dir(),
-        ),
-        ("docs/adr/**", "adr", root.join("docs/adr").is_dir()),
-        ("docs/plans/**", "plan", root.join("docs/plans").is_dir()),
-    ]
-    .into_iter()
-    .filter(|(_, _, exists)| *exists)
-    .map(|(path, kind, _)| (path.to_owned(), kind))
-    .collect();
+    let mut kinds = Vec::<(String, &str)>::new();
+    for (filename, pattern, kind) in [
+        ("README.md", "**/README.md", "readme"),
+        ("CHANGELOG.md", "**/CHANGELOG.md", "changelog"),
+    ] {
+        if root.join(filename).is_file() {
+            kinds.push((pattern.to_owned(), kind));
+        }
+    }
+    for (directories, kind) in [
+        (&["docs/guides", "guides"][..], "howto"),
+        (&["docs/howto", "howto"][..], "howto"),
+        (&["docs/reference", "reference"][..], "reference"),
+        (&["docs/runbooks", "runbooks"][..], "runbook"),
+        (&["docs/adr", "adr"][..], "adr"),
+        (&["docs/plans", "plans"][..], "plan"),
+    ] {
+        for directory in directories.iter().filter(|path| root.join(path).is_dir()) {
+            kinds.push((format!("{directory}/**"), kind));
+        }
+    }
     for name in ["CONTRIBUTING.md", "SECURITY.md", "SUPPORT.md"] {
         kinds.extend(
             community_files(root, name)
@@ -614,7 +638,7 @@ fn suggest_configuration(workspace: &Workspace) -> SuggestedConfig {
         );
     }
     kinds.extend(
-        agent_kind_suggestions(workspace)
+        agent_kind_suggestions(workspace, root)
             .into_iter()
             .map(|path| (path.to_owned(), "agents")),
     );
@@ -627,8 +651,10 @@ fn suggest_configuration(workspace: &Workspace) -> SuggestedConfig {
 }
 
 /// Suggest agent mappings only for files an ordinary check would discover.
-fn agent_kind_suggestions(workspace: &Workspace) -> Vec<&'static str> {
-    let root = &workspace.root;
+fn agent_kind_suggestions(workspace: &Workspace, root: &Path) -> Vec<&'static str> {
+    let Ok(governing) = workspace.config_for(&root.join("seiso.toml")) else {
+        return Vec::new();
+    };
     let patterns = [
         "**/AGENTS.md",
         "**/CLAUDE.md",
@@ -636,7 +662,7 @@ fn agent_kind_suggestions(workspace: &Workspace) -> Vec<&'static str> {
         ".github/copilot-instructions.md",
     ];
     let mut found = [false; 4];
-    for entry in workspace::walk_workspace(root).flatten() {
+    for entry in workspace::walk_workspace(&workspace.root).flatten() {
         let path = entry.path();
         if !entry.file_type().is_some_and(|kind| kind.is_file()) || !is_markdown(path) {
             continue;
@@ -661,8 +687,8 @@ fn agent_kind_suggestions(workspace: &Workspace) -> Vec<&'static str> {
         let Ok(config) = workspace.config_for(path) else {
             continue;
         };
-        if config.source.as_deref() != workspace.config.source.as_deref()
-            || config.directory.as_path() != workspace.config.directory.as_path()
+        if config.source.as_deref() != governing.source.as_deref()
+            || config.directory.as_path() != governing.directory.as_path()
         {
             continue;
         }
@@ -679,29 +705,41 @@ fn agent_kind_suggestions(workspace: &Workspace) -> Vec<&'static str> {
 }
 
 impl SuggestedConfig {
-    fn render(&self) -> String {
+    fn render(&self, parent: Option<&str>) -> String {
         let Self {
             excludes,
             kinds,
             sites,
         } = self;
         let quote = |value: &str| toml::Value::String(value.to_owned()).to_string();
-        let mut contents = String::from("include = [\"**/*.md\", \"**/*.markdown\"]\n");
+        let mut contents = match parent {
+            Some(parent) => format!("extend = {}\n", quote(parent)),
+            None => String::from("include = [\"**/*.md\", \"**/*.markdown\"]\n"),
+        };
+        let field = |name: &str| {
+            if parent.is_some() {
+                format!("extend-{name}")
+            } else {
+                name.to_owned()
+            }
+        };
         if !excludes.is_empty() {
-            contents.push_str(
-                "# Templates, dependencies, and adopted texts are not project documentation.\nexclude = [\n",
-            );
+            contents.push_str(&format!("# Templates, dependencies, and adopted texts are not project documentation.\n{} = [\n", field("exclude")));
             for pattern in excludes {
                 contents.push_str(&format!("  {},\n", quote(pattern)));
             }
             contents.push_str("]\n");
         }
+        if parent.is_none() {
+            contents.push_str("preview = false\n");
+        }
         contents.push_str(
-            "preview = false\n\n# Review these path mappings and declare other kinds in document frontmatter.\n",
+            "\n# Review these path mappings and declare other kinds in document frontmatter.\n",
         );
         for (path, kind) in kinds {
             contents.push_str(&format!(
-                "\n[[kinds]]\npath = {}\nkind = \"{kind}\"\n",
+                "\n[[{}]]\npath = {}\nkind = \"{kind}\"\n",
+                field("kinds"),
                 quote(path)
             ));
         }
@@ -717,7 +755,8 @@ impl SuggestedConfig {
                 format!("{}/**", site.root)
             };
             contents.push_str(&format!(
-                "\n[[sites]] # {}\npath = {}\nroot = {}\n",
+                "\n[[{}]] # {}\npath = {}\nroot = {}\n",
+                field("sites"),
                 site.found,
                 quote(&path),
                 quote(&site.root)
@@ -1098,7 +1137,7 @@ mod tests {
         fs::write(root.join("CONTRIBUTING.md"), "# Contribute").unwrap();
         fs::write(root.join("mkdocs.yml"), "site_name: Project\n").unwrap();
         let workspace = Workspace::discover(root, None).unwrap();
-        let suggested = suggest_configuration(&workspace);
+        let suggested = suggest_configuration(&workspace, &workspace.root);
         assert_eq!(suggested.excludes, [".github/ISSUE_TEMPLATE/**"]);
         assert_eq!(
             suggested.kinds,
