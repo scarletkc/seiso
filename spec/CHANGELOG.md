@@ -14,6 +14,8 @@ the `spec-v<version>` tag of this repository. This file follows
 
 ## Unreleased
 
+## 0.2.0 - 2026-10-01
+
 ### Added
 
 - A worked example of a conversation remnant without a requester phrase: a

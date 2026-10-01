@@ -37,8 +37,8 @@ kinds, and `seiso init` suggests a starting point.
   such as versions, deployment status, or counts.
 - A pointer names a file or symbol, so the reader doesn't have to search for
   what the sentence promised.
-- The finished page doesn't address whoever asked for it or narrate how it
-  was made.
+- The finished page doesn't address whoever asked for it or narrate how it,
+  or the work it describes, was made.
 - Judgment calls a tool can't make are written down with a reason. An
   exception without one is itself a violation.
 
