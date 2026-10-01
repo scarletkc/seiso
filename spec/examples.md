@@ -369,7 +369,7 @@ page prompts a new measurement. The repair keeps the claim and points to the
 record that holds the measurement at its date (`FACT-5`):
 
 ```markdown
-The file cache shortens warm runs;
+A warm run reuses the file cache and finishes sooner than a cold run;
 [decision 0001](decisions/0001-file-based-cache.md) records the measurement.
 ```
 
