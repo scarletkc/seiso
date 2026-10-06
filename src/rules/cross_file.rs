@@ -466,7 +466,7 @@ fn similarity_edges(
         // A qualifying Jaccard pair must intersect in these prefixes under one
         // shared token ordering. Rarest-first ordering avoids common prose shingles.
         let mut prefix: Vec<_> = values.iter().map(String::as_str).collect();
-        prefix.sort_by_key(|value| (frequencies[&(domain.0, domain.1, *value)], *value));
+        prefix.sort_by_cached_key(|value| (frequencies[&(domain.0, domain.1, *value)], *value));
         let prefix_length = values
             .len()
             .saturating_sub((threshold * values.len() as f64).ceil() as usize)
