@@ -114,10 +114,6 @@ pub(crate) fn occurrences(text: &str, phrase: &str) -> Vec<Span> {
         .collect()
 }
 
-pub(crate) fn marker(runs: &[Run<'_>], phrases: &[&str]) -> Option<Span> {
-    marker_if(runs, phrases, |_, _| true)
-}
-
 pub(crate) fn marker_if(
     runs: &[Run<'_>],
     phrases: &[&str],

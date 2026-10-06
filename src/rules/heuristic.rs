@@ -3,10 +3,11 @@ use std::sync::LazyLock;
 
 use regex::Regex;
 
+use super::lexicon::{self, Phrase, marker};
 use super::normative::constrained;
 use crate::config::Config;
 use crate::diagnostics::{Diagnostic, RelatedLocation, Span};
-use crate::md::prose::{assertions, marker, runs};
+use crate::md::prose::{assertions, runs};
 use crate::md::{BlockKind, Document, FragmentKind, Language, Sentence};
 use crate::sections::{self, SectionType, contains, is_quoted, main_flow, prose_text, rationale};
 
@@ -74,151 +75,26 @@ fn conditional(text: &str) -> bool {
     )
 }
 
-fn deployment(language: Language) -> &'static [&'static str] {
-    match language {
-        Language::En => &[
-            "is deployed",
-            "are deployed",
-            "is currently deployed",
-            "are currently deployed",
-            "has been deployed",
-            "have been deployed",
-            "is live",
-            "is running in production",
-            "is not yet deployed",
-            "has not been deployed",
-            "not yet shipped",
-        ],
-        Language::Zh => &[
-            "已部署",
-            "已经部署",
-            "已上线",
-            "已经上线",
-            "尚未部署",
-            "尚未上线",
-            "正在生产环境运行",
-        ],
-        Language::Ja => &[
-            "デプロイ済み",
-            "デプロイされています",
-            "本番稼働中",
-            "まだデプロイされていません",
-            "リリース済み",
-        ],
-    }
+fn deployment(language: Language) -> &'static [Phrase<'static>] {
+    lexicon::phrases("deployment", language)
 }
 
-fn excluded_heading(language: Language) -> &'static [&'static str] {
-    match language {
-        Language::En => &[
-            "what this does not",
-            "what we did not",
-            "what is not included",
-            "out of scope",
-            "non-goals",
-            "without the",
-        ],
-        Language::Zh => &[
-            "不包含的",
-            "不包括的",
-            "不在范围",
-            "本次不做",
-            "非目标",
-            "未包含",
-        ],
-        Language::Ja => &["対象外", "含まれない", "今回実施しない", "非目標"],
-    }
+fn excluded_heading(language: Language) -> &'static [Phrase<'static>] {
+    lexicon::phrases("excluded_heading", language)
 }
 
-fn production_heading(language: Language) -> &'static [&'static str] {
-    match language {
-        Language::En => &[
-            "implementation notes",
-            "implementation approach",
-            "what i changed",
-            "what we changed",
-            "changes made",
-            "how i built",
-            "how we built",
-            "my approach",
-        ],
-        Language::Zh => &[
-            "实现过程",
-            "实现思路",
-            "本次修改",
-            "我做的修改",
-            "修改说明",
-            "制作过程",
-        ],
-        Language::Ja => &[
-            "実装メモ",
-            "実装方針",
-            "今回の変更",
-            "作成過程",
-            "変更した内容",
-        ],
-    }
+fn production_heading(language: Language) -> &'static [Phrase<'static>] {
+    lexicon::phrases("production_heading", language)
 }
 
 /// First-person production accounts. Statements that a page is generated or
 /// maintained by someone are ownership notices, not narration.
-fn narration(language: Language) -> &'static [&'static str] {
-    match language {
-        Language::En => &[
-            "i have implemented",
-            "i implemented",
-            "i have added",
-            "i updated",
-            "i created this",
-            "this page demonstrates",
-        ],
-        Language::Zh => &[
-            "我已经实现",
-            "我已实现",
-            "我添加了",
-            "我修改了",
-            "本页面展示了实现过程",
-        ],
-        Language::Ja => &[
-            "私は実装しました",
-            "私が追加した",
-            "このページを作成しました",
-        ],
-    }
+fn narration(language: Language) -> &'static [Phrase<'static>] {
+    lexicon::phrases("narration", language)
 }
 
-fn evaluation(language: Language) -> &'static [&'static str] {
-    match language {
-        Language::En => &[
-            "is faster",
-            "is the fastest",
-            "is better",
-            "is the best",
-            "is superior",
-            "is more efficient",
-            "is recommended",
-            "we recommend",
-            "recommended approach",
-            "best performance",
-        ],
-        Language::Zh => &[
-            "更快",
-            "性能更好",
-            "最高效",
-            "最佳方案",
-            "最好的",
-            "推荐使用",
-            "我们推荐",
-        ],
-        Language::Ja => &[
-            "より高速",
-            "最も高速",
-            "最適な方法",
-            "最高の性能",
-            "推奨します",
-            "を推奨",
-        ],
-    }
+fn evaluation(language: Language) -> &'static [Phrase<'static>] {
+    lexicon::phrases("evaluation", language)
 }
 
 fn enabled_language(config: &Config, language: Language) -> bool {
