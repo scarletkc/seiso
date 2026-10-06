@@ -159,14 +159,16 @@ fn render(evaluation: &Analysis, format: CheckFormat) -> Result<String, String> 
         }
         CheckFormat::Github => {
             let root = &evaluation.snapshot.index.root;
+            let checkout = repository_root(root);
+            let repository = checkout.join(".git").exists().then_some(checkout.as_path());
             let diagnostics = evaluation
                 .diagnostics
                 .iter()
                 .cloned()
                 .map(|mut diagnostic| {
-                    diagnostic.filename = github_filename(root, &diagnostic.filename);
+                    diagnostic.filename = github_filename(root, repository, &diagnostic.filename);
                     for related in &mut diagnostic.related {
-                        related.filename = github_filename(root, &related.filename);
+                        related.filename = github_filename(root, repository, &related.filename);
                     }
                     diagnostic
                 })
@@ -176,15 +178,12 @@ fn render(evaluation: &Analysis, format: CheckFormat) -> Result<String, String> 
     }
 }
 
-/// Resolve an annotation location relative to the workspace checkout, or absolutely.
-fn github_filename(workspace_root: &Path, filename: &str) -> String {
+/// Resolve an annotation location relative to the repository, or absolutely without one.
+fn github_filename(workspace_root: &Path, repository: Option<&Path>, filename: &str) -> String {
     let path = workspace_root.join(filename);
-    let repository = repository_root(workspace_root);
-    let reported = if repository.join(".git").exists() {
-        path.strip_prefix(&repository).unwrap_or(&path)
-    } else {
-        &path
-    };
+    let reported = repository
+        .and_then(|repository| path.strip_prefix(repository).ok())
+        .unwrap_or(&path);
     reported.to_string_lossy().replace('\\', "/")
 }
 
