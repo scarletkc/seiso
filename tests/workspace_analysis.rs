@@ -588,7 +588,18 @@ fn statistics_include_reasons_states_and_machine_outputs_remain_parseable() {
     status(&github, 1);
     let annotations = String::from_utf8_lossy(&github.stdout);
     assert_eq!(annotations.lines().count(), 1);
-    assert!(annotations.starts_with("::error file=guide.md,"));
+    let filename = root.path().join("guide.md");
+    // Unix current_dir resolves directory symlinks, including macOS /var.
+    #[cfg(unix)]
+    let filename = filename.canonicalize().unwrap();
+    let filename = filename.to_string_lossy().replace('\\', "/");
+    let filename = filename
+        .replace('%', "%25")
+        .replace('\r', "%0D")
+        .replace('\n', "%0A")
+        .replace(':', "%3A")
+        .replace(',', "%2C");
+    assert!(annotations.starts_with(&format!("::error file={filename},")));
     assert!(!annotations.contains("Rule counts:"));
     assert!(String::from_utf8_lossy(&github.stderr).contains("Historical reason."));
 }

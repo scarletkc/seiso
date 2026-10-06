@@ -516,7 +516,8 @@ impl Workspace {
     }
 }
 
-fn repository_root(cwd: &Path) -> PathBuf {
+/// Return the nearest Git repository root, or the supplied directory.
+pub fn repository_root(cwd: &Path) -> PathBuf {
     cwd.ancestors()
         .find(|d| d.join(".git").exists())
         .unwrap_or(cwd)

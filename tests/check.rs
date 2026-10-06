@@ -117,6 +117,196 @@ fn selected_reports_are_deterministic_subsets_of_full_reports() {
 }
 
 #[test]
+fn github_annotations_use_repository_paths_from_a_standalone_nested_workspace() {
+    let checkout = TempDir::new().unwrap();
+    let root = checkout.path();
+    std::fs::create_dir(root.join(".git")).unwrap();
+    write(
+        root,
+        "docs/seiso.toml",
+        "[[kinds]]\npath = '**/*.md'\nkind = 'reference'\n",
+    );
+    write(
+        root,
+        "docs/guides/a.md",
+        "# Guide\n\nSee [missing](missing.md).\n",
+    );
+
+    let args = [
+        "check",
+        "--no-cache",
+        "--select",
+        "LNK001",
+        "--output-format",
+        "github",
+    ];
+    let from_root = run(root, &args, None);
+    let from_docs = run(&root.join("docs"), &args, None);
+    assert_eq!(from_root.status.code(), Some(1));
+    assert_eq!(from_docs.status.code(), Some(1));
+    assert_eq!(from_root.stdout, from_docs.stdout);
+    let escaped_filename = "docs/guides/a.md";
+    let expected = format!(
+        "::error file={escaped_filename},line=3,endLine=3,title=LNK001,col=5,endColumn=25::"
+    );
+    let annotations = String::from_utf8_lossy(&from_docs.stdout);
+    assert!(annotations.starts_with(&expected), "{annotations}");
+
+    let json = run(
+        &root.join("docs"),
+        &[
+            "check",
+            "--no-cache",
+            "--select",
+            "LNK001",
+            "--output-format",
+            "json",
+        ],
+        None,
+    );
+    assert_eq!(value(&json)[0]["filename"], "guides/a.md");
+    let root_json = run(
+        root,
+        &[
+            "check",
+            "--no-cache",
+            "--select",
+            "LNK001",
+            "--output-format",
+            "json",
+        ],
+        None,
+    );
+    assert_eq!(value(&root_json)[0]["filename"], "docs/guides/a.md");
+}
+
+#[test]
+fn github_annotations_use_checkout_paths_and_related_locations() {
+    let directory = TempDir::new().unwrap();
+    let checkout = directory.path().join("repo");
+    // A worktree's .git marker is a file, not a directory.
+    write(&checkout, ".git", "gitdir: ../metadata\n");
+    write(
+        &checkout,
+        "docs/seiso.toml",
+        "preview=true\n[lint]\nselect=['PTR002']\n",
+    );
+    write(
+        &checkout,
+        "docs/guides/a.md",
+        "---\nkind: howto\n---\nSee [the catalog](sub/).\n",
+    );
+    write(
+        &checkout,
+        "docs/guides/sub/entry.md",
+        "---\nkind: reference\n---\n# Entry\n",
+    );
+    let args = ["check", "--no-cache", "--output-format", "github"];
+    let from_root = run(&checkout, &args, None);
+    let from_docs = run(&checkout.join("docs"), &args, None);
+    assert_eq!(from_root.status.code(), Some(1));
+    assert_eq!(from_docs.status.code(), Some(1));
+    for output in [&from_root, &from_docs] {
+        let annotations = String::from_utf8_lossy(&output.stdout);
+        assert!(
+            annotations.starts_with("::error file=docs/guides/a.md,"),
+            "{annotations}"
+        );
+        assert!(
+            annotations.contains("Related: docs/guides/sub:1:1:"),
+            "{annotations}"
+        );
+    }
+    let json = run(
+        &checkout.join("docs"),
+        &["check", "--no-cache", "--output-format", "json"],
+        None,
+    );
+    assert_eq!(value(&json)[0]["filename"], "guides/a.md");
+    assert_eq!(value(&json)[0]["related"][0]["filename"], "guides/sub");
+}
+
+#[test]
+fn github_annotations_keep_nested_repository_paths_relative_to_the_workspace_checkout() {
+    let directory = workspace("preview=true\n[lint]\nselect=['PTR002']\n");
+    let root = directory.path();
+    std::fs::create_dir(root.join(".git")).unwrap();
+    write(root, "vendor/lib/.git", "gitdir: ../../metadata\n");
+    write(
+        root,
+        "vendor/lib/guide.md",
+        "---\nkind: howto\n---\nSee [the catalog](catalog/).\n",
+    );
+    write(
+        root,
+        "vendor/lib/catalog/entry.md",
+        "---\nkind: reference\n---\n# Entry\n",
+    );
+    let output = run(
+        root,
+        &["check", "--no-cache", "--output-format", "github"],
+        None,
+    );
+    assert_eq!(output.status.code(), Some(1));
+    let annotations = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        annotations.starts_with("::error file=vendor/lib/guide.md,"),
+        "{annotations}"
+    );
+    assert!(
+        annotations.contains("Related: vendor/lib/catalog:1:1:"),
+        "{annotations}"
+    );
+}
+
+#[test]
+fn github_annotations_without_a_repository_use_absolute_paths() {
+    let directory = workspace("preview=true\n[lint]\nselect=['PTR002']\n");
+    let root = directory.path();
+    write(
+        root,
+        "guide.md",
+        "---\nkind: howto\n---\nSee [the catalog](catalog/).\n",
+    );
+    write(
+        root,
+        "catalog/entry.md",
+        "---\nkind: reference\n---\n# Entry\n",
+    );
+    let output = run(
+        root,
+        &["check", "--no-cache", "--output-format", "github"],
+        None,
+    );
+    assert_eq!(output.status.code(), Some(1));
+    #[cfg(unix)]
+    let root = root.canonicalize().unwrap();
+    let filename = root.join("guide.md").to_string_lossy().replace('\\', "/");
+    let escaped = filename
+        .replace('%', "%25")
+        .replace('\r', "%0D")
+        .replace('\n', "%0A")
+        .replace(':', "%3A")
+        .replace(',', "%2C");
+    let related = root
+        .join("catalog")
+        .to_string_lossy()
+        .replace('\\', "/")
+        .replace('%', "%25")
+        .replace('\r', "%0D")
+        .replace('\n', "%0A");
+    let annotations = String::from_utf8_lossy(&output.stdout);
+    assert!(
+        annotations.starts_with(&format!("::error file={escaped},")),
+        "{annotations}"
+    );
+    assert!(
+        annotations.contains(&format!("Related: {related}:1:1:")),
+        "{annotations}"
+    );
+}
+
+#[test]
 fn incomplete_checks_preserve_diagnostics_and_override_exit_zero() {
     let workspace = workspace("");
     let root = workspace.path();

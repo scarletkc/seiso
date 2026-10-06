@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use clap::{Args, Subcommand, ValueEnum};
 use seiso::analysis::{self, Analysis};
-use seiso::config::{CliOverrides, Settings, Workspace};
+use seiso::config::{CliOverrides, Settings, Workspace, repository_root};
 use seiso::diagnostics::{
     Diagnostic, render_concise, render_github, render_json, render_sarif, render_text,
 };
@@ -157,8 +157,35 @@ fn render(evaluation: &Analysis, format: CheckFormat) -> Result<String, String> 
         CheckFormat::Sarif => {
             render_sarif(&evaluation.diagnostics).map_err(|error| error.to_string())
         }
-        CheckFormat::Github => Ok(render_github(&evaluation.diagnostics)),
+        CheckFormat::Github => {
+            let root = &evaluation.snapshot.index.root;
+            let diagnostics = evaluation
+                .diagnostics
+                .iter()
+                .cloned()
+                .map(|mut diagnostic| {
+                    diagnostic.filename = github_filename(root, &diagnostic.filename);
+                    for related in &mut diagnostic.related {
+                        related.filename = github_filename(root, &related.filename);
+                    }
+                    diagnostic
+                })
+                .collect::<Vec<_>>();
+            Ok(render_github(&diagnostics))
+        }
     }
+}
+
+/// Resolve an annotation location relative to the workspace checkout, or absolutely.
+fn github_filename(workspace_root: &Path, filename: &str) -> String {
+    let path = workspace_root.join(filename);
+    let repository = repository_root(workspace_root);
+    let reported = if repository.join(".git").exists() {
+        path.strip_prefix(&repository).unwrap_or(&path)
+    } else {
+        &path
+    };
+    reported.to_string_lossy().replace('\\', "/")
 }
 
 fn print_errors(snapshot: &Snapshot, github: bool) {
