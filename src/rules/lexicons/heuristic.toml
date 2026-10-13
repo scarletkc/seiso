@@ -1,0 +1,856 @@
+# Built-in phrases and intended-use tuning examples. See README.md.
+
+[[deployment.en]]
+phrase = "is deployed"
+hits = [
+  { text = "The service is deployed now." },
+]
+misses = [
+  { text = "Check whether the service is deployed before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "are deployed"
+hits = [
+  { text = "The service are deployed now." },
+]
+misses = [
+  { text = "Check whether the service are deployed before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "is currently deployed"
+hits = [
+  { text = "The service is currently deployed now." },
+]
+misses = [
+  { text = "Check whether the service is currently deployed before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "are currently deployed"
+hits = [
+  { text = "The service are currently deployed now." },
+]
+misses = [
+  { text = "Check whether the service are currently deployed before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "has been deployed"
+hits = [
+  { text = "The service has been deployed now." },
+]
+misses = [
+  { text = "Check whether the service has been deployed before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "have been deployed"
+hits = [
+  { text = "The service have been deployed now." },
+]
+misses = [
+  { text = "Check whether the service have been deployed before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "is live"
+hits = [
+  { text = "The service is live now." },
+]
+misses = [
+  { text = "Check whether the service is live before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "is running in production"
+hits = [
+  { text = "The service is running in production now." },
+]
+misses = [
+  { text = "Check whether the service is running in production before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "is not yet deployed"
+hits = [
+  { text = "The service is not yet deployed now." },
+]
+misses = [
+  { text = "Check whether the service is not yet deployed before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "has not been deployed"
+hits = [
+  { text = "The service has not been deployed now." },
+]
+misses = [
+  { text = "Check whether the service has not been deployed before routing traffic." },
+]
+
+[[deployment.en]]
+phrase = "not yet shipped"
+hits = [
+  { text = "The service not yet shipped now." },
+]
+misses = [
+  { text = "Check whether the service not yet shipped before routing traffic." },
+]
+
+[[deployment.zh]]
+phrase = "已部署"
+hits = [
+  { text = "服务已部署。" },
+]
+misses = [
+  { text = "检查服务是否已部署。" },
+]
+
+[[deployment.zh]]
+phrase = "已经部署"
+hits = [
+  { text = "服务已经部署。" },
+]
+misses = [
+  { text = "检查服务是否已经部署。" },
+]
+
+[[deployment.zh]]
+phrase = "已上线"
+hits = [
+  { text = "服务已上线。" },
+]
+misses = [
+  { text = "检查服务是否已上线。" },
+]
+
+[[deployment.zh]]
+phrase = "已经上线"
+hits = [
+  { text = "服务已经上线。" },
+]
+misses = [
+  { text = "检查服务是否已经上线。" },
+]
+
+[[deployment.zh]]
+phrase = "尚未部署"
+hits = [
+  { text = "服务尚未部署。" },
+]
+misses = [
+  { text = "检查服务是否尚未部署。" },
+]
+
+[[deployment.zh]]
+phrase = "尚未上线"
+hits = [
+  { text = "服务尚未上线。" },
+]
+misses = [
+  { text = "检查服务是否尚未上线。" },
+]
+
+[[deployment.zh]]
+phrase = "正在生产环境运行"
+hits = [
+  { text = "服务正在生产环境运行。" },
+]
+misses = [
+  { text = "检查服务是否正在生产环境运行。" },
+]
+
+[[deployment.ja]]
+phrase = "デプロイ済み"
+hits = [
+  { text = "サービスはデプロイ済み。" },
+]
+misses = [
+  { text = "サービスはデプロイ済みかどうか確認してください。" },
+]
+
+[[deployment.ja]]
+phrase = "デプロイされています"
+hits = [
+  { text = "サービスはデプロイされています。" },
+]
+misses = [
+  { text = "サービスはデプロイされていますかどうか確認してください。" },
+]
+
+[[deployment.ja]]
+phrase = "本番稼働中"
+hits = [
+  { text = "サービスは本番稼働中。" },
+]
+misses = [
+  { text = "サービスは本番稼働中かどうか確認してください。" },
+]
+
+[[deployment.ja]]
+phrase = "まだデプロイされていません"
+hits = [
+  { text = "サービスはまだデプロイされていません。" },
+]
+misses = [
+  { text = "サービスはまだデプロイされていませんかどうか確認してください。" },
+]
+
+[[deployment.ja]]
+phrase = "リリース済み"
+hits = [
+  { text = "サービスはリリース済み。" },
+]
+misses = [
+  { text = "サービスはリリース済みかどうか確認してください。" },
+]
+
+[[excluded_heading.en]]
+phrase = "what this does not"
+hits = [
+  { text = "## what this does not" },
+]
+misses = [
+  { text = "The decision record documents what this does not." },
+]
+
+[[excluded_heading.en]]
+phrase = "what we did not"
+hits = [
+  { text = "## what we did not" },
+]
+misses = [
+  { text = "The decision record documents what we did not." },
+]
+
+[[excluded_heading.en]]
+phrase = "what is not included"
+hits = [
+  { text = "## what is not included" },
+]
+misses = [
+  { text = "The decision record documents what is not included." },
+]
+
+[[excluded_heading.en]]
+phrase = "out of scope"
+hits = [
+  { text = "## out of scope" },
+]
+misses = [
+  { text = "The decision record documents out of scope." },
+]
+
+[[excluded_heading.en]]
+phrase = "non-goals"
+hits = [
+  { text = "## non-goals" },
+]
+misses = [
+  { text = "The decision record documents non-goals." },
+]
+
+[[excluded_heading.en]]
+phrase = "without the"
+hits = [
+  { text = "## without the" },
+]
+misses = [
+  { text = "The decision record documents without the." },
+]
+
+[[excluded_heading.zh]]
+phrase = "不包含的"
+hits = [
+  { text = "## 不包含的" },
+]
+misses = [
+  { text = "决策记录解释了不包含的的细节。" },
+]
+
+[[excluded_heading.zh]]
+phrase = "不包括的"
+hits = [
+  { text = "## 不包括的" },
+]
+misses = [
+  { text = "决策记录解释了不包括的的细节。" },
+]
+
+[[excluded_heading.zh]]
+phrase = "不在范围"
+hits = [
+  { text = "## 不在范围" },
+]
+misses = [
+  { text = "决策记录解释了不在范围的细节。" },
+]
+
+[[excluded_heading.zh]]
+phrase = "本次不做"
+hits = [
+  { text = "## 本次不做" },
+]
+misses = [
+  { text = "决策记录解释了本次不做的细节。" },
+]
+
+[[excluded_heading.zh]]
+phrase = "非目标"
+hits = [
+  { text = "## 非目标" },
+]
+misses = [
+  { text = "决策记录解释了非目标的细节。" },
+]
+
+[[excluded_heading.zh]]
+phrase = "未包含"
+hits = [
+  { text = "## 未包含" },
+]
+misses = [
+  { text = "决策记录解释了未包含的细节。" },
+]
+
+[[excluded_heading.ja]]
+phrase = "対象外"
+hits = [
+  { text = "## 対象外" },
+]
+misses = [
+  { text = "意思決定記録は対象外について説明します。" },
+]
+
+[[excluded_heading.ja]]
+phrase = "含まれない"
+hits = [
+  { text = "## 含まれない" },
+]
+misses = [
+  { text = "意思決定記録は含まれないについて説明します。" },
+]
+
+[[excluded_heading.ja]]
+phrase = "今回実施しない"
+hits = [
+  { text = "## 今回実施しない" },
+]
+misses = [
+  { text = "意思決定記録は今回実施しないについて説明します。" },
+]
+
+[[excluded_heading.ja]]
+phrase = "非目標"
+hits = [
+  { text = "## 非目標" },
+]
+misses = [
+  { text = "意思決定記録は非目標について説明します。" },
+]
+
+[[production_heading.en]]
+phrase = "implementation notes"
+hits = [
+  { text = "## implementation notes" },
+]
+misses = [
+  { text = "The decision record documents implementation notes." },
+]
+
+[[production_heading.en]]
+phrase = "implementation approach"
+hits = [
+  { text = "## implementation approach" },
+]
+misses = [
+  { text = "The decision record documents implementation approach." },
+]
+
+[[production_heading.en]]
+phrase = "what i changed"
+hits = [
+  { text = "## what i changed" },
+]
+misses = [
+  { text = "The decision record documents what i changed." },
+]
+
+[[production_heading.en]]
+phrase = "what we changed"
+hits = [
+  { text = "## what we changed" },
+]
+misses = [
+  { text = "The decision record documents what we changed." },
+]
+
+[[production_heading.en]]
+phrase = "changes made"
+hits = [
+  { text = "## changes made" },
+]
+misses = [
+  { text = "The decision record documents changes made." },
+]
+
+[[production_heading.en]]
+phrase = "how i built"
+hits = [
+  { text = "## how i built" },
+]
+misses = [
+  { text = "The decision record documents how i built." },
+]
+
+[[production_heading.en]]
+phrase = "how we built"
+hits = [
+  { text = "## how we built" },
+]
+misses = [
+  { text = "The decision record documents how we built." },
+]
+
+[[production_heading.en]]
+phrase = "my approach"
+hits = [
+  { text = "## my approach" },
+]
+misses = [
+  { text = "The decision record documents my approach." },
+]
+
+[[production_heading.zh]]
+phrase = "实现过程"
+hits = [
+  { text = "## 实现过程" },
+]
+misses = [
+  { text = "决策记录解释了实现过程的细节。" },
+]
+
+[[production_heading.zh]]
+phrase = "实现思路"
+hits = [
+  { text = "## 实现思路" },
+]
+misses = [
+  { text = "决策记录解释了实现思路的细节。" },
+]
+
+[[production_heading.zh]]
+phrase = "本次修改"
+hits = [
+  { text = "## 本次修改" },
+]
+misses = [
+  { text = "决策记录解释了本次修改的细节。" },
+]
+
+[[production_heading.zh]]
+phrase = "我做的修改"
+hits = [
+  { text = "## 我做的修改" },
+]
+misses = [
+  { text = "决策记录解释了我做的修改的细节。" },
+]
+
+[[production_heading.zh]]
+phrase = "修改说明"
+hits = [
+  { text = "## 修改说明" },
+]
+misses = [
+  { text = "决策记录解释了修改说明的细节。" },
+]
+
+[[production_heading.zh]]
+phrase = "制作过程"
+hits = [
+  { text = "## 制作过程" },
+]
+misses = [
+  { text = "决策记录解释了制作过程的细节。" },
+]
+
+[[production_heading.ja]]
+phrase = "実装メモ"
+hits = [
+  { text = "## 実装メモ" },
+]
+misses = [
+  { text = "意思決定記録は実装メモについて説明します。" },
+]
+
+[[production_heading.ja]]
+phrase = "実装方針"
+hits = [
+  { text = "## 実装方針" },
+]
+misses = [
+  { text = "意思決定記録は実装方針について説明します。" },
+]
+
+[[production_heading.ja]]
+phrase = "今回の変更"
+hits = [
+  { text = "## 今回の変更" },
+]
+misses = [
+  { text = "意思決定記録は今回の変更について説明します。" },
+]
+
+[[production_heading.ja]]
+phrase = "作成過程"
+hits = [
+  { text = "## 作成過程" },
+]
+misses = [
+  { text = "意思決定記録は作成過程について説明します。" },
+]
+
+[[production_heading.ja]]
+phrase = "変更した内容"
+hits = [
+  { text = "## 変更した内容" },
+]
+misses = [
+  { text = "意思決定記録は変更した内容について説明します。" },
+]
+
+[[narration.en]]
+phrase = "i have implemented"
+hits = [
+  { text = "i have implemented the connection panel." },
+]
+misses = [
+  { text = "The audit log stores the message \"i have implemented the connection panel.\"" },
+]
+
+[[narration.en]]
+phrase = "i implemented"
+hits = [
+  { text = "i implemented the connection panel." },
+]
+misses = [
+  { text = "The audit log stores the message \"i implemented the connection panel.\"" },
+]
+
+[[narration.en]]
+phrase = "i have added"
+hits = [
+  { text = "i have added the connection panel." },
+]
+misses = [
+  { text = "The audit log stores the message \"i have added the connection panel.\"" },
+]
+
+[[narration.en]]
+phrase = "i updated"
+hits = [
+  { text = "i updated the connection panel." },
+]
+misses = [
+  { text = "The audit log stores the message \"i updated the connection panel.\"" },
+]
+
+[[narration.en]]
+phrase = "i created this"
+hits = [
+  { text = "i created this the connection panel." },
+]
+misses = [
+  { text = "The audit log stores the message \"i created this the connection panel.\"" },
+]
+
+[[narration.en]]
+phrase = "this page demonstrates"
+hits = [
+  { text = "This page demonstrates the connection panel." },
+]
+misses = [
+  { text = "The audit log stores the message \"This page demonstrates the connection panel.\"" },
+]
+
+[[narration.zh]]
+phrase = "我已经实现"
+hits = [
+  { text = "我已经实现连接面板。" },
+]
+misses = [
+  { text = "审计日志保存“我已经实现连接面板”这条消息。" },
+]
+
+[[narration.zh]]
+phrase = "我已实现"
+hits = [
+  { text = "我已实现连接面板。" },
+]
+misses = [
+  { text = "审计日志保存“我已实现连接面板”这条消息。" },
+]
+
+[[narration.zh]]
+phrase = "我添加了"
+hits = [
+  { text = "我添加了连接面板。" },
+]
+misses = [
+  { text = "审计日志保存“我添加了连接面板”这条消息。" },
+]
+
+[[narration.zh]]
+phrase = "我修改了"
+hits = [
+  { text = "我修改了连接面板。" },
+]
+misses = [
+  { text = "审计日志保存“我修改了连接面板”这条消息。" },
+]
+
+[[narration.zh]]
+phrase = "本页面展示了实现过程"
+hits = [
+  { text = "本页面展示了实现过程。" },
+]
+misses = [
+  { text = "审计日志保存“本页面展示了实现过程”这条消息。" },
+]
+
+[[narration.ja]]
+phrase = "私は実装しました"
+hits = [
+  { text = "私は実装しました。" },
+]
+misses = [
+  { text = "監査ログに「私は実装しました」を保存します。" },
+]
+
+[[narration.ja]]
+phrase = "私が追加した"
+hits = [
+  { text = "私が追加した接続パネルです。" },
+]
+misses = [
+  { text = "監査ログに「私が追加した接続パネルです」を保存します。" },
+]
+
+[[narration.ja]]
+phrase = "このページを作成しました"
+hits = [
+  { text = "このページを作成しました。" },
+]
+misses = [
+  { text = "監査ログに「このページを作成しました」を保存します。" },
+]
+
+[[evaluation.en]]
+phrase = "is faster"
+hits = [
+  { text = "This implementation is faster." },
+]
+misses = [
+  { text = "This implementation is faster. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.en]]
+phrase = "is the fastest"
+hits = [
+  { text = "This implementation is the fastest." },
+]
+misses = [
+  { text = "This implementation is the fastest. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.en]]
+phrase = "is better"
+hits = [
+  { text = "This implementation is better." },
+]
+misses = [
+  { text = "This implementation is better. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.en]]
+phrase = "is the best"
+hits = [
+  { text = "This implementation is the best." },
+]
+misses = [
+  { text = "This implementation is the best. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.en]]
+phrase = "is superior"
+hits = [
+  { text = "This implementation is superior." },
+]
+misses = [
+  { text = "This implementation is superior. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.en]]
+phrase = "is more efficient"
+hits = [
+  { text = "This implementation is more efficient." },
+]
+misses = [
+  { text = "This implementation is more efficient. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.en]]
+phrase = "is recommended"
+hits = [
+  { text = "This implementation is recommended for best performance." },
+]
+misses = [
+  { text = "This implementation is recommended for best performance. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.en]]
+phrase = "we recommend"
+hits = [
+  { text = "We recommend this implementation for best performance." },
+]
+misses = [
+  { text = "We recommend this implementation for best performance. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.en]]
+phrase = "recommended approach"
+hits = [
+  { text = "The recommended approach provides best performance." },
+]
+misses = [
+  { text = "The recommended approach provides best performance. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.en]]
+phrase = "best performance"
+hits = [
+  { text = "This implementation provides best performance." },
+]
+misses = [
+  { text = "This implementation provides best performance. See [the comparison](https://example.org/results)." },
+]
+
+[[evaluation.zh]]
+phrase = "更快"
+hits = [
+  { text = "这个实现更快。" },
+]
+misses = [
+  { text = "这个实现更快。详见[对比结果](https://example.org/results)。" },
+]
+
+[[evaluation.zh]]
+phrase = "性能更好"
+hits = [
+  { text = "这个实现性能更好。" },
+]
+misses = [
+  { text = "这个实现性能更好。详见[对比结果](https://example.org/results)。" },
+]
+
+[[evaluation.zh]]
+phrase = "最高效"
+hits = [
+  { text = "这个实现最高效。" },
+]
+misses = [
+  { text = "这个实现最高效。详见[对比结果](https://example.org/results)。" },
+]
+
+[[evaluation.zh]]
+phrase = "最佳方案"
+hits = [
+  { text = "这个实现是最佳方案。" },
+]
+misses = [
+  { text = "这个实现是最佳方案。详见[对比结果](https://example.org/results)。" },
+]
+
+[[evaluation.zh]]
+phrase = "最好的"
+hits = [
+  { text = "这个实现是最好的。" },
+]
+misses = [
+  { text = "这个实现是最好的。详见[对比结果](https://example.org/results)。" },
+]
+
+[[evaluation.zh]]
+phrase = "推荐使用"
+hits = [
+  { text = "推荐使用这个性能更好的实现。" },
+]
+misses = [
+  { text = "推荐使用这个性能更好的实现。详见[对比结果](https://example.org/results)。" },
+]
+
+[[evaluation.zh]]
+phrase = "我们推荐"
+hits = [
+  { text = "我们推荐这个性能更好的实现。" },
+]
+misses = [
+  { text = "我们推荐这个性能更好的实现。详见[对比结果](https://example.org/results)。" },
+]
+
+[[evaluation.ja]]
+phrase = "より高速"
+hits = [
+  { text = "この実装はより高速です。" },
+]
+misses = [
+  { text = "この実装はより高速です。[比較結果](https://example.org/results)を参照してください。" },
+]
+
+[[evaluation.ja]]
+phrase = "最も高速"
+hits = [
+  { text = "この実装は最も高速です。" },
+]
+misses = [
+  { text = "この実装は最も高速です。[比較結果](https://example.org/results)を参照してください。" },
+]
+
+[[evaluation.ja]]
+phrase = "最適な方法"
+hits = [
+  { text = "この実装は最適な方法です。" },
+]
+misses = [
+  { text = "この実装は最適な方法です。[比較結果](https://example.org/results)を参照してください。" },
+]
+
+[[evaluation.ja]]
+phrase = "最高の性能"
+hits = [
+  { text = "この実装は最高の性能を発揮します。" },
+]
+misses = [
+  { text = "この実装は最高の性能を発揮します。[比較結果](https://example.org/results)を参照してください。" },
+]
+
+[[evaluation.ja]]
+phrase = "推奨します"
+hits = [
+  { text = "この実装を推奨しますが、最高の性能を発揮する設計です。" },
+]
+misses = [
+  { text = "この実装を推奨しますが、最高の性能を発揮する設計です。[比較結果](https://example.org/results)を参照してください。" },
+]
+
+[[evaluation.ja]]
+phrase = "を推奨"
+hits = [
+  { text = "この実装を推奨する理由は最高の性能です。" },
+]
+misses = [
+  { text = "この実装を推奨する理由は最高の性能です。[比較結果](https://example.org/results)を参照してください。" },
+]

@@ -4,6 +4,7 @@ pub mod cross_file;
 pub mod fixes;
 pub mod heuristic;
 mod kind;
+mod lexicon;
 mod links;
 pub mod normative;
 pub mod suppression;

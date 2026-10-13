@@ -1,0 +1,1054 @@
+# Built-in phrases and intended-use tuning examples. See README.md.
+
+[[stale.en]]
+phrase = "currently"
+hits = [
+  { text = "The service currently uses `12` workers.", target = "12" },
+]
+misses = [
+  { text = "The service currently selects workers from the queue." },
+]
+
+[[stale.en]]
+phrase = "latest"
+hits = [
+  { text = "The latest release uses `12` workers.", target = "12" },
+]
+misses = [
+  { text = "The latest release lists the supported platforms." },
+]
+
+[[stale.en]]
+phrase = "at present"
+hits = [
+  { text = "The service at present uses `12` workers.", target = "12" },
+]
+misses = [
+  { text = "The service at present selects workers from the queue." },
+]
+
+[[stale.zh]]
+phrase = "目前"
+hits = [
+  { text = "目前使用 `12` 个工作线程。", target = "12" },
+]
+misses = [
+  { text = "目前的任务由调度器分配。" },
+]
+
+[[stale.zh]]
+phrase = "当前"
+hits = [
+  { text = "当前使用 `12` 个工作线程。", target = "12" },
+]
+misses = [
+  { text = "当前的任务由调度器分配。" },
+]
+
+[[stale.zh]]
+phrase = "最新"
+hits = [
+  { text = "最新使用 `12` 个工作线程。", target = "12" },
+]
+misses = [
+  { text = "最新的任务由调度器分配。" },
+]
+
+[[stale.zh]]
+phrase = "现在"
+hits = [
+  { text = "现在使用 `12` 个工作线程。", target = "12" },
+]
+misses = [
+  { text = "现在的任务由调度器分配。" },
+]
+
+[[stale.ja]]
+phrase = "現在"
+hits = [
+  { text = "現在のワーカー数は `12` です。", target = "12" },
+]
+misses = [
+  { text = "現在のタスクを表示します。" },
+]
+
+[[stale.ja]]
+phrase = "最新"
+hits = [
+  { text = "最新のワーカー数は `12` です。", target = "12" },
+]
+misses = [
+  { text = "最新のタスクを表示します。" },
+]
+
+[[stale.ja]]
+phrase = "現時点"
+hits = [
+  { text = "現時点のワーカー数は `12` です。", target = "12" },
+]
+misses = [
+  { text = "現時点のタスクを表示します。" },
+]
+
+[[constraint.en]]
+phrase = "or later"
+hits = [
+  { text = "The latest release supports version `1.2.3` or later." },
+]
+misses = [
+  { text = "The release notes describe or later constraints. The service currently uses `12` workers.", target = "12" },
+]
+
+[[constraint.en]]
+phrase = "or newer"
+hits = [
+  { text = "The latest release supports version `1.2.3` or newer." },
+]
+misses = [
+  { text = "The release notes describe or newer constraints. The service currently uses `12` workers.", target = "12" },
+]
+
+[[constraint.en]]
+phrase = "at least"
+hits = [
+  { text = "The service currently uses at least `12` workers." },
+]
+misses = [
+  { text = "The release notes describe at least constraints. The service currently uses `12` workers.", target = "12" },
+]
+
+[[constraint.en]]
+phrase = "at most"
+hits = [
+  { text = "The service currently uses at most `12` workers." },
+]
+misses = [
+  { text = "The release notes describe at most constraints. The service currently uses `12` workers.", target = "12" },
+]
+
+[[constraint.en]]
+phrase = "minimum"
+hits = [
+  { text = "The latest release has a minimum of `12` workers." },
+]
+misses = [
+  { text = "The release notes describe minimum constraints. The service currently uses `12` workers.", target = "12" },
+]
+
+[[constraint.en]]
+phrase = "maximum"
+hits = [
+  { text = "The latest release has a maximum of `12` workers." },
+]
+misses = [
+  { text = "The release notes describe maximum constraints. The service currently uses `12` workers.", target = "12" },
+]
+
+[[constraint.en]]
+phrase = "requires"
+hits = [
+  { text = "The latest release requires `12` workers." },
+]
+misses = [
+  { text = "The release notes describe requires constraints. The service currently uses `12` workers.", target = "12" },
+]
+
+[[constraint.en]]
+phrase = "required"
+hits = [
+  { text = "The latest release has `12` required workers." },
+]
+misses = [
+  { text = "The release notes describe required constraints. The service currently uses `12` workers.", target = "12" },
+]
+
+[[constraint.zh]]
+phrase = "以上"
+hits = [
+  { text = "目前使用 `12` 个以上的工作线程。" },
+]
+misses = [
+  { text = "本节解释以上的含义。目前使用 `12` 个工作线程。", target = "12" },
+]
+
+[[constraint.zh]]
+phrase = "以下"
+hits = [
+  { text = "目前使用 `12` 个以下的工作线程。" },
+]
+misses = [
+  { text = "本节解释以下的含义。目前使用 `12` 个工作线程。", target = "12" },
+]
+
+[[constraint.zh]]
+phrase = "至少"
+hits = [
+  { text = "目前使用至少 `12` 个工作线程。" },
+]
+misses = [
+  { text = "本节解释至少的含义。目前使用 `12` 个工作线程。", target = "12" },
+]
+
+[[constraint.zh]]
+phrase = "最多"
+hits = [
+  { text = "目前使用最多 `12` 个工作线程。" },
+]
+misses = [
+  { text = "本节解释最多的含义。目前使用 `12` 个工作线程。", target = "12" },
+]
+
+[[constraint.zh]]
+phrase = "要求"
+hits = [
+  { text = "目前要求 `12` 个工作线程。" },
+]
+misses = [
+  { text = "本节解释要求的含义。目前使用 `12` 个工作线程。", target = "12" },
+]
+
+[[constraint.zh]]
+phrase = "不低于"
+hits = [
+  { text = "目前使用不低于 `12` 个工作线程。" },
+]
+misses = [
+  { text = "本节解释不低于的含义。目前使用 `12` 个工作线程。", target = "12" },
+]
+
+[[constraint.zh]]
+phrase = "不高于"
+hits = [
+  { text = "目前使用不高于 `12` 个工作线程。" },
+]
+misses = [
+  { text = "本节解释不高于的含义。目前使用 `12` 个工作线程。", target = "12" },
+]
+
+[[constraint.ja]]
+phrase = "以上"
+hits = [
+  { text = "現在は `12` 個以上のワーカーを使います。" },
+]
+misses = [
+  { text = "以上の意味を説明します。現在は `12` 個のワーカーを使います。", target = "12" },
+]
+
+[[constraint.ja]]
+phrase = "以下"
+hits = [
+  { text = "現在は `12` 個以下のワーカーを使います。" },
+]
+misses = [
+  { text = "以下の意味を説明します。現在は `12` 個のワーカーを使います。", target = "12" },
+]
+
+[[constraint.ja]]
+phrase = "以降"
+hits = [
+  { text = "現在はバージョン `1.2.3` 以降をサポートします。" },
+]
+misses = [
+  { text = "以降の意味を説明します。現在は `12` 個のワーカーを使います。", target = "12" },
+]
+
+[[constraint.ja]]
+phrase = "少なくとも"
+hits = [
+  { text = "現在は少なくとも `12` 個のワーカーを使います。" },
+]
+misses = [
+  { text = "少なくともの意味を説明します。現在は `12` 個のワーカーを使います。", target = "12" },
+]
+
+[[constraint.ja]]
+phrase = "必要"
+hits = [
+  { text = "現在は `12` 個のワーカーが必要です。" },
+]
+misses = [
+  { text = "必要の意味を説明します。現在は `12` 個のワーカーを使います。", target = "12" },
+]
+
+[[constraint.ja]]
+phrase = "要件"
+hits = [
+  { text = "現在の要件は `12` 個のワーカーです。" },
+]
+misses = [
+  { text = "要件の意味を説明します。現在は `12` 個のワーカーを使います。", target = "12" },
+]
+
+[[commit.en]]
+phrase = "commit"
+hits = [
+  { text = "The deployed commit: deadbee.", target = "deadbee" },
+]
+misses = [
+  { text = "The commit identifier is read from the manifest." },
+]
+
+[[commit.en]]
+phrase = "sha"
+hits = [
+  { text = "The deployed sha: deadbee.", target = "deadbee" },
+]
+misses = [
+  { text = "The sha identifier is read from the manifest." },
+]
+
+[[commit.en]]
+phrase = "build"
+hits = [
+  { text = "The deployed build: deadbee.", target = "deadbee" },
+]
+misses = [
+  { text = "The build identifier is read from the manifest." },
+]
+
+[[commit.zh]]
+phrase = "commit"
+hits = [
+  { text = "部署的 commit: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "从清单读取 commit 标识符。" },
+]
+
+[[commit.zh]]
+phrase = "sha"
+hits = [
+  { text = "部署的 sha: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "从清单读取 sha 标识符。" },
+]
+
+[[commit.zh]]
+phrase = "build"
+hits = [
+  { text = "部署的 build: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "从清单读取 build 标识符。" },
+]
+
+[[commit.zh]]
+phrase = "提交"
+hits = [
+  { text = "部署的提交: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "从清单读取 提交 标识符。" },
+]
+
+[[commit.zh]]
+phrase = "构建"
+hits = [
+  { text = "部署的构建: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "从清单读取 构建 标识符。" },
+]
+
+[[commit.ja]]
+phrase = "commit"
+hits = [
+  { text = "配布した commit: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "commit の識別子を表示します。" },
+]
+
+[[commit.ja]]
+phrase = "sha"
+hits = [
+  { text = "配布した sha: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "sha の識別子を表示します。" },
+]
+
+[[commit.ja]]
+phrase = "build"
+hits = [
+  { text = "配布した build: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "build の識別子を表示します。" },
+]
+
+[[commit.ja]]
+phrase = "コミット"
+hits = [
+  { text = "配布した コミット: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "コミット の識別子を表示します。" },
+]
+
+[[commit.ja]]
+phrase = "ビルド"
+hits = [
+  { text = "配布した ビルド: deadbee。", target = "deadbee" },
+]
+misses = [
+  { text = "ビルド の識別子を表示します。" },
+]
+
+[[pointer.en]]
+phrase = "see"
+hits = [
+  { text = "For details, see [the repository](https://github.com/acme/widget).", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "For details, see [the repository](https://github.com/acme/widget/blob/main/parser.rs)." },
+]
+
+[[pointer.en]]
+phrase = "defined in"
+hits = [
+  { text = "The details are defined in [the repository](https://github.com/acme/widget).", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "The details are defined in [the repository](https://github.com/acme/widget/blob/main/parser.rs)." },
+]
+
+[[pointer.en]]
+phrase = "refer to"
+hits = [
+  { text = "For details, refer to [the repository](https://github.com/acme/widget).", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "For details, refer to [the repository](https://github.com/acme/widget/blob/main/parser.rs)." },
+]
+
+[[pointer.zh]]
+phrase = "见"
+hits = [
+  { text = "详细规则见[仓库](https://github.com/acme/widget)。", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "详细规则见[仓库](https://github.com/acme/widget/blob/main/parser.rs)。" },
+]
+
+[[pointer.zh]]
+phrase = "参见"
+hits = [
+  { text = "详细规则参见[仓库](https://github.com/acme/widget)。", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "详细规则参见[仓库](https://github.com/acme/widget/blob/main/parser.rs)。" },
+]
+
+[[pointer.zh]]
+phrase = "参考"
+hits = [
+  { text = "详细规则参考[仓库](https://github.com/acme/widget)。", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "详细规则参考[仓库](https://github.com/acme/widget/blob/main/parser.rs)。" },
+]
+
+[[pointer.zh]]
+phrase = "定义在"
+hits = [
+  { text = "详细规则定义在[仓库](https://github.com/acme/widget)。", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "详细规则定义在[仓库](https://github.com/acme/widget/blob/main/parser.rs)。" },
+]
+
+[[pointer.ja]]
+phrase = "参照"
+hits = [
+  { text = "詳細は[リポジトリ](https://github.com/acme/widget)を参照してください。", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "詳細は[リポジトリ](https://github.com/acme/widget/blob/main/parser.rs)を参照してください。" },
+]
+
+[[pointer.ja]]
+phrase = "定義"
+hits = [
+  { text = "契約は[リポジトリ](https://github.com/acme/widget)で定義されています。", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "契約は[リポジトリ](https://github.com/acme/widget/blob/main/parser.rs)で定義されています。" },
+]
+
+[[pointer.ja]]
+phrase = "をご覧"
+hits = [
+  { text = "詳細は[リポジトリ](https://github.com/acme/widget)をご覧ください。", target = "https://github.com/acme/widget" },
+]
+misses = [
+  { text = "詳細は[リポジトリ](https://github.com/acme/widget/blob/main/parser.rs)をご覧ください。" },
+]
+
+[[source.en]]
+phrase = "see the source"
+hits = [
+  { text = "For the parsing contract, see the source." },
+]
+misses = [
+  { text = "For the parsing contract, see the source in `parser.rs`." },
+]
+
+[[source.en]]
+phrase = "see source"
+hits = [
+  { text = "For the parsing contract, see source." },
+]
+misses = [
+  { text = "For the parsing contract, see source in `parser.rs`." },
+]
+
+[[source.en]]
+phrase = "refer to the source"
+hits = [
+  { text = "For the parsing contract, refer to the source." },
+]
+misses = [
+  { text = "For the parsing contract, refer to the source in `parser.rs`." },
+]
+
+[[source.en]]
+phrase = "see the code"
+hits = [
+  { text = "For the parsing contract, see the code." },
+]
+misses = [
+  { text = "For the parsing contract, see the code in `parser.rs`." },
+]
+
+[[source.zh]]
+phrase = "见源码"
+hits = [
+  { text = "解析规则见源码。" },
+]
+misses = [
+  { text = "解析规则见源码 `parser.rs`。" },
+]
+
+[[source.zh]]
+phrase = "见源代码"
+hits = [
+  { text = "解析规则见源代码。" },
+]
+misses = [
+  { text = "解析规则见源代码 `parser.rs`。" },
+]
+
+[[source.zh]]
+phrase = "参见源码"
+hits = [
+  { text = "解析规则参见源码。" },
+]
+misses = [
+  { text = "解析规则参见源码 `parser.rs`。" },
+]
+
+[[source.zh]]
+phrase = "参见源代码"
+hits = [
+  { text = "解析规则参见源代码。" },
+]
+misses = [
+  { text = "解析规则参见源代码 `parser.rs`。" },
+]
+
+[[source.zh]]
+phrase = "参考源码"
+hits = [
+  { text = "解析规则参考源码。" },
+]
+misses = [
+  { text = "解析规则参考源码 `parser.rs`。" },
+]
+
+[[source.ja]]
+phrase = "ソースを参照"
+hits = [
+  { text = "解析の契約はソースを参照。" },
+]
+misses = [
+  { text = "解析の契約は `parser.rs` のソースを参照。" },
+]
+
+[[source.ja]]
+phrase = "ソースコードを参照"
+hits = [
+  { text = "解析の契約はソースコードを参照。" },
+]
+misses = [
+  { text = "解析の契約は `parser.rs` のソースコードを参照。" },
+]
+
+[[source.ja]]
+phrase = "コードを参照"
+hits = [
+  { text = "解析の契約はコードを参照。" },
+]
+misses = [
+  { text = "解析の契約は `parser.rs` のコードを参照。" },
+]
+
+[[rationale.en]]
+phrase = "why we chose"
+hits = [
+  { text = "## why we chose SQLite" },
+]
+misses = [
+  { text = "The ADR explains why we chose SQLite." },
+]
+
+[[rationale.en]]
+phrase = "why we choose"
+hits = [
+  { text = "## why we choose SQLite" },
+]
+misses = [
+  { text = "The ADR explains why we choose SQLite." },
+]
+
+[[rationale.en]]
+phrase = "why we use"
+hits = [
+  { text = "## why we use SQLite" },
+]
+misses = [
+  { text = "The ADR explains why we use SQLite." },
+]
+
+[[rationale.en]]
+phrase = "why not use"
+hits = [
+  { text = "## why not use SQLite" },
+]
+misses = [
+  { text = "The ADR explains why not use SQLite." },
+]
+
+[[rationale.zh]]
+phrase = "为什么选择"
+hits = [
+  { text = "## 为什么选择本地存储" },
+]
+misses = [
+  { text = "决策记录说明了为什么选择本地存储。" },
+]
+
+[[rationale.zh]]
+phrase = "为何选择"
+hits = [
+  { text = "## 为何选择本地存储" },
+]
+misses = [
+  { text = "决策记录说明了为何选择本地存储。" },
+]
+
+[[rationale.zh]]
+phrase = "为什么不用"
+hits = [
+  { text = "## 为什么不用本地存储" },
+]
+misses = [
+  { text = "决策记录说明了为什么不用本地存储。" },
+]
+
+[[rationale.zh]]
+phrase = "为何不用"
+hits = [
+  { text = "## 为何不用本地存储" },
+]
+misses = [
+  { text = "决策记录说明了为何不用本地存储。" },
+]
+
+[[rationale.zh]]
+phrase = "为什么采用"
+hits = [
+  { text = "## 为什么采用本地存储" },
+]
+misses = [
+  { text = "决策记录说明了为什么采用本地存储。" },
+]
+
+[[rationale.ja]]
+phrase = "採用した理由"
+hits = [
+  { text = "## 採用した理由とその背景" },
+]
+misses = [
+  { text = "意思決定記録で採用した理由を説明します。" },
+]
+
+[[rationale.ja]]
+phrase = "選択した理由"
+hits = [
+  { text = "## 選択した理由とその背景" },
+]
+misses = [
+  { text = "意思決定記録で選択した理由を説明します。" },
+]
+
+[[conversation.en]]
+phrase = "as you requested"
+guard = "end-user"
+hits = [
+  { text = "as you requested, the installation guide is ready." },
+]
+misses = [
+  { text = "Check whether “as you requested” appears in the message template." },
+]
+
+[[conversation.en]]
+phrase = "as requested by you"
+guard = "end-user"
+hits = [
+  { text = "as requested by you, the installation guide is ready." },
+]
+misses = [
+  { text = "Check whether “as requested by you” appears in the message template." },
+]
+
+[[conversation.en]]
+phrase = "here's the updated"
+guard = "end-user"
+hits = [
+  { text = "here's the updated installation guide." },
+]
+misses = [
+  { text = "Check whether “here's the updated” appears in the message template." },
+]
+
+[[conversation.en]]
+phrase = "here’s the updated"
+guard = "end-user"
+hits = [
+  { text = "here’s the updated installation guide." },
+]
+misses = [
+  { text = "Check whether “here’s the updated” appears in the message template." },
+]
+
+[[conversation.en]]
+phrase = "here is the updated"
+guard = "end-user"
+hits = [
+  { text = "here is the updated installation guide." },
+]
+misses = [
+  { text = "Check whether “here is the updated” appears in the message template." },
+]
+
+[[conversation.en]]
+phrase = "i hope this helps"
+guard = "end-user"
+hits = [
+  { text = "i hope this helps." },
+]
+misses = [
+  { text = "Check whether “i hope this helps” appears in the message template." },
+]
+
+[[conversation.en]]
+phrase = "hope this helps"
+guard = "end-user"
+hits = [
+  { text = "hope this helps." },
+]
+misses = [
+  { text = "Check whether “hope this helps” appears in the message template." },
+]
+
+[[conversation.en]]
+phrase = "as the user requested"
+guard = "end-user"
+hits = [
+  { text = "as the user requested, the installation guide is ready." },
+]
+misses = [
+  { text = "Check whether “as the user requested” appears in the message template." },
+]
+
+[[conversation.en]]
+phrase = "the user confirmed"
+guard = "end-user"
+hits = [
+  { text = "the user confirmed the revised installation guide." },
+]
+misses = [
+  { text = "Verify that the user confirmed the application before granting access." },
+]
+
+[[conversation.en]]
+phrase = "the user has confirmed"
+guard = "end-user"
+hits = [
+  { text = "the user has confirmed the revised installation guide." },
+]
+misses = [
+  { text = "Verify that the user has confirmed the application before granting access." },
+]
+
+[[conversation.en]]
+phrase = "the user approved"
+guard = "end-user"
+hits = [
+  { text = "the user approved the revised installation guide." },
+]
+misses = [
+  { text = "Verify that the user approved the application before granting access." },
+]
+
+[[conversation.en]]
+phrase = "the user has approved"
+guard = "end-user"
+hits = [
+  { text = "the user has approved the revised installation guide." },
+]
+misses = [
+  { text = "Verify that the user has approved the application before granting access." },
+]
+
+[[conversation.en]]
+phrase = "the user authorized"
+guard = "end-user"
+hits = [
+  { text = "the user authorized publication of the revised installation guide." },
+]
+misses = [
+  { text = "Verify that the user authorized the application before granting access." },
+]
+
+[[conversation.en]]
+phrase = "the user has authorized"
+guard = "end-user"
+hits = [
+  { text = "the user has authorized publication of the revised installation guide." },
+]
+misses = [
+  { text = "Verify that the user has authorized the application before granting access." },
+]
+
+[[conversation.zh]]
+phrase = "根据你的要求"
+guard = "end-user"
+hits = [
+  { text = "根据你的要求，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含根据你的要求这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "根据您的要求"
+guard = "end-user"
+hits = [
+  { text = "根据您的要求，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含根据您的要求这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "按你的要求"
+guard = "end-user"
+hits = [
+  { text = "按你的要求，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含按你的要求这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "按照你的要求"
+guard = "end-user"
+hits = [
+  { text = "按照你的要求，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含按照你的要求这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "希望对你有帮助"
+guard = "end-user"
+hits = [
+  { text = "希望对你有帮助。" },
+]
+misses = [
+  { text = "检查通知模板是否包含希望对你有帮助这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "希望对您有帮助"
+guard = "end-user"
+hits = [
+  { text = "希望对您有帮助。" },
+]
+misses = [
+  { text = "检查通知模板是否包含希望对您有帮助这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "根据用户的要求"
+guard = "end-user"
+hits = [
+  { text = "根据用户的要求，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含根据用户的要求这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "按照用户的要求"
+guard = "end-user"
+hits = [
+  { text = "按照用户的要求，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含按照用户的要求这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "经用户确认"
+guard = "end-user"
+hits = [
+  { text = "经用户确认，安装指南已更新。" },
+]
+misses = [
+  { text = "经用户确认后才能继续安装。" },
+]
+
+[[conversation.zh]]
+phrase = "已与用户确认"
+guard = "end-user"
+hits = [
+  { text = "已与用户确认，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含已与用户确认这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "用户已确认"
+guard = "end-user"
+hits = [
+  { text = "用户已确认，安装指南已更新。" },
+]
+misses = [
+  { text = "用户已确认后才能继续安装。" },
+]
+
+[[conversation.zh]]
+phrase = "经用户授权"
+guard = "end-user"
+hits = [
+  { text = "经用户授权，安装指南已更新。" },
+]
+misses = [
+  { text = "经用户授权后才能继续安装。" },
+]
+
+[[conversation.zh]]
+phrase = "已获用户授权"
+guard = "end-user"
+hits = [
+  { text = "已获用户授权，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含已获用户授权这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "已获得用户授权"
+guard = "end-user"
+hits = [
+  { text = "已获得用户授权，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含已获得用户授权这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "用户已授权"
+guard = "end-user"
+hits = [
+  { text = "用户已授权，安装指南已更新。" },
+]
+misses = [
+  { text = "用户已授权后才能继续安装。" },
+]
+
+[[conversation.zh]]
+phrase = "经用户同意"
+guard = "end-user"
+hits = [
+  { text = "经用户同意，安装指南已更新。" },
+]
+misses = [
+  { text = "经用户同意后才能继续安装。" },
+]
+
+[[conversation.zh]]
+phrase = "已征得用户同意"
+guard = "end-user"
+hits = [
+  { text = "已征得用户同意，安装指南已更新。" },
+]
+misses = [
+  { text = "检查通知模板是否包含已征得用户同意这句话。" },
+]
+
+[[conversation.zh]]
+phrase = "用户已同意"
+guard = "end-user"
+hits = [
+  { text = "用户已同意，安装指南已更新。" },
+]
+misses = [
+  { text = "用户已同意后才能继续安装。" },
+]
+
+[[conversation.ja]]
+phrase = "ご要望に応じて"
+guard = "end-user"
+hits = [
+  { text = "ご要望に応じて、インストール手順を更新しました。" },
+]
+misses = [
+  { text = "通知テンプレートの `ご要望に応じて` という文言を編集します。" },
+]
+
+[[conversation.ja]]
+phrase = "ご依頼のとおり"
+guard = "end-user"
+hits = [
+  { text = "ご依頼のとおり、インストール手順を更新しました。" },
+]
+misses = [
+  { text = "通知テンプレートの `ご依頼のとおり` という文言を編集します。" },
+]
+
+[[conversation.ja]]
+phrase = "ご依頼どおり"
+guard = "end-user"
+hits = [
+  { text = "ご依頼どおり、インストール手順を更新しました。" },
+]
+misses = [
+  { text = "通知テンプレートの `ご依頼どおり` という文言を編集します。" },
+]
+
+[[conversation.ja]]
+phrase = "お役に立てれば幸い"
+guard = "end-user"
+hits = [
+  { text = "お役に立てれば幸いです。" },
+]
+misses = [
+  { text = "通知テンプレートの `お役に立てれば幸い` という文言を編集します。" },
+]

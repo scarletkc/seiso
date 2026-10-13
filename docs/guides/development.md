@@ -42,6 +42,15 @@ diagnostics are stored in snapshots. Add regression cases for fragment
 boundaries, languages, source mappings, and suppression scope when changing
 a rule. Use the [checking guide](checking.md) to exercise the CLI.
 
+Before changing a built-in lexicon entry, add a failing real-use example and
+its near miss using the [lexicon format](../../src/rules/lexicons/README.md).
+Keep phrases and examples in the same change, and record removed or guarded
+entries in the PR. Run the entry examples with:
+
+```sh
+cargo test --locked --lib every_builtin_phrase_has_executable_intended_use_examples
+```
+
 ## Maintenance scripts
 
 The `scripts/` package groups tools by responsibility:
