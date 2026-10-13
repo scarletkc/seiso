@@ -27,8 +27,24 @@ pub fn parse_with_options(source: &str, options: ParseOptions) -> Result<Documen
     let tree = markdown::to_mdast(source, &markdown_options).map_err(|error| ParseError {
         message: error.to_string(),
     })?;
+    // An unmatched frontmatter opener can hide Markdown blockquotes in mdast.
+    // Probe ordinary Markdown only for the ambiguous, unfenced fallback.
+    let markdown_tree = if markdown_options.constructs.frontmatter
+        && !tree
+            .children()
+            .is_some_and(|children| children.iter().any(|node| matches!(node, Node::Yaml(_))))
+    {
+        markdown_options.constructs.frontmatter = false;
+        Some(
+            markdown::to_mdast(source, &markdown_options).map_err(|error| ParseError {
+                message: error.to_string(),
+            })?,
+        )
+    } else {
+        None
+    };
     let mut builder = DocumentBuilder::new(source);
-    builder.read_definitions(&tree);
+    builder.read_definitions(&tree, markdown_tree.as_ref().unwrap_or(&tree));
     builder.walk_blocks(&tree);
     builder.detect_language();
     Ok(builder.document)
@@ -79,7 +95,7 @@ impl<'a> DocumentBuilder<'a> {
         }
     }
 
-    fn read_definitions(&mut self, tree: &Node) {
+    fn read_definitions(&mut self, tree: &Node, markdown_tree: &Node) {
         let mut stack = vec![tree];
         while let Some(node) = stack.pop() {
             if let Node::Definition(definition) = node {
@@ -101,7 +117,9 @@ impl<'a> DocumentBuilder<'a> {
                 stack.extend(children.iter().rev());
             }
         }
-        if self.document.frontmatter.is_none() && looks_like_unclosed_frontmatter(self.source) {
+        if self.document.frontmatter.is_none()
+            && looks_like_unclosed_frontmatter(self.source, markdown_tree)
+        {
             let span = Span {
                 start: 0,
                 end: self.source.len(),
@@ -320,21 +338,98 @@ fn node_span(node: &Node) -> Span {
         .unwrap_or(Span { start: 0, end: 0 })
 }
 
-fn looks_like_unclosed_frontmatter(source: &str) -> bool {
-    let mut lines = source.lines();
-    if lines.next().is_none_or(|line| line.trim_end() != "---") {
+fn looks_like_unclosed_frontmatter(source: &str, tree: &Node) -> bool {
+    if source
+        .lines()
+        .next()
+        .is_none_or(|line| line.trim_end() != "---")
+    {
         return false;
     }
-    let Some(line) = lines.find(|line| !line.trim().is_empty()) else {
-        return false;
-    };
-    let Some((key, _)) = line.split_once(':') else {
-        return false;
-    };
-    !key.is_empty()
-        && key
-            .chars()
-            .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
+    // Use parsed Markdown boundaries so metadata examples inside non-prose
+    // blocks cannot turn an earlier thematic break into a declaration.
+    let mut boundaries = tree
+        .children()
+        .into_iter()
+        .flatten()
+        .filter(|node| match node {
+            Node::Html(_) | Node::Blockquote(_) => true,
+            Node::Code(_) => {
+                // Indented code can also be a YAML block-scalar value.
+                let span = node_span(node);
+                let opening = &source[span.start..span.end];
+                opening.starts_with("```") || opening.starts_with("~~~")
+            }
+            _ => false,
+        })
+        .map(|node| node_span(node).start)
+        .peekable();
+    // An unfenced mapping is ambiguous with labeled Markdown prose. Require
+    // a top-level Seiso field in its initial mapping, not just any colon.
+    let mut sequence_value = false;
+    let mut scalar_value = false;
+    let mut pending_value = false;
+    let mut offset = source.find('\n').map_or(source.len(), |offset| offset + 1);
+    for line in source[offset..].split_inclusive('\n') {
+        let indented = line.starts_with([' ', '\t']);
+        let end = offset + line.len();
+        let line = line.trim_end_matches(['\r', '\n']);
+        if pending_value && !line.trim().is_empty() && !line.trim_start().starts_with('#') {
+            scalar_value = indented && block_scalar_header(line.trim_start());
+            pending_value = false;
+        }
+        while boundaries.peek().is_some_and(|boundary| *boundary < end) {
+            // An explicit YAML block scalar owns its indented literal content,
+            // even when Markdown parses that content as a root block.
+            if !scalar_value || !indented {
+                return false;
+            }
+            boundaries.next();
+        }
+        offset = end;
+        if line.trim().is_empty() || line.trim_start().starts_with('#') {
+            continue;
+        }
+        if indented {
+            continue;
+        }
+        if sequence_value
+            && line
+                .strip_prefix('-')
+                .is_some_and(|rest| rest.is_empty() || rest.starts_with([' ', '\t']))
+        {
+            continue;
+        }
+        let Some((key, value)) = line.split_once(':') else {
+            return false;
+        };
+        if key.is_empty()
+            || !key
+                .chars()
+                .all(|ch| ch.is_ascii_alphanumeric() || matches!(ch, '_' | '-'))
+        {
+            return false;
+        }
+        if matches!(key, "kind" | "lang" | "canonical") {
+            return true;
+        }
+        sequence_value = yaml_value_token(value).is_none_or(|token| token.starts_with('#'));
+        scalar_value = block_scalar_header(value.trim_start());
+        pending_value = sequence_value;
+    }
+    false
+}
+
+fn block_scalar_header(value: &str) -> bool {
+    yaml_value_token(value).is_some_and(|token| token.starts_with(['|', '>']))
+        && serde_yaml_ng::from_str::<Value>(&format!("value: {value}\n")).is_ok()
+}
+
+fn yaml_value_token(value: &str) -> Option<&str> {
+    // Anchors and tags precede the value; serde validates complete scalar headers.
+    value
+        .split_whitespace()
+        .find(|token| !token.starts_with(['&', '!']))
 }
 
 fn block_kind(node: &Node) -> Option<BlockKind> {

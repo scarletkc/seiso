@@ -56,6 +56,8 @@ fn kind_errors_do_not_fall_back_to_a_configured_exemption() {
         ("---\nkind: guide\n---\n# Guide\n", "KND002"),
         ("---\nkind: generated\n---\n# Guide\n", "KND002"),
         ("---\nkind: [\n---\n# Guide\n", "KND001"),
+        ("---\nkind: howto\n\n# Guide\n", "KND001"),
+        ("---\ncustom: value\nkind: howto\n", "KND001"),
     ] {
         let result = evaluate(root.path(), source, mapping, true);
         assert_eq!(result.kind.value, None);

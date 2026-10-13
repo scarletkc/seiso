@@ -459,6 +459,178 @@ fn thematic_break_and_toml_like_content_are_not_yaml_frontmatter() {
 }
 
 #[test]
+fn thematic_break_before_labeled_prose_keeps_markdown_structure() {
+    for newline in ["\n", "\r\n"] {
+        for label in ["Note", "Warning", "Status", "Summary", "note"] {
+            let source = format!(
+                "---\n\n{label}: this page starts with a horizontal rule.\n\n# Title\n\nBody text.\n"
+            )
+            .replace('\n', newline);
+            for flavor in [MarkdownFlavor::Gfm, MarkdownFlavor::CommonMark] {
+                let document = parse_with_options(&source, ParseOptions { flavor }).unwrap();
+                assert!(document.frontmatter.is_none(), "{label}, {newline:?}");
+                assert_eq!(document.blocks[0].kind, BlockKind::ThematicBreak);
+                assert_eq!(document.sections[1].heading.as_deref(), Some("Title"));
+                assert_eq!(document.source, source);
+                assert_source_ranges(&document);
+            }
+        }
+    }
+}
+
+#[test]
+fn unclosed_frontmatter_retains_top_level_metadata_errors() {
+    for newline in ["\n", "\r\n"] {
+        for content in [
+            "kind: howto",
+            "\n# Metadata\n\nkind: [",
+            "lang: en",
+            "canonical:",
+            "custom: value\nkind: howto",
+            "custom:\n  kind: nested\nkind: howto",
+            "custom: |\n  kind: prose\nkind: howto",
+            "custom: |\n\n    kind: nested\nkind: howto",
+            "custom: |\n\n    ```yaml\n    key: value\n    ```\nkind: howto",
+            "custom:\n- value\nkind: howto",
+            "custom: # explanatory comment\n- value\nkind: howto",
+            "custom:\n-\nkind: howto",
+        ] {
+            let source =
+                format!("---\n{content}\n\n# Title\n\nBody text.\n").replace('\n', newline);
+            let document = parse(&source).unwrap();
+            assert_eq!(
+                document.frontmatter.as_ref().unwrap().errors[0].message,
+                "YAML frontmatter has no closing fence",
+                "{content}, {newline:?}"
+            );
+            assert_source_ranges(&document);
+        }
+    }
+}
+
+#[test]
+fn metadata_after_block_scalar_examples_keeps_unclosed_errors() {
+    for newline in ["\n", "\r\n"] {
+        for content in [
+            "custom: |\n\n  <div>\n  text\n  </div>\nkind: howto",
+            "custom: |\n\n  ```yaml\n  key: value\n  ```\nkind: howto",
+            "custom: >\n\n  > quoted value\nkind: howto",
+            "custom:\n  |\n  <div>\n  text\n  </div>\nkind: howto",
+            "custom:\n  >\n  > quoted value\nkind: howto",
+            "custom: # explanatory comment\n  |\n\n  <div>\n  text\n  </div>\nkind: howto",
+            "custom: &label |\n\n  <div>\n  text\n  </div>\nkind: howto",
+            "custom: !!str |\n\n  ```yaml\n  key: value\n  ```\nkind: howto",
+            "custom: &label # explanatory comment\n  >\n  > quoted value\nkind: howto",
+        ] {
+            let closed = format!("---\n{content}\n---\n").replace('\n', newline);
+            let parsed = parse(&closed).unwrap();
+            let frontmatter = parsed.frontmatter.as_ref().unwrap();
+            assert_eq!(frontmatter.kind.as_deref(), Some("howto"));
+            assert!(frontmatter.errors.is_empty(), "{content}, {newline:?}");
+
+            let source = format!("---\n{content}\n").replace('\n', newline);
+            let parsed = parse(&source).unwrap();
+            assert_eq!(
+                parsed.frontmatter.as_ref().unwrap().errors[0].message,
+                "YAML frontmatter has no closing fence",
+                "{content}, {newline:?}"
+            );
+            assert_source_ranges(&parsed);
+        }
+    }
+}
+
+#[test]
+fn metadata_in_nested_values_or_later_markdown_is_not_an_unclosed_declaration() {
+    for newline in ["\n", "\r\n"] {
+        for content in [
+            "custom:\n  kind: nested",
+            "custom: |\n  kind: prose",
+            "Note: example\n\n```yaml\nkind: howto\n```",
+            "Note: example\n\n~~~yaml\nkind: howto\n~~~",
+            "Note: example\n\nBody text.\n\nkind: howto",
+            "custom: prose\n\n- Markdown list\n\nkind: howto",
+            "custom:\n- kind: nested",
+            "custom: |\n  ```yaml\n  kind: howto\n  ```",
+            "custom: |\n  literal\ncustom: prose\n\n  ```yaml\nkind: howto\n  ```",
+            "custom: |\n  literal\nBody text.\n\nkind: howto",
+            "custom: |\n\n```yaml\nkind: howto\n```",
+            "Note: > quoted prose\n\n  ```yaml\nkind: howto\n  ```",
+            "Note: | labeled prose\n\n  <!--\nkind: howto\n  -->",
+            "Note:\n  prose\n\n  >\nkind: howto",
+            "Note: &label prose\n\n  ```yaml\nkind: howto\n  ```",
+            "Note: !!str \"|\"\n\n  <!--\nkind: howto\n  -->",
+        ] {
+            let source = format!("---\n\n{content}\n").replace('\n', newline);
+            let document = parse(&source).unwrap();
+            assert!(document.frontmatter.is_none(), "{content}, {newline:?}");
+            assert_source_ranges(&document);
+        }
+    }
+}
+
+#[test]
+fn indented_code_fences_do_not_supply_frontmatter_metadata() {
+    for newline in ["\n", "\r\n"] {
+        for fence in ["```", "~~~"] {
+            for indent in [" ", "  ", "   "] {
+                let source = format!(
+                    "---\n\nNote: example\n\n{indent}{fence}yaml\nkind: howto\n{indent}{fence}\n"
+                )
+                .replace('\n', newline);
+                let document = parse(&source).unwrap();
+                assert!(
+                    document.frontmatter.is_none(),
+                    "{fence}, {indent:?}, {newline:?}"
+                );
+                assert_source_ranges(&document);
+            }
+        }
+    }
+}
+
+#[test]
+fn html_blocks_do_not_supply_frontmatter_metadata() {
+    for newline in ["\n", "\r\n"] {
+        for indent in ["", " ", "  ", "   "] {
+            for (content, block) in [
+                (
+                    format!("{indent}<!--\nkind: howto\n{indent}-->"),
+                    BlockKind::HtmlComment,
+                ),
+                (
+                    format!("{indent}<div>\nkind: howto\n{indent}</div>"),
+                    BlockKind::Html,
+                ),
+            ] {
+                let source = format!("---\n\nNote: example\n\n{content}\n").replace('\n', newline);
+                let document = parse(&source).unwrap();
+                assert!(document.frontmatter.is_none(), "{content}, {newline:?}");
+                assert!(
+                    document.blocks.iter().any(|value| value.kind == block),
+                    "{content}, {:?}",
+                    document.blocks
+                );
+                assert_source_ranges(&document);
+            }
+        }
+    }
+}
+
+#[test]
+fn blockquote_examples_do_not_supply_frontmatter_metadata() {
+    for newline in ["\n", "\r\n"] {
+        for indent in ["", " ", "  ", "   "] {
+            let source = format!("---\n\nNote: example\n\n{indent}> example\nkind: howto\n")
+                .replace('\n', newline);
+            let document = parse(&source).unwrap();
+            assert!(document.frontmatter.is_none(), "{indent:?}, {newline:?}");
+            assert_source_ranges(&document);
+        }
+    }
+}
+
+#[test]
 fn headings_in_quotes_do_not_capture_following_outer_content() {
     let source = "# Outside\n\n> ## Quoted\n> text\n\nMain paragraph.";
     let document = parse(source).unwrap();

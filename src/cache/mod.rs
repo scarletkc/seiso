@@ -11,8 +11,8 @@ use crate::md::{Document, ParseError};
 use bincode::Options;
 use sha2::{Digest, Sha256};
 
-const SCHEMA: &str = "seiso-parse-cache-5-bincode-varint-le";
-const HEADER: &[u8] = b"seiso-parse-cache-5-bincode-varint-le\n";
+const SCHEMA: &str = "seiso-parse-cache-6-bincode-varint-le";
+const HEADER: &[u8] = b"seiso-parse-cache-6-bincode-varint-le\n";
 const GITIGNORE: &str = "# Automatically created by seiso.\n*\n";
 const CACHEDIR_TAG: &str = "Signature: 8a477f597d28d172789f06886806bc55\n# This file is a cache directory tag created by seiso.\n# For information about cache directory tags see https://bford.info/cachedir/\n";
 const PRUNE_MARKER: &str = ".pruned";
@@ -333,6 +333,49 @@ mod tests {
                 .unwrap()
         );
         assert!(!absent.exists());
+    }
+
+    #[test]
+    fn old_frontmatter_cache_is_not_reused_after_parser_correction() {
+        let source = "---\n\nNote: a thematic break.\n\n# Title\n\nBody text.\n";
+        let temporary = tempfile::tempdir().unwrap();
+        let cache = ParseCache::new(temporary.path().to_path_buf(), true);
+        let mut stale = crate::md::parse(source).unwrap();
+        let span = Span::new(0, source.len());
+        stale.frontmatter = Some(crate::md::Frontmatter {
+            span,
+            raw: source.lines().skip(1).collect::<Vec<_>>().join("\n"),
+            kind: None,
+            lang: None,
+            canonical: None,
+            errors: vec![crate::md::FrontmatterError {
+                span,
+                message: "YAML frontmatter has no closing fence".to_owned(),
+            }],
+        });
+        assert!(valid(&stale));
+        let legacy = "seiso-parse-cache-5-bincode-varint-le";
+        let mut hash = Sha256::new();
+        hash.update(legacy);
+        hash.update([0]);
+        hash.update(env!("CARGO_PKG_VERSION"));
+        hash.update([0]);
+        hash.update(source);
+        let path = cache.path_for_key(&hash.finalize().into());
+        let payload = bincode::options().serialize(&stale).unwrap();
+        let mut bytes = format!("{legacy}\n").into_bytes();
+        bytes.extend_from_slice(&Sha256::digest(&payload));
+        bytes.extend_from_slice(&payload);
+        std::fs::write(&path, bytes).unwrap();
+        assert!(cache.parse(source).unwrap().frontmatter.is_none());
+        assert!(
+            ParseCache::new(temporary.path().to_path_buf(), true)
+                .parse(source)
+                .unwrap()
+                .frontmatter
+                .is_none()
+        );
+        assert!(path.exists());
     }
 
     #[test]

@@ -10,6 +10,42 @@ use serde_json::{Value, json};
 use tempfile::TempDir;
 
 #[test]
+fn mapped_kind_applies_to_thematic_break_before_labeled_prose() {
+    let root = workspace("[[kinds]]\npath = '**/*.md'\nkind = 'reference'\n");
+    for newline in ["\n", "\r\n"] {
+        for label in ["Note", "Warning", "Status"] {
+            write(
+                root.path(),
+                "a.md",
+                &format!("---\n\n{label}: this page starts with a horizontal rule.\n\n# Title\n\nBody text.\n")
+                    .replace('\n', newline),
+            );
+            let output = run(
+                root.path(),
+                &[
+                    "check",
+                    "a.md",
+                    "--select",
+                    "KND001",
+                    "--no-cache",
+                    "--output-format",
+                    "json",
+                ],
+                None,
+            );
+            assert_eq!(
+                output.status.code(),
+                Some(0),
+                "{label}, {newline:?}: {}",
+                String::from_utf8_lossy(&output.stdout)
+            );
+            assert_eq!(value(&output), json!([]));
+            assert!(output.stderr.is_empty());
+        }
+    }
+}
+
+#[test]
 fn preview_is_opt_in_even_when_a_rule_is_explicitly_selected() {
     let workspace = TempDir::new().unwrap();
     let root = workspace.path();
