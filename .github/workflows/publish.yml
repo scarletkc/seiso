@@ -126,7 +126,11 @@ jobs:
         with:
           python-version: '3.12'
       - uses: dtolnay/rust-toolchain@stable
+      # Rows on one runner image share the default cache key, and build scripts compiled in the
+      # musl build container need a newer glibc than the manylinux2014 container provides.
       - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.platform }}
       # Shared preflight runs the Rust tests on Linux x64. On a musl row, cargo test would repeat
       # the glibc row's host tests, so its wheel is exercised on Alpine instead.
       - if: matrix.platform != 'linux-x64' && !matrix.image
